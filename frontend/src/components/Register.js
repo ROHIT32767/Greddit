@@ -3,24 +3,29 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import PhoneInput from 'react-phone-input-2'
-
-import EmailComp from "./FormElements/Email"
-import AgeComp from "./FormElements/Age"
-import PasswordComp from './FormElements/Password';
-
 const theme = createTheme();
-
-
-
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+  return (
+    <div>
+      <br />
+      <div className='error'>
+        {message}
+      </div>
+      <br />
+    </div>
+  )
+}
 export default function Home() {
+  const [errorMessage, setErrorMessage] = React.useState(null)
   const [FormValues, setFormValues] = React.useState({
     FirstName: "",
     LastName: "",
@@ -31,15 +36,39 @@ export default function Home() {
     Password: ""
   })
 
-  // const [error, setError] = useState({
-  //   email: false,
-  //   age: false,
-  //   password: false
-  // }) Handle errors
   function handleSubmit(event) {
     console.log(FormValues)
+    event.preventDefault()
+    if (!FormValues.FirstName || !FormValues.LastName || !FormValues.Username || !FormValues.Email || (FormValues.Age <= 0) || (!FormValues.ContactNumber) || (!FormValues.Password)) {
+      setFormValues({
+        FirstName: "",
+        LastName: "",
+        Username: "",
+        Email: "",
+        Age: "",
+        ContactNumber: "",
+        Password: ""
+      })
+      setErrorMessage(
+        `Given Form Inputs are Invalid `
+      )
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+    }
+    else {
+      setFormValues({
+        FirstName: "",
+        LastName: "",
+        Username: "",
+        Email: "",
+        Age: "",
+        ContactNumber: "",
+        Password: ""
+      })
+      // TODO: Write code for submitting post request
+    }
   }
-
   return (
     <div>
       <ThemeProvider theme={theme}>
@@ -59,6 +88,7 @@ export default function Home() {
             <Typography component="h1" variant="h5">
               Sign up
             </Typography>
+            <Notification message={errorMessage} />
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -96,7 +126,75 @@ export default function Home() {
                     onChange={event => setFormValues({ ...FormValues, Username: event.target.value })}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="outlined-number"
+                    required
+                    label="Age"
+                    type="number"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={FormValues.Age}
+                    onChange={event => setFormValues({ ...FormValues, Age: event.target.value })}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    value={FormValues.ContactNumber}
+                    required
+                    placeholder="Contact Number"
+                    name="Contact Number"
+                    inputStyle={{
+                      background: "lightblue"
+                    }}
+                    onChange={event => setFormValues({ ...FormValues, ContactNumber: event.target.value })}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    value={FormValues.Email}
+                    onChange={event => setFormValues({ ...FormValues, Email: event.target.value })}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="new-password"
+                    value={FormValues.Password}
+                    onChange={event => setFormValues({ ...FormValues, Password: event.target.value })}
+                  />
+                </Grid>
+              </Grid>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign Up
+              </Button>
+            </Box>
+          </Box>
+        </Container>
+      </ThemeProvider>
+    </div>
+  )
+}
+
+
+{/* <Grid item xs={12} sm={4}>
                   <AgeComp
                     FormValues={FormValues}
                     setFormValues={setFormValues}
@@ -126,30 +224,4 @@ export default function Home() {
                     setFormValues={setFormValues}
                   // Handle Errors
                   />
-                </Grid>
-              </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign Up
-              </Button>
-              <Grid container justifyContent="flex-end">
-                <Grid item>
-                  <Link href="/login" variant="body2">
-                    Already have an account? Sign in
-                  </Link>
-                </Grid>
-              </Grid>
-            </Box>
-          </Box>
-          {/* <Copyright sx={{ mt: 5 }} /> */}
-        </Container>
-      </ThemeProvider>
-    </div>
-  )
-}
-
-
+                </Grid> */}

@@ -1,33 +1,30 @@
 import React from 'react';
-import Typography from '@mui/material/Typography';
-import animation from '../assets/icons8-reddit.gif';
-import AuthContext from "../context/AuthContext"
-
-const Home = () => {
-    const user = React.useContext(AuthContext).user
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import Login from "./Login"
+import Register from "./Register"
+export default function Home(props){
     return (
         <div>
-            {!user ?
-                    <div className="welcome-page">
-                        <img 
-                        src={animation} 
-                        alt="Loading..."
-                        style={{
-                            margin: "3rem",
-                            marginTop: "20rem", 
-                        }}
-                        />
-                        <Typography className="welcome-heading" variant="h2" component="h1">
-                            Welcome to Greddiit Portal
-                        </Typography>
-                    </div>
-                    :
-                    <div className="welcome-page">
-
-                    </div>
+            {!props.user ?
+                <div className="App">
+                    <Tabs className="Tabs">
+                        <TabList>
+                            <Tab>Login</Tab>
+                            <Tab>Signup</Tab>
+                        </TabList>
+                        <TabPanel>
+                            <Login user={props.user} setuser={props.setuser} />
+                        </TabPanel>
+                        <TabPanel>
+                            <Register  />
+                        </TabPanel>
+                    </Tabs>
+                </div>
+                :
+                <div>
+                Welcome {user.email}    
+                </div>
             }
         </div>
     );
 };
-
-export default Home;

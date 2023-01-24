@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
@@ -12,7 +10,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import loginService from "../services/login"
 // import UserService from "../services/Users" reestablish
-import AuthContext from '../context/AuthContext';
+// import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
@@ -24,10 +22,24 @@ function validate(email, password) {
         password: password.length === 0
     };
 }
-
+const Notification = ({ message }) => {
+    if (message === null) {
+        return null
+    }
+    return (
+        <div>
+            <br />
+            <div className='error'>
+                {message}
+            </div>
+            <br />
+        </div>
+    )
+}
 export default function Login(props) {
     const [emaillogin, setemaillogin] = React.useState("")
     const [passwordlogin, setpasswordlogin] = React.useState("")
+    const [errorMessage, setErrorMessage] = React.useState(null)
     const [touched, settouched] = React.useState({
         email: false,
         password: false
@@ -42,11 +54,6 @@ export default function Login(props) {
     }
     const handlelogin = async (event) => {
         console.log(emaillogin, passwordlogin)
-        // if (canBeSubmitted()) {
-        //     event.preventDefault();
-        //     return;
-        // };
-        // alert(`Signed up with email: ${emaillogin} password: ${passwordlogin}`);
         if (canBeSubmitted()) {
             event.preventDefault()
             try {
@@ -55,16 +62,34 @@ export default function Login(props) {
                     password: passwordlogin
                 })
                 setuser(user)
-                // UserService.setToken(user.token)
                 window.localStorage.setItem(
                     'token', JSON.stringify(user)
                 )
-                navigate("/")
                 setemaillogin("")
                 setpasswordlogin("")
+                // TODO: Make sure everything is reight here
             } catch (exception) {
                 console.log(emaillogin, passwordlogin, exception)
+                setemaillogin("")
+                setpasswordlogin("")
+                setErrorMessage(
+                    `Invalid Credentials`
+                )
+                setTimeout(() => {
+                    setErrorMessage(null)
+                }, 3000)
             }
+        }
+        else {
+            console.log(emaillogin, passwordlogin, exception)
+            setemaillogin("")
+            setpasswordlogin("")
+            setErrorMessage(
+                `Invalid Credentials`
+            )
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 3000)
         }
     }
     function canBeSubmitted() {
@@ -175,21 +200,11 @@ export default function Login(props) {
                                         Sign In
                                     </Button>
                             }
-                            <Grid container>
-                                <Grid item>
-                                    <Link href="/register" variant="body2">
-                                        {"Don't have an account? Sign Up"}
-                                    </Link>
-                                </Grid>
-                            </Grid>
                         </Box>
                     </Box>
-
                 </Container>
             </ThemeProvider>
         </div>
 
     )
 }
-
-/* <Copyright sx={{ mt: 8, mb: 4 }} /> Handle Copyright*/
