@@ -391,7 +391,7 @@ export default function ViewProfile(props) {
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
+                                        <Table sx={{ maxWidth: 125 }} aria-label="simple table">
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>Username</TableCell>
@@ -424,7 +424,7 @@ export default function ViewProfile(props) {
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
+                                        <Table sx={{ maxWidth: 125 }} aria-label="simple table">
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>Username</TableCell>

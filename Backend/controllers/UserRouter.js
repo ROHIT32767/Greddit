@@ -44,7 +44,7 @@ usersRouter.get('/', async (request, response) => {
 usersRouter.get('/:id', async (request, response) => {
   const ID = request.params.id
   const users = await User
-    .findById(ID).populate('Users')
+    .findById(ID).populate('Followers').populate('Following')
   users.id = ID
   console.log(users)
   response.json(users)

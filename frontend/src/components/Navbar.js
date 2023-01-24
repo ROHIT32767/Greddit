@@ -29,6 +29,7 @@ export default function Home(props) {
                     {props.user ?
                         <div>
                             <Button color="inherit" href="/profile"><AccountCircleIcon style={{ marginRight: "0.5rem" }} />Profile</Button>
+                            <Button color="inherit" href="/MySubGreddits"><AccountCircleIcon style={{ marginRight: "0.5rem" }} />MySubGreddits</Button>
                             <Button color="inherit" onClick={handleLogout}><ExitToAppIcon style={{ marginRight: "0.5rem" }} />Logout</Button>
                         </div>
                         :
