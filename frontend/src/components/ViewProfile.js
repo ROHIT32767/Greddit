@@ -17,7 +17,6 @@ import TableRow from "@mui/material/TableRow";
 // import axios from 'axios';
 import UserService from "../services/Users"
 const theme = createTheme();
-
 const Notification = ({ message }) => {
     if (message === null) {
         return null
@@ -41,24 +40,8 @@ export default function ViewProfile(props) {
         Age: "",
         ContactNumber: "",
         Password: "",
-        Followers: [
-            {
-                Username: "Rahul",
-                id: 1
-            },
-            {
-                Username: "Rohit",
-                id: 2
-            }
-        ],
-        Following: [{
-            Username: "Rahul",
-            id: 1
-        },
-        {
-            Username: "Rohit",
-            id: 2
-        }]
+        Followers: [],
+        Following: []
     })
     const [show1, setshow1] = React.useState(false)
     const [show2, setshow2] = React.useState(false)
@@ -71,7 +54,7 @@ export default function ViewProfile(props) {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                console.log("props user =", props.user)
+                // console.log("props user =", props.user)
                 const data = await UserService.getID()
                 console.log("recieved", data)
                 setFormValues({
@@ -82,10 +65,8 @@ export default function ViewProfile(props) {
                     Age: data.Age,
                     ContactNumber: data.ContactNumber,
                     Password: data.Password,
-                    Followers: data.Followers,
-                    Following: data.Following,
-                    Following: [],
-                    Followers: []
+                    Following: data.Followers,
+                    Followers: data.Following
                 })
             }
             catch (error) {
@@ -117,26 +98,70 @@ export default function ViewProfile(props) {
             console.log(FormValues)
         }
         else {
-            setFormValues({
-                FirstName: FirstName,
-                LastName: LastName,
-                Username: Username,
-                Email: Email,
-                Age: Age,
-                ContactNumber: ContactNumber,
-                Password: Password
-            })
+            const UpdateProfile = async () => {
+                try {
+                    console.log("props user for UPdate = ", props.user)
+                    const data = await UserService.UpdateProfile(props.user.id, {
+                        ...FormValues,
+                        FirstName: FirstName,
+                        LastName: LastName,
+                        Username: Username,
+                        Email: Email,
+                        Age: Age,
+                        ContactNumber: ContactNumber,
+                        password: Password
+                    })
+                    console.log(FormValues)
+                    console.log("recieved for Update", data)
+                    setFormValues({
+                        ...FormValues,
+                        FirstName: FirstName,
+                        LastName: LastName,
+                        Username: Username,
+                        Email: Email,
+                        Age: Age,
+                        ContactNumber: ContactNumber,
+                        Password: Password
+                    })
+                }
+                catch (error) {
+                    console.log("In Register.js", error)
+                }
+            }
+            UpdateProfile();
             setedit(!edit)
             console.log(FormValues)
         }
     }
     function Deleterow1(event, id) {
         console.log(id)
-        setFormValues({ ...FormValues, Followers: FormValues.Followers.filter(element => element.id !== id) })
+        const DeleteFollowers = async () => {
+            try {
+                // console.log("props user =", props.user)
+                const data = await UserService.UpdateFollowers(props.user.id, { TargetID: id })
+                console.log("recieved", data)
+                setFormValues({ ...FormValues, Followers: FormValues.Followers.filter(element => element.id !== id) })
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        DeleteFollowers();
     }
     function Deleterow2(event, id) {
         console.log(id)
-        setFormValues({ ...FormValues, Following: FormValues.Following.filter(element => element.id !== id) })
+        const DeleteFollowing = async () => {
+            try {
+                // console.log("props user =", props.user)
+                const data = await UserService.UpdateFollowing(props.user.id, { TargetID: id })
+                console.log("recieved", data)
+                setFormValues({ ...FormValues, Following: FormValues.Following.filter(element => element.id !== id) })
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        DeleteFollowing();
     }
     return (
         <div>

@@ -8,7 +8,13 @@ const userSchema = new mongoose.Schema({
   Age:{type:Number,required:true},
   ContactNumber:{type:String,required:true},
   passwordHash: {type:String,required:true},
-  Users: [
+  Following: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  ],
+  Followers: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'

@@ -79,9 +79,6 @@ export default function Register(props) {
         }
       }
       sendData();
-
-
-      // TODO: Write code for submitting post request
     }
   }
   return (
@@ -209,7 +206,7 @@ export default function Register(props) {
 }
 
 
-{/* <Grid item xs={12} sm={4}>
+/* <Grid item xs={12} sm={4}>
                   <AgeComp
                     FormValues={FormValues}
                     setFormValues={setFormValues}
@@ -239,4 +236,4 @@ export default function Register(props) {
                     setFormValues={setFormValues}
                   // Handle Errors
                   />
-                </Grid> */}
+                </Grid> */

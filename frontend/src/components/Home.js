@@ -22,7 +22,7 @@ export default function Home(props){
                 </div>
                 :
                 <div>
-                Welcome {props.user.email}    
+                Welcome {props.user.Email}    
                 </div>
             }
         </div>
