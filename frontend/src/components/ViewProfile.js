@@ -14,6 +14,8 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import axios from 'axios';
+import UserService from "../services/Users"
 const theme = createTheme();
 
 const Notification = ({ message }) => {
@@ -65,7 +67,26 @@ export default function ViewProfile(props) {
     function handleEdit() {
         setedit(!edit)
     }
+    React.useEffect(async () => {
+        try {
+            const data = await UserService.getID(user.id)
+            setFormValues({
+                FirstName: data.FirstName,
+                LastName: data.LastName,
+                Username: data.Username,
+                Email: data.Email,
+                Age: data.Age,
+                ContactNumber: data.ContactNumber,
+                Password: data.Password,
+                Followers: data.Followers,
+                Following: data.Following
+            })
+        }
+        catch (exception) {
+            console.log(exception)
+        }
 
+    })
     function handleSubmit(event) {
         event.preventDefault();
         const data = new FormData(event.target)
@@ -337,7 +358,7 @@ export default function ViewProfile(props) {
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <Table sx={{ maxWidth:250 }} aria-label="simple table">
+                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>Username</TableCell>
@@ -370,7 +391,7 @@ export default function ViewProfile(props) {
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <Table sx={{ maxWidth:250 }} aria-label="simple table">
+                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>Username</TableCell>
