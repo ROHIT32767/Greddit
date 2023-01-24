@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import loginService from "../services/login"
-// import UserService from "../services/Users" reestablish
+import UserService from "../services/Users" 
 // import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,6 +36,9 @@ const Notification = ({ message }) => {
         </div>
     )
 }
+// ! Password: Testing - rohitgowlapalli01@gmail.com
+// ! Password: Hello123 rohit.gowlapalli@students.iiit.ac.in
+
 export default function Login(props) {
     const [emaillogin, setemaillogin] = React.useState("")
     const [passwordlogin, setpasswordlogin] = React.useState("")
@@ -44,8 +47,8 @@ export default function Login(props) {
         email: false,
         password: false
     })
-    const navigate = useNavigate()
-    const setuser = React.useContext(AuthContext).setuser
+    // const navigate = useNavigate()
+    // const setuser = React.useContext(AuthContext).setuser
     function changeemaillogin(event) {
         setemaillogin(event.target.value)
     }
@@ -61,15 +64,16 @@ export default function Login(props) {
                     Email: emaillogin,
                     password: passwordlogin
                 })
-                setuser(user)
+                props.setuser(user)
                 window.localStorage.setItem(
                     'token', JSON.stringify(user)
                 )
+                UserService.setToken(user.token)
                 setemaillogin("")
                 setpasswordlogin("")
                 // TODO: Make sure everything is reight here
-            } catch (exception) {
-                console.log(emaillogin, passwordlogin, exception)
+            } catch (error) {
+                console.log(emaillogin, passwordlogin, error)
                 setemaillogin("")
                 setpasswordlogin("")
                 setErrorMessage(
@@ -81,7 +85,7 @@ export default function Login(props) {
             }
         }
         else {
-            console.log(emaillogin, passwordlogin, exception)
+            console.log(emaillogin, passwordlogin)
             setemaillogin("")
             setpasswordlogin("")
             setErrorMessage(
@@ -123,6 +127,7 @@ export default function Login(props) {
                         <Typography component="h1" variant="h5">
                             Sign in
                         </Typography>
+                        <Notification message={errorMessage} />
                         <Box component="form" onSubmit={handlelogin} noValidate sx={{ mt: 1 }}>
                             {
                                 shouldMarkError("email") ?

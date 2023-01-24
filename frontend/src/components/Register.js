@@ -9,6 +9,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import UserService from "../services/Users"
 const theme = createTheme();
 const Notification = ({ message }) => {
   if (message === null) {
@@ -24,7 +25,7 @@ const Notification = ({ message }) => {
     </div>
   )
 }
-export default function Home() {
+export default function Register(props) {
   const [errorMessage, setErrorMessage] = React.useState(null)
   const [FormValues, setFormValues] = React.useState({
     FirstName: "",
@@ -33,13 +34,13 @@ export default function Home() {
     Email: "",
     Age: "",
     ContactNumber: "",
-    Password: ""
+    password: ""
   })
 
   function handleSubmit(event) {
     console.log(FormValues)
     event.preventDefault()
-    if (!FormValues.FirstName || !FormValues.LastName || !FormValues.Username || !FormValues.Email || (FormValues.Age <= 0) || (!FormValues.ContactNumber) || (!FormValues.Password)) {
+    if (!FormValues.FirstName || !FormValues.LastName || !FormValues.Username || !FormValues.Email || (FormValues.Age <= 0) || (!FormValues.ContactNumber) || (!FormValues.password)) {
       setFormValues({
         FirstName: "",
         LastName: "",
@@ -47,7 +48,7 @@ export default function Home() {
         Email: "",
         Age: "",
         ContactNumber: "",
-        Password: ""
+        password: "",
       })
       setErrorMessage(
         `Given Form Inputs are Invalid `
@@ -57,15 +58,29 @@ export default function Home() {
       }, 3000)
     }
     else {
-      setFormValues({
-        FirstName: "",
-        LastName: "",
-        Username: "",
-        Email: "",
-        Age: "",
-        ContactNumber: "",
-        Password: ""
-      })
+      const sendData = async () => {
+        try {
+          console.log("props user = ", props.user)
+          const data = await UserService.create({...FormValues})
+          console.log(FormValues)
+          console.log("recieved", data)
+          setFormValues({
+            FirstName: "",
+            LastName: "",
+            Username: "",
+            Email: "",
+            Age: "",
+            ContactNumber: "",
+            password: ""
+          })
+        }
+        catch (error) {
+          console.log("In Register.js" , error)
+        }
+      }
+      sendData();
+
+
       // TODO: Write code for submitting post request
     }
   }
@@ -172,8 +187,8 @@ export default function Home() {
                     type="password"
                     id="password"
                     autoComplete="new-password"
-                    value={FormValues.Password}
-                    onChange={event => setFormValues({ ...FormValues, Password: event.target.value })}
+                    value={FormValues.password}
+                    onChange={event => setFormValues({ ...FormValues, password: event.target.value })}
                   />
                 </Grid>
               </Grid>

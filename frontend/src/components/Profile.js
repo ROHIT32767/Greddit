@@ -6,7 +6,7 @@ export default function Profile(props) {
         <div>
             {
                 props.user ?
-                    <ViewProfile />
+                    <ViewProfile user={props.user} setuser={props.setuser} />
                     :
                     <div>
                     </div>

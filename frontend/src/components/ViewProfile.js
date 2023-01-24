@@ -14,7 +14,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import axios from 'axios';
+// import axios from 'axios';
 import UserService from "../services/Users"
 const theme = createTheme();
 
@@ -67,26 +67,34 @@ export default function ViewProfile(props) {
     function handleEdit() {
         setedit(!edit)
     }
-    React.useEffect(async () => {
-        try {
-            const data = await UserService.getID(user.id)
-            setFormValues({
-                FirstName: data.FirstName,
-                LastName: data.LastName,
-                Username: data.Username,
-                Email: data.Email,
-                Age: data.Age,
-                ContactNumber: data.ContactNumber,
-                Password: data.Password,
-                Followers: data.Followers,
-                Following: data.Following
-            })
-        }
-        catch (exception) {
-            console.log(exception)
-        }
 
-    })
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                console.log("props user =", props.user)
+                const data = await UserService.getID()
+                console.log("recieved", data)
+                setFormValues({
+                    FirstName: data.FirstName,
+                    LastName: data.LastName,
+                    Username: data.Username,
+                    Email: data.Email,
+                    Age: data.Age,
+                    ContactNumber: data.ContactNumber,
+                    Password: data.Password,
+                    Followers: data.Followers,
+                    Following: data.Following,
+                    Following: [],
+                    Followers: []
+                })
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        fetchData();
+    }, [])
+
     function handleSubmit(event) {
         event.preventDefault();
         const data = new FormData(event.target)
@@ -253,7 +261,7 @@ export default function ViewProfile(props) {
                                             id="outlined-read-only-input"
                                             label="FirstName"
                                             autoFocus
-                                            defaultValue={FormValues.FirstName}
+
                                             InputProps={{
                                                 readOnly: true,
                                             }}
@@ -266,7 +274,7 @@ export default function ViewProfile(props) {
                                             id="outlined-read-only-input"
                                             label="Last Name"
                                             name="LastName"
-                                            defaultValue={FormValues.LastName}
+
                                             InputProps={{
                                                 readOnly: true,
                                             }}
@@ -279,7 +287,7 @@ export default function ViewProfile(props) {
                                             id="outlined-read-only-input"
                                             label="Username"
                                             name="username"
-                                            defaultValue={FormValues.Username}
+
                                             InputProps={{
                                                 readOnly: true,
                                             }}
@@ -296,7 +304,7 @@ export default function ViewProfile(props) {
                                                 shrink: true,
                                             }}
                                             name="age"
-                                            defaultValue={FormValues.Age}
+
                                             InputProps={{
                                                 readOnly: true,
                                             }}
@@ -305,7 +313,7 @@ export default function ViewProfile(props) {
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
                                         <TextField
-                                            defaultValue={FormValues.ContactNumber}
+
                                             id="outlined-read-only-input"
                                             placeholder="Contact Number"
                                             name="Contact Number"
@@ -315,7 +323,7 @@ export default function ViewProfile(props) {
                                             InputProps={{
                                                 readOnly: true,
                                             }}
-                                            value={FormValues.ContactNumbe}
+                                            value={FormValues.ContactNumber}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -325,7 +333,7 @@ export default function ViewProfile(props) {
                                             label="Email Address"
                                             name="Email"
                                             autoComplete="email"
-                                            defaultValue={FormValues.Email}
+
                                             InputProps={{
                                                 readOnly: true,
                                             }}

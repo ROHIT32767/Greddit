@@ -1,5 +1,5 @@
 import React from "react"
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route , Navigate } from "react-router-dom";
 import "./App.css"
 import Home from './components/Home';
 import Navbar from "./components/Navbar"
@@ -9,7 +9,7 @@ import MySubGreddits from "./components/MySubGreddits"
 import SubGreddits from "./components/SubGreddits"
 import AllSubGreddits from "./components/AllSubGreddits"
 
-function App() {
+export default function App() {
   const [user, setuser] = React.useState(null)
   React.useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('token')
@@ -28,15 +28,13 @@ function App() {
           <Routes>
             <Route exact path="/" element={<Home user={user} setuser={setuser} />} />
             <Route path="/profile" element={window.localStorage.getItem('token') ? <Profile user={user} setuser={setuser}/>: <Navigate replace to="/" />}/>
-            <Route path="/MySubGreddits" element={window.localStorage.getItem('token') ? <MySubGreddits/> :<Navigate replace to="/" />}/>
+            {/* <Route path="/MySubGreddits" element={window.localStorage.getItem('token') ? <MySubGreddits/> :<Navigate replace to="/" />}/>
             <Route path="/SubGreddits" element={window.localStorage.getItem('token') ? <SubGreddits/> :<Navigate replace to="/" />}/>
             <Route path="/AllSubGreddits" element={window.localStorage.getItem('token') ? <AllSubGreddits/> :<Navigate replace to="/" />}/>
-            <Route path="*" element={<Navigate replace to="/"/>} />
+            <Route path="*" element={<Navigate replace to="/"/>} /> */}
           </Routes>
         </div>
        {/* </AuthContext.Provider> */}
     </Router>
   );
 }
-
-export default App; 
