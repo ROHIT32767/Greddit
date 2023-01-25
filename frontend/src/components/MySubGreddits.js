@@ -35,7 +35,7 @@ export default function SubredditPage(props) {
         Followers: [],
         Tags: [],
         Posts: [],
-        Moderator : null
+        Moderator: null
         // Image: null,
     });
     const ToggleForm = () => {
@@ -45,7 +45,8 @@ export default function SubredditPage(props) {
             Banned: [],
             Followers: [window.localStorage.getItem('token').id],
             Posts: [],
-            Tags: []
+            Tags: [],
+            Moderator: window.localStorage.getItem('token').id
             // Image: null,
         });
         setShowForm(!showForm);
@@ -64,7 +65,7 @@ export default function SubredditPage(props) {
                         Followers: element.Followers,
                         Posts: element.Posts,
                         Tags: element.Tags,
-                        Moderator:element.Moderator
+                        Moderator: element.Moderator
                     }
                 }
                 )
@@ -78,32 +79,21 @@ export default function SubredditPage(props) {
     }, [])
     const handleSubmit = (event) => {
         event.preventDefault();
-        setSubreddits([...subreddits, newSubreddit]);
         const PostSubGreddiit = async () => {
             try {
-                console.log("props user for UPdate = ", props.user)
-                const data = await SubGredditService.create(props.user.id, {
-                    ...FormValues,
-                    FirstName: FirstName,
-                    LastName: LastName,
-                    Username: Username,
-                    Email: Email,
-                    Age: Age,
-                    ContactNumber: ContactNumber,
-                    password: Password
+                console.log("props user for Posting MySubreddiit = ", props.user)
+                const data = await SubGredditService.create({
+                    Name: newSubreddit.Name,
+                    Description: newSubreddit.Description,
+                    Banned: newSubreddit.Banned,
+                    Followers: [window.localStorage.getItem('token').id],
+                    Posts: [],
+                    Tags: newSubreddit.Tags,
+                    Moderator: window.localStorage.getItem('token').id
                 })
-                console.log(FormValues)
-                console.log("recieved for Update", data)
-                setFormValues({
-                    ...FormValues,
-                    FirstName: FirstName,
-                    LastName: LastName,
-                    Username: Username,
-                    Email: Email,
-                    Age: Age,
-                    ContactNumber: ContactNumber,
-                    Password: Password
-                })
+                setSubreddits([...subreddits, newSubreddit]);
+                console.log(subreddits)
+                console.log("recieved for Posting MySubGrediiit", data)
             }
             catch (error) {
                 console.log("In Register.js", error)
