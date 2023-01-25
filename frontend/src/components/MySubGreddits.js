@@ -43,10 +43,10 @@ export default function SubredditPage(props) {
             Name: "",
             Description: "",
             Banned: [],
-            Followers: [window.localStorage.getItem('token').id],
+            Followers: [JSON.parse(window.localStorage.getItem('token')).id],
             Posts: [],
             Tags: [],
-            Moderator: window.localStorage.getItem('token').id
+            Moderator: JSON.parse(window.localStorage.getItem('token')).id
             // Image: null,
         });
         setShowForm(!showForm);
@@ -54,22 +54,21 @@ export default function SubredditPage(props) {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                // console.log("props user =", props.user)
                 const data = await SubGredditService.getID()
                 console.log("recieved", data)
                 setSubreddits(data.map(element => {
                     return {
+                        ...element,
                         Name: element.Name,
                         Description: element.Description,
                         Banned: element.Banned,
                         Followers: element.Followers,
-                        Posts: element.Posts,
+                        Posts: element.Post,
                         Tags: element.Tags,
-                        Moderator: element.Moderator
+                        Moderator: element.Moderator,
                     }
-                }
-                )
-                )
+                }))
+                // console.log("Subreddits on Loading are",subreddits)
             }
             catch (error) {
                 console.log(error)
@@ -82,35 +81,54 @@ export default function SubredditPage(props) {
         const PostSubGreddiit = async () => {
             try {
                 console.log("props user for Posting MySubreddiit = ", props.user)
+                console.log(JSON.parse(window.localStorage.getItem('token')).id)
                 const data = await SubGredditService.create({
                     Name: newSubreddit.Name,
                     Description: newSubreddit.Description,
                     Banned: newSubreddit.Banned,
-                    Followers: [window.localStorage.getItem('token').id],
+                    Followers: [JSON.parse(window.localStorage.getItem('token')).id],
                     Posts: [],
                     Tags: newSubreddit.Tags,
-                    Moderator: window.localStorage.getItem('token').id
+                    Moderator: JSON.parse(window.localStorage.getItem('token')).id
                 })
                 setSubreddits([...subreddits, newSubreddit]);
                 console.log(subreddits)
                 console.log("recieved for Posting MySubGrediiit", data)
             }
             catch (error) {
-                console.log("In Register.js", error)
+                console.log("In MySubReddit.js", error)
             }
         }
         PostSubGreddiit();
         setShowForm(false);
         setNewSubreddit({
+            ...newSubreddit,
             Name: "",
             Description: "",
             Banned: [],
-            Followers: [window.localStorage.getItem('token').id],
+            Followers: [JSON.parse(window.localStorage.getItem('token')).id],
             Posts: [],
             Tags: []
             // Image: null,
         });
     };
+    function handleDelete(event,id){
+        console.log(id)
+        const DeleteSubGreddiit = async () => {
+            try {
+                console.log("props user for Deleting MySubreddiit = ", props.user)
+                console.log(JSON.parse(window.localStorage.getItem('token')).id)
+                const data = await SubGredditService.Delete(id)
+                setSubreddits(subreddits.filter(element => element._id!==id));
+                console.log(subreddits)
+                console.log("recieved for Deleting MySubGrediiit", data)
+            }
+            catch (error) {
+                console.log("In MySubReddit.js", error)
+            }
+        }
+        DeleteSubGreddiit();
+    }
     // ! Banned Keywords
     const [bannedword, setbannedword] = React.useState("")
     function addword() {
@@ -194,7 +212,7 @@ export default function SubredditPage(props) {
                                                 onChange={event => setNewSubreddit({ ...newSubreddit, Description: event.target.value })}
                                             />
                                         </Grid>
-                                        // ! Banned Keywords
+                                        {/* // ! Banned Keywords */}
                                         <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                                             <nav aria-label="main mailbox folders">
                                                 <List>
@@ -236,7 +254,7 @@ export default function SubredditPage(props) {
                                                 Ban this Word !
                                             </Button>
                                         </Grid>
-                                        // ! Tags
+                                        {/* // ! Tags */}
                                         <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                                             <nav aria-label="main mailbox folders">
                                                 <List>
@@ -296,8 +314,8 @@ export default function SubredditPage(props) {
                 <Container component="main" sx={{ mt: 5 }}>
                     <Grid container spacing={4}>
                         {subreddits.map(subreddit => {
-                            return <Grid xs={12} sm={6}>
-                                <Card sx={{ bgcolor: green[500] }}>
+                            return <Grid sx={{ mt: 5 }} xs={12} sm={6}>
+                                <Card sx={{ maxWidth:500 ,bgcolor: green[500] }}>
                                     <CardHeader
                                         avatar={
                                             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -325,7 +343,7 @@ export default function SubredditPage(props) {
                                         <IconButton aria-label="add to favorites">
                                             <OpenInNewIcon />
                                         </IconButton>
-                                        <IconButton aria-label="share">
+                                        <IconButton onClick={(event) => handleDelete(event,subreddit._id)} aria-label="share">
                                             <DeleteIcon />
                                         </IconButton>
                                     </CardActions>

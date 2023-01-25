@@ -27,6 +27,12 @@ const SubGredditSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Posts'
         }
+    ],
+    Reports:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Report'
+        }
     ]
 })
 
