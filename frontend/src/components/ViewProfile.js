@@ -395,7 +395,7 @@ export default function ViewProfile(props) {
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>Username</TableCell>
-                                                    <TableCell align="right">Delete</TableCell>
+                                                    <TableCell align="right">Action</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
@@ -428,7 +428,7 @@ export default function ViewProfile(props) {
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>Username</TableCell>
-                                                    <TableCell align="right">Delete</TableCell>
+                                                    <TableCell align="right">Action</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>

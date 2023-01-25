@@ -13,6 +13,21 @@ const SubGredditSchema = new mongoose.Schema({
             type: String,
         }
     ],
+    Moderator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    Followers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }],
+    Post: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Posts'
+        }
+    ]
 })
 
 SubGredditSchema.set('toJSON', {
