@@ -44,15 +44,45 @@ export default function MySubGreddits(props) {
     const [selectedTags, setSelectedTags] = useState([]);
     const handleTagClick = (tag) => {
         if (selectedTags.includes(tag)) {
-            setSelectedTags(selectedTags.filter((t) => t !== tag));
-        } else {
-            setSelectedTags([...selectedTags, tag]);
+            if (selectedTags.length == 1 && searchtext) {
+                setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).sort((a, b) => {
+                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                        return -1;
+                    }
+                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                        return 1;
+                    }
+                    return 0;
+                }))
+                setSelectedTags([])
+            }
+            else {
+                setSelectedTags(selectedTags.filter((t) => t !== tag));
+                setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.filter(item => item !== tag).indexOf(r) >= 0)).sort((a, b) => {
+                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                        return -1;
+                    }
+                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                        return 1;
+                    }
+                    return 0;
+                }))
+            }
         }
-    };
-    const addTag = item => {
-        settags(prev => new Set(prev).add(item));
-    }
+        else {
+            setSelectedTags([...selectedTags, tag]);
+            setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.concat(tag).indexOf(r) >= 0)).sort((a, b) => {
+                if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                    return -1;
+                }
+                if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                    return 1;
+                }
+                return 0;
+            }))
+        }
 
+    };
     React.useEffect(() => {
         const fetchData = async () => {
             try {
@@ -70,6 +100,16 @@ export default function MySubGreddits(props) {
                         Moderator: element.Moderator,
                     }
 
+                }).sort((a, b) => {
+                    console.log(a,a.Moderator._id,JSON.parse(window.localStorage.getItem('token')).id)
+                    console.log(b,b.Moderator._id,JSON.parse(window.localStorage.getItem('token')).id)
+                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                        return -1;
+                    }
+                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                        return 1;
+                    }
+                    return 0;
                 }))
                 setdisplaysubreddits(data.map(element => {
                     return {
@@ -82,10 +122,18 @@ export default function MySubGreddits(props) {
                         Tags: element.Tags,
                         Moderator: element.Moderator,
                     }
+                }).sort((a, b) => {
+                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                        return -1;
+                    }
+                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                        return 1;
+                    }
+                    return 0;
                 }))
                 const tagarray = []
                 data.map(subgreddit => subgreddit.Tags.map(eachtag => tagarray.push(eachtag)))
-                console.log(`tags in console `,tagarray)
+                console.log(`tags in console `, tagarray)
                 settags([...new Set(tagarray)])
                 // console.log("Subreddits on Loading are",subreddits)
             }
@@ -127,7 +175,44 @@ export default function MySubGreddits(props) {
                             placeholder="Search SubGreddits"
                             inputProps={{ 'aria-label': 'search subgreddits' }}
                             value={searchtext}
-                            onChange={event => setsearchtext(event.target.value)}
+                            onChange={event => {
+                                setsearchtext(event.target.value)
+                                if (!event.target.value) {
+                                    setdisplaysubreddits(subreddits.filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
+                                        if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                            return -1;
+                                        }
+                                        if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                            return 1;
+                                        }
+                                        return 0;
+                                    }))
+                                }
+                                else {
+                                    if (!selectedTags.length) {
+                                        setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).sort((a, b) => {
+                                            if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                                return -1;
+                                            }
+                                            if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                                return 1;
+                                            }
+                                            return 0;
+                                        }))
+                                    }
+                                    else {
+                                        setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
+                                            if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                                return -1;
+                                            }
+                                            if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                                return 1;
+                                            }
+                                            return 0;
+                                        }))
+                                    }
+                                }
+                            }}
                         />
                         <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
                             <SearchIcon />
@@ -157,39 +242,52 @@ export default function MySubGreddits(props) {
                                 setdatesort(false)
                                 setdescending(false)
                                 setfollowersort(false)
+                                setdisplaysubreddits(displaysubreddits.sort((a, b) => {
+                                    return a.Name.localeCompare(b.Name)
+                                }))
+
                             }}>Ascending</Button>
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={18} sm={3}>
                             <Button variant="contained" color="secondary" onClick={event => {
-                                setascending(true)
+                                setascending(false)
                                 setdatesort(false)
-                                setdescending(false)
+                                setdescending(true)
                                 setfollowersort(false)
+                                setdisplaysubreddits(displaysubreddits.sort((a, b) => {
+                                    return b.Name.localeCompare(a.Name)
+                                }))
                             }}>Descending</Button>
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={15} sm={3}>
                             <Button variant="contained" color="secondary" onClick={event => {
-                                setascending(true)
+                                setascending(false)
                                 setdatesort(false)
                                 setdescending(false)
-                                setfollowersort(false)
+                                setfollowersort(true)
+                                setdisplaysubreddits.sort((a, b) => {
+                                    return b.Followers.length - a.Followers.length;
+                                })
                             }}>Followers</Button>
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={18} sm={3}>
                             <Button variant="contained" color="secondary" onClick={event => {
-                                setascending(true)
-                                setdatesort(false)
+                                setascending(false)
+                                setdatesort(true)
                                 setdescending(false)
                                 setfollowersort(false)
+                                    .sort((a, b) => {
+                                        return new Date(b.date) - new Date(a.date);
+                                    })
                             }}>Date</Button>
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={18} sm={3}>
                             <Button variant="contained" color="secondary" onClick={event => {
-                                setascending(true)
+                                setascending(false)
                                 setdatesort(false)
                                 setdescending(false)
                                 setfollowersort(false)
@@ -234,41 +332,88 @@ export default function MySubGreddits(props) {
                 </Container>
                 <Container component="main" sx={{ mt: 5 }}>
                     <Grid container spacing={4}>
-                        {displaysubreddits.map(subreddit => {
-                            return <Grid sx={{ mt: 5 }} xs={12} sm={6}>
-                                <Card sx={{ maxWidth: 500, bgcolor: green[500] }}>
-                                    <CardHeader
-                                        avatar={
-                                            <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                                                <RedditIcon style={{ fontSize: "2rem" }} />
-                                            </Avatar>
-                                        }
-                                        title={subreddit.Name}
-                                        subheader={`Banned Keywords ${subreddit.Banned.join(',')}`}
-                                    />
-                                    <CardMedia
-                                    // TODO: Attach image Here
-                                    />
-                                    <CardContent>
-                                        <Typography variant="body2" color="text.secondary">
-                                            {subreddit.Posts.length} Posts
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            {subreddit.Followers.length} Followers
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            {subreddit.Description}
-                                        </Typography>
-                                    </CardContent>
-                                    <CardActions disableSpacing>
-                                        <IconButton aria-label="add to favorites">
-                                            <OpenInNewIcon onClick={event => navigate(`/OpenSubGreddits/${subreddit._id}`)} />
-                                        </IconButton>
-                                        <Button variant="contained" color="secondary">LEAVE</Button>
-                                    </CardActions>
-                                </Card>
-                            </Grid>
-                        })}
+                        {
+                            (!searchtext && !selectedTags.length) ?
+                                subreddits.sort((a, b) => {
+                                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                        return -1;
+                                    }
+                                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                        return 1;
+                                    }
+                                    return 0;
+                                }).map(subreddit => {
+                                    return <Grid sx={{ mt: 5 }} xs={12} sm={6}>
+                                        <Card sx={{ maxWidth: 500, bgcolor: green[500] }}>
+                                            <CardHeader
+                                                avatar={
+                                                    <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                                                        <RedditIcon style={{ fontSize: "2rem" }} />
+                                                    </Avatar>
+                                                }
+                                                title={subreddit.Name}
+                                                subheader={`Banned Keywords ${subreddit.Banned.join(',')}`}
+                                            />
+                                            <CardMedia
+                                            // TODO: Attach image Here
+                                            />
+                                            <CardContent>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {subreddit.Posts.length} Posts
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {subreddit.Followers.length} Followers
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {subreddit.Description}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardActions disableSpacing>
+                                                <IconButton aria-label="add to favorites">
+                                                    <OpenInNewIcon onClick={event => navigate(`/OpenSubGreddits/${subreddit._id}`)} />
+                                                </IconButton>
+                                                <Button variant="contained" color="secondary">LEAVE</Button>
+                                            </CardActions>
+                                        </Card>
+                                    </Grid>
+                                })
+                                :
+                                displaysubreddits.map(subreddit => {
+                                    return <Grid sx={{ mt: 5 }} xs={12} sm={6}>
+                                        <Card sx={{ maxWidth: 500, bgcolor: green[500] }}>
+                                            <CardHeader
+                                                avatar={
+                                                    <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                                                        <RedditIcon style={{ fontSize: "2rem" }} />
+                                                    </Avatar>
+                                                }
+                                                title={subreddit.Name}
+                                                subheader={`Banned Keywords ${subreddit.Banned.join(',')}`}
+                                            />
+                                            <CardMedia
+                                            // TODO: Attach image Here
+                                            />
+                                            <CardContent>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {subreddit.Posts.length} Posts
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {subreddit.Followers.length} Followers
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {subreddit.Description}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardActions disableSpacing>
+                                                <IconButton aria-label="add to favorites">
+                                                    <OpenInNewIcon onClick={event => navigate(`/OpenSubGreddits/${subreddit._id}`)} />
+                                                </IconButton>
+                                                <Button variant="contained" color="secondary">LEAVE</Button>
+                                            </CardActions>
+                                        </Card>
+                                    </Grid>
+                                })
+                        }
                     </Grid>
                 </Container>
             </ThemeProvider>
