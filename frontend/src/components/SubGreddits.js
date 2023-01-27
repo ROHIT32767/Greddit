@@ -421,11 +421,3 @@ export default function MySubGreddits(props) {
         </div>
     )
 }
-
-// const RemoveTag = item => {
-//     settags(prev => {
-//         const next = new Set(prev);
-//         next.delete(item);
-//         return next;
-//     });
-// }
