@@ -24,8 +24,10 @@ import RedditIcon from '@mui/icons-material/Reddit';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SubGredditService from '../services/SubGreddiit';
+import { useNavigate } from "react-router-dom";
 const theme = createTheme();
-export default function SubredditPage(props) {
+export default function MySubGreddits(props) {
+    const navigate = useNavigate()
     const [subreddits, setSubreddits] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [newSubreddit, setNewSubreddit] = useState({
@@ -341,7 +343,7 @@ export default function SubredditPage(props) {
                                     </CardContent>
                                     <CardActions disableSpacing>
                                         <IconButton aria-label="add to favorites">
-                                            <OpenInNewIcon />
+                                            <OpenInNewIcon onClick={event => navigate(`/OpenSubGreddits/${subreddit._id}`)} />
                                         </IconButton>
                                         <IconButton onClick={(event) => handleDelete(event,subreddit._id)} aria-label="share">
                                             <DeleteIcon />
