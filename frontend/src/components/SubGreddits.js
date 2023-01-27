@@ -7,9 +7,12 @@ import Divider from '@mui/material/Divider';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import DirectionsIcon from '@mui/icons-material/Directions';
+import Chip from '@mui/material/Chip';
+import TagIcon from '@mui/icons-material/Tag';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import SortIcon from '@mui/icons-material/Sort';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Card from '@mui/material/Card';
@@ -25,6 +28,8 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SubGredditService from '../services/SubGreddiit';
 import { useNavigate } from "react-router-dom";
+import Sort from '@mui/icons-material/Sort';
+import Tag from '@mui/icons-material/Tag';
 const theme = createTheme();
 export default function MySubGreddits(props) {
     const navigate = useNavigate()
@@ -35,6 +40,19 @@ export default function MySubGreddits(props) {
     const [descending, setdescending] = useState(false)
     const [followersort, setfollowersort] = useState(false)
     const [datesort, setdatesort] = useState(false)
+    const [tags, settags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState([]);
+    const handleTagClick = (tag) => {
+        if (selectedTags.includes(tag)) {
+            setSelectedTags(selectedTags.filter((t) => t !== tag));
+        } else {
+            setSelectedTags([...selectedTags, tag]);
+        }
+    };
+    const addTag = item => {
+        settags(prev => new Set(prev).add(item));
+    }
+
     React.useEffect(() => {
         const fetchData = async () => {
             try {
@@ -65,6 +83,10 @@ export default function MySubGreddits(props) {
                         Moderator: element.Moderator,
                     }
                 }))
+                const tagarray = []
+                data.map(subgreddit => subgreddit.Tags.map(eachtag => tagarray.push(eachtag)))
+                console.log(`tags in console `,tagarray)
+                settags([...new Set(tagarray)])
                 // console.log("Subreddits on Loading are",subreddits)
             }
             catch (error) {
@@ -95,7 +117,7 @@ export default function MySubGreddits(props) {
                     ></Box>
                     <Paper
                         component="form"
-                        sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+                        sx={{ marginTop: 8, p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
                     >
                         <IconButton sx={{ p: '10px' }} aria-label="menu">
                             <MenuIcon />
@@ -125,27 +147,89 @@ export default function MySubGreddits(props) {
                             alignItems: 'center',
                         }}
                     >
-                        <Grid item xs={15} sm={3}>
-                            <Typography color="blueviolet">
-                                SORT 
-                            </Typography>
+                        <Grid item xs={18} sm={3}>
+                            <SortIcon />
+                        </Grid>
+                        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                        <Grid item xs={18} sm={3}>
+                            <Button variant="contained" color="secondary" onClick={event => {
+                                setascending(true)
+                                setdatesort(false)
+                                setdescending(false)
+                                setfollowersort(false)
+                            }}>Ascending</Button>
+                        </Grid>
+                        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                        <Grid item xs={18} sm={3}>
+                            <Button variant="contained" color="secondary" onClick={event => {
+                                setascending(true)
+                                setdatesort(false)
+                                setdescending(false)
+                                setfollowersort(false)
+                            }}>Descending</Button>
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={15} sm={3}>
-                            <Button variant="contained" color="secondary" onClick={event => setascending(true)}>Ascending</Button>
+                            <Button variant="contained" color="secondary" onClick={event => {
+                                setascending(true)
+                                setdatesort(false)
+                                setdescending(false)
+                                setfollowersort(false)
+                            }}>Followers</Button>
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                        <Grid item xs={15} sm={3}>
-                            <Button variant="contained" color="secondary" onClick={event => setdescending(true)}>Descending</Button>
+                        <Grid item xs={18} sm={3}>
+                            <Button variant="contained" color="secondary" onClick={event => {
+                                setascending(true)
+                                setdatesort(false)
+                                setdescending(false)
+                                setfollowersort(false)
+                            }}>Date</Button>
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                        <Grid item xs={18} sm={3}>
+                            <Button variant="contained" color="secondary" onClick={event => {
+                                setascending(true)
+                                setdatesort(false)
+                                setdescending(false)
+                                setfollowersort(false)
+                            }}>None</Button>
+                        </Grid>
+                    </Box>
+                </Container>
+                <Container component="main" maxWidth="xs">
+                    <Box
+                        sx={{
+                            marginTop: 2,
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}
+                    >
                         <Grid item xs={15} sm={3}>
-                            <Button variant="contained" color="secondary" onClick={event => setfollowersort(true)}>Followers</Button>
+                            <TagIcon />
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                        <Grid item xs={15} sm={3}>
-                            <Button variant="contained" color="secondary" onClick={event => setdatesort(true)}>Date</Button>
-                        </Grid>
+                        <Paper sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexWrap: 'wrap',
+                            listStyle: 'none',
+                            padding: theme.spacing(0.5),
+                            margin: 0
+                        }}>
+                            {tags.map((tag) => (
+                                <div>
+                                    <Chip
+                                        key={tag}
+                                        label={tag}
+                                        onClick={() => handleTagClick(tag)}
+                                        sx={{ margin: theme.spacing(0.5) }}
+                                        color={selectedTags.includes(tag) ? 'primary' : 'default'}
+                                    />
+                                </div>
+                            ))}
+                        </Paper>
                     </Box>
                 </Container>
                 <Container component="main" sx={{ mt: 5 }}>
@@ -180,9 +264,7 @@ export default function MySubGreddits(props) {
                                         <IconButton aria-label="add to favorites">
                                             <OpenInNewIcon onClick={event => navigate(`/OpenSubGreddits/${subreddit._id}`)} />
                                         </IconButton>
-                                        <IconButton aria-label="share">
-                                            <DeleteIcon />
-                                        </IconButton>
+                                        <Button variant="contained" color="secondary">LEAVE</Button>
                                     </CardActions>
                                 </Card>
                             </Grid>
@@ -193,3 +275,11 @@ export default function MySubGreddits(props) {
         </div>
     )
 }
+
+// const RemoveTag = item => {
+//     settags(prev => {
+//         const next = new Set(prev);
+//         next.delete(item);
+//         return next;
+//     });
+// }
