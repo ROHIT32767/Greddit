@@ -42,6 +42,7 @@ export default function MySubGreddits(props) {
     const [datesort, setdatesort] = useState(false)
     const [tags, settags] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
+    // const[emptydisplaysubreddits,setemptydisplaysubreddits]=useState([])
     const handleTagClick = (tag) => {
         if (selectedTags.includes(tag)) {
             if (selectedTags.length == 1 && searchtext) {
@@ -267,9 +268,9 @@ export default function MySubGreddits(props) {
                                 setdatesort(false)
                                 setdescending(false)
                                 setfollowersort(true)
-                                setdisplaysubreddits.sort((a, b) => {
+                                setdisplaysubreddits(displaysubreddits.sort((a, b) => {
                                     return b.Followers.length - a.Followers.length;
-                                })
+                                }))
                             }}>Followers</Button>
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
