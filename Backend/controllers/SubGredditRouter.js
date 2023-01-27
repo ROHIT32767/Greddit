@@ -12,17 +12,19 @@ SubGredditRouter.post('/', async (request, response) => {
         Banned,
         Moderator,
         Followers } = request.body
+    const date = Date.parse(request.body.date)
     const subgreddit = new SubGreddit({
         Name,
         Description,
         Tags,
         Banned,
         Moderator,
-        Followers
+        Followers,
+        date
     })
     const savedsubgreddit = await subgreddit.save()
     console.log(savedsubgreddit)
-    response.status(201).json(savedsubgreddit)  
+    response.status(201).json(savedsubgreddit)
 })
 
 SubGredditRouter.get('/', async (request, response) => {
@@ -81,13 +83,13 @@ SubGredditRouter.delete('/:id', async (request, response) => {
         .findById(ID).populate('Followers').populate('Post').populate('Reports')
     const PostIDs = subgreddit.Post.map(element => element._id)
     const ReportIDs = subgreddit.Reports.map(element => element._id)
-    const deleteallPosts = await Posts.deleteMany({ _id: { $in: PostIDs} })
-    console.log("Delete all Posts" , deleteallPosts)
-    const deleteallReports = await Report.deleteMany({ _id: { $in: ReportIDs} })
-    console.log("Delete all Reports" , deleteallReports)
+    const deleteallPosts = await Posts.deleteMany({ _id: { $in: PostIDs } })
+    console.log("Delete all Posts", deleteallPosts)
+    const deleteallReports = await Report.deleteMany({ _id: { $in: ReportIDs } })
+    console.log("Delete all Reports", deleteallReports)
     // TODO: Delete Followers ?
     const DeleteSubGreddit = await SubGreddit.findByIdAndDelete(ID)
-    response.json(DeleteSubGreddit) 
+    response.json(DeleteSubGreddit)
 })
 
 module.exports = SubGredditRouter

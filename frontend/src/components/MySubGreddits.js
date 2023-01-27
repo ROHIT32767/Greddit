@@ -91,7 +91,8 @@ export default function MySubGreddits(props) {
                     Followers: [JSON.parse(window.localStorage.getItem('token')).id],
                     Posts: [],
                     Tags: newSubreddit.Tags,
-                    Moderator: JSON.parse(window.localStorage.getItem('token')).id
+                    Moderator: JSON.parse(window.localStorage.getItem('token')).id,
+                    date: new Date()
                 })
                 setSubreddits([...subreddits, newSubreddit]);
                 console.log(subreddits)

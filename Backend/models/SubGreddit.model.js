@@ -33,7 +33,8 @@ const SubGredditSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Report'
         }
-    ]
+    ],
+    date:{type:Date,required:true}
 })
 
 SubGredditSchema.set('toJSON', {

@@ -42,7 +42,7 @@ export default function MySubGreddits(props) {
     const [datesort, setdatesort] = useState(false)
     const [tags, settags] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
-    // const[emptydisplaysubreddits,setemptydisplaysubreddits]=useState([])
+    const [emptydisplaysubreddits, setemptydisplaysubreddits] = useState([])
     const handleTagClick = (tag) => {
         if (selectedTags.includes(tag)) {
             if (selectedTags.length == 1 && searchtext) {
@@ -99,11 +99,12 @@ export default function MySubGreddits(props) {
                         Posts: element.Post,
                         Tags: element.Tags,
                         Moderator: element.Moderator,
+                        date: element.date
                     }
 
                 }).sort((a, b) => {
-                    console.log(a,a.Moderator._id,JSON.parse(window.localStorage.getItem('token')).id)
-                    console.log(b,b.Moderator._id,JSON.parse(window.localStorage.getItem('token')).id)
+                    console.log(a, a.Moderator._id, JSON.parse(window.localStorage.getItem('token')).id)
+                    console.log(b, b.Moderator._id, JSON.parse(window.localStorage.getItem('token')).id)
                     if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
                         return -1;
                     }
@@ -122,6 +123,28 @@ export default function MySubGreddits(props) {
                         Posts: element.Post,
                         Tags: element.Tags,
                         Moderator: element.Moderator,
+                        date: element.date
+                    }
+                }).sort((a, b) => {
+                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                        return -1;
+                    }
+                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                        return 1;
+                    }
+                    return 0;
+                }))
+                setemptydisplaysubreddits(data.map(element => {
+                    return {
+                        ...element,
+                        Name: element.Name,
+                        Description: element.Description,
+                        Banned: element.Banned,
+                        Followers: element.Followers,
+                        Posts: element.Post,
+                        Tags: element.Tags,
+                        Moderator: element.Moderator,
+                        date: element.date
                     }
                 }).sort((a, b) => {
                     if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
@@ -238,60 +261,135 @@ export default function MySubGreddits(props) {
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={18} sm={3}>
-                            <Button variant="contained" color="secondary" onClick={event => {
-                                setascending(true)
-                                setdatesort(false)
-                                setdescending(false)
-                                setfollowersort(false)
-                                setdisplaysubreddits(displaysubreddits.sort((a, b) => {
-                                    return a.Name.localeCompare(b.Name)
-                                }))
+                            {
+                                (descending || followersort || datesort) ? (
+                                    <Button disabled variant="contained" color="secondary" >Ascending</Button>)
+                                    :
+                                    (
+                                        <Button variant="contained" color="secondary" onClick={event => {
+                                            setascending(true)
+                                            setdatesort(false)
+                                            setdescending(false)
+                                            setfollowersort(false)
+                                            !searchtext && !selectedTags.length ? setemptydisplaysubreddits([...subreddits].sort((a, b) => {
+                                                return a.Name.localeCompare(b.Name)
+                                            })) :
+                                                setdisplaysubreddits(displaysubreddits.sort((a, b) => {
+                                                    return a.Name.localeCompare(b.Name)
+                                                }))
 
-                            }}>Ascending</Button>
+                                        }}>Ascending</Button>
+                                    )
+                            }
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={18} sm={3}>
-                            <Button variant="contained" color="secondary" onClick={event => {
-                                setascending(false)
-                                setdatesort(false)
-                                setdescending(true)
-                                setfollowersort(false)
-                                setdisplaysubreddits(displaysubreddits.sort((a, b) => {
-                                    return b.Name.localeCompare(a.Name)
-                                }))
-                            }}>Descending</Button>
+                            {
+                                (ascending || followersort || datesort) ? (
+                                    <Button disabled variant="contained" color="secondary" >Descending</Button>)
+                                    :
+                                    (
+                                        <Button variant="contained" color="secondary" onClick={event => {
+                                            console.log("Descending")
+                                            setascending(false)
+                                            setdatesort(false)
+                                            setdescending(true)
+                                            setfollowersort(false)
+                                            !searchtext && !selectedTags.length ? setemptydisplaysubreddits([...subreddits].sort((a, b) => {
+                                                return b.Name.localeCompare(a.Name)
+                                            })) :
+                                                setdisplaysubreddits(displaysubreddits.sort((a, b) => {
+                                                    return b.Name.localeCompare(a.Name)
+                                                }))
+                                        }}>Descending</Button>
+                                    )
+                            }
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={15} sm={3}>
-                            <Button variant="contained" color="secondary" onClick={event => {
-                                setascending(false)
-                                setdatesort(false)
-                                setdescending(false)
-                                setfollowersort(true)
-                                setdisplaysubreddits(displaysubreddits.sort((a, b) => {
-                                    return b.Followers.length - a.Followers.length;
-                                }))
-                            }}>Followers</Button>
+                            {
+                                (ascending || descending || datesort) ? (
+                                    <Button disabled variant="contained" color="secondary" >Followers</Button>)
+                                    :
+                                    (<Button variant="contained" color="secondary" onClick={event => {
+                                        setascending(false)
+                                        setdatesort(false)
+                                        setdescending(false)
+                                        setfollowersort(true)
+                                        !searchtext && !selectedTags.length ? setemptydisplaysubreddits([...subreddits].sort((a, b) => {
+                                            return b.Followers.length - a.Followers.length;
+                                        })) :
+                                            setdisplaysubreddits(displaysubreddits.sort((a, b) => {
+                                                return b.Followers.length - a.Followers.length;
+                                            }))
+                                    }}>Followers</Button>)
+                            }
+                        </Grid>
+                        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                        <Grid item xs={18} sm={3}>
+                            {
+                                (ascending || descending || followersort) ? (
+                                    <Button disabled variant="contained" color="secondary" >Date</Button>)
+                                    :
+                                    (
+                                        <Button variant="contained" color="secondary" onClick={event => {
+                                            setascending(false)
+                                            setdatesort(true)
+                                            setdescending(false)
+                                            setfollowersort(false)
+                                            !searchtext && !selectedTags.length ? setemptydisplaysubreddits([...subreddits].sort((a, b) => {
+                                                return new Date(b.date) - new Date(a.date);
+                                            })) :
+                                                setdisplaysubreddits(displaysubreddits.sort((a, b) => {
+                                                    return new Date(b.date) - new Date(a.date);
+                                                }))
+                                        }}>Date</Button>
+                                    )
+                            }
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={18} sm={3}>
                             <Button variant="contained" color="secondary" onClick={event => {
                                 setascending(false)
-                                setdatesort(true)
-                                setdescending(false)
-                                setfollowersort(false)
-                                    .sort((a, b) => {
-                                        return new Date(b.date) - new Date(a.date);
-                                    })
-                            }}>Date</Button>
-                        </Grid>
-                        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                        <Grid item xs={18} sm={3}>
-                            <Button variant="contained" color="secondary" onClick={event => {
-                                setascending(false)
                                 setdatesort(false)
                                 setdescending(false)
                                 setfollowersort(false)
+                                if (!searchtext && !selectedTags.length) {
+                                    setemptydisplaysubreddits([...subreddits])
+                                }
+                                else if (!searchtext) {
+                                    setdisplaysubreddits(subreddits.filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
+                                        if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                            return -1;
+                                        }
+                                        if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                            return 1;
+                                        }
+                                        return 0;
+                                    }))
+                                }
+                                else if (!selectedTags.length) {
+                                    setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).sort((a, b) => {
+                                        if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                            return -1;
+                                        }
+                                        if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                            return 1;
+                                        }
+                                        return 0;
+                                    }))
+                                }
+                                else {
+                                    setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
+                                        if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                            return -1;
+                                        }
+                                        if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                            return 1;
+                                        }
+                                        return 0;
+                                    }))
+                                }
                             }}>None</Button>
                         </Grid>
                     </Box>
@@ -335,15 +433,7 @@ export default function MySubGreddits(props) {
                     <Grid container spacing={4}>
                         {
                             (!searchtext && !selectedTags.length) ?
-                                subreddits.sort((a, b) => {
-                                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
-                                        return -1;
-                                    }
-                                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
-                                        return 1;
-                                    }
-                                    return 0;
-                                }).map(subreddit => {
+                                emptydisplaysubreddits.map(subreddit => {
                                     return <Grid sx={{ mt: 5 }} xs={12} sm={6}>
                                         <Card sx={{ maxWidth: 500, bgcolor: green[500] }}>
                                             <CardHeader
@@ -373,7 +463,16 @@ export default function MySubGreddits(props) {
                                                 <IconButton aria-label="add to favorites">
                                                     <OpenInNewIcon onClick={event => navigate(`/OpenSubGreddits/${subreddit._id}`)} />
                                                 </IconButton>
-                                                <Button variant="contained" color="secondary">LEAVE</Button>
+                                                {
+                                                    subreddit.Moderator._id == JSON.parse(window.localStorage.getItem('token')).id ?
+                                                        <Button variant="contained" color="secondary" disabled>LEAVE</Button>
+                                                        :
+                                                        subreddit.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) ?
+
+                                                            <Button variant="contained" color="secondary">LEAVE</Button>
+                                                            :
+                                                            <Button variant="contained" color="secondary">JOIN</Button>
+                                                }
                                             </CardActions>
                                         </Card>
                                     </Grid>
@@ -409,7 +508,16 @@ export default function MySubGreddits(props) {
                                                 <IconButton aria-label="add to favorites">
                                                     <OpenInNewIcon onClick={event => navigate(`/OpenSubGreddits/${subreddit._id}`)} />
                                                 </IconButton>
-                                                <Button variant="contained" color="secondary">LEAVE</Button>
+                                                {
+                                                    subreddit.Moderator._id == JSON.parse(window.localStorage.getItem('token')).id ?
+                                                        <Button variant="contained" color="secondary" disabled>LEAVE</Button>
+                                                        :
+                                                        (subreddit.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) ?
+
+                                                            <Button variant="contained" color="secondary">LEAVE</Button>
+                                                            :
+                                                            <Button variant="contained" color="secondary">JOIN</Button>)
+                                                }
                                             </CardActions>
                                         </Card>
                                     </Grid>
