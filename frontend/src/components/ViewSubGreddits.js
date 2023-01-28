@@ -25,24 +25,38 @@ import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import PostService from '../services/Posts';
+import { useParams } from "react-router-dom"
 const theme = createTheme();
-const Post = ({ post ,setposts }) => {
-    const [upvotes, setUpvotes] = useState(post.upvotes);
-    const [downvotes, setDownvotes] = useState(post.downvotes);
-    const [comments, setComments] = useState(post.comments);
+const Post = ({ id, post, posts, setposts }) => {
+    console.log(post)
+    const [Upvotes, setUpvotes] = useState(post.upvotes);
+    const [Downvotes, setDownvotes] = useState(post.downvotes);
+    const [Comments, setComments] = useState(post.comments);
     const [newComment, setNewComment] = useState('');
-
     const handleUpvote = () => {
-        setUpvotes(upvotes + 1);
+        setUpvotes(Upvotes + 1);
+        setposts(posts.map(element => element._id === id ? {
+            ...element,
+            Upvotes: element.Upvotes + 1
+        } : element))
     };
 
     const handleDownvote = () => {
-        setDownvotes(downvotes + 1)
+        setDownvotes(Downvotes + 1)
+        setposts(posts.map(element => element._id === id ? {
+            ...element,
+            Downvotes: element.Downvotes + 1
+        } : element))
     };
 
     const handleComment = (event) => {
         event.preventDefault();
-        setComments([...comments, newComment]);
+        setComments([...Comments, newComment]);
+        setposts(posts.map(element => element._id === id ? {
+            ...element,
+            Comments: Comments.concat(newComment)
+        } : element))
         setNewComment('');
     };
     return (
@@ -51,30 +65,30 @@ const Post = ({ post ,setposts }) => {
                 <Card style={{ marginBottom: '20px' }} sx={{ marginTop: 8, bgcolor: green[500] }}>
                     <CardContent>
                         <Typography variant="h5" component="h2">
-                            {post.title}
+                            {post.By.Username}
                         </Typography>
                         <Typography color="textSecondary" style={{ marginBottom: 12 }}>
-                            {post.author}
+                            {post.By.FirstName}
                         </Typography>
                         <Typography variant="body2" component="p">
-                            {post.body}
+                            {post.Text}
                         </Typography>
                         <div>
                             <IconButton aria-label="upvote" onClick={handleUpvote}>
                                 <ThumbUpIcon />
                             </IconButton>
-                            {upvotes}
+                            {Upvotes}
                             <IconButton aria-label="downvote" onClick={handleDownvote}>
                                 <ThumbDownIcon />
                             </IconButton>
-                            {downvotes}
+                            {Downvotes}
                             <IconButton aria-label="Save" onClick={handleUpvote}>
                                 <BookmarkAddIcon />
                             </IconButton>
                             <IconButton aria-label="Follow" onClick={handleDownvote}>
                                 <FollowTheSignsIcon />
                             </IconButton>
-                            </div>
+                        </div>
                         <div style={{
                             marginTop: '20px',
                             marginBottom: '10px'
@@ -94,7 +108,7 @@ const Post = ({ post ,setposts }) => {
                             </form>
                         </div>
                         <div>
-                            {comments.map((comment) => (
+                            {Comments.map((comment) => (
                                 <Typography key={comment} variant="body2" component="p">
                                     {comment}
                                 </Typography>
@@ -115,21 +129,66 @@ function srcset(image: string, width: number, height: number, rows = 1, cols = 1
     };
 }
 const RedditClone = () => {
-    const [posts,setposts]=React.useState([])
+    const params = useParams()
+    const [posts, setposts] = React.useState([])
     const [open, setOpen] = useState(false);
+    const [Text, setText] = useState("")
     const handleClickOpen = () => {
         setOpen(true);
     };
     const handleClose = () => {
         setOpen(false);
+        setText("")
+    };
+    const handlePost = () => {
+        const PostData = async () => {
+            try {
+                const data = await PostService.create(
+                    {
+                        Text: Text,
+                        By: (JSON.parse(window.localStorage.getItem('token'))).id,
+                        In: params.id,
+                        date: new Date()
+                    }
+                )
+                console.log("recieved", data)
+                setposts(data.map(element => {
+                    return {
+                        ...element,
+                        Text: element.Text,
+                        By: element.By,
+                        In: element.In,
+                        Upvotes: element.Upvotes,
+                        Downvotes: element.Downvotes,
+                        Comments: element.Comments,
+                    }
+                }))
+                console.log("posts on Loading are", posts)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        PostData();
+        setOpen(false);
     };
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await 
-                console.log("recieved", data)
-
-                // console.log("Subreddits on Loading are",subreddits)
+                const data = await
+                    console.log("recieved", data)
+                setposts(data.map(element => {
+                    return {
+                        ...element,
+                        Text: element.Text,
+                        By: element.By,
+                        In: element.In,
+                        Upvotes: element.Upvotes,
+                        Downvotes: element.Downvotes,
+                        Comments: element.Comments,
+                    }
+                }))
+                console.log("posts on Loading are", posts)
             }
             catch (error) {
                 console.log(error)
@@ -137,6 +196,7 @@ const RedditClone = () => {
         }
         fetchData();
     }, [])
+
     return (
         <div>
             <ThemeProvider theme={theme} sx={{ mt: 8 }}>
@@ -226,15 +286,17 @@ const RedditClone = () => {
                             label="Text"
                             fullWidth
                             variant="standard"
+                            value={Text}
+                            onChange={event => setText(event.target.value)}
                         />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={handleClose}>POST THIS</Button>
+                        <Button onClick={handlePost}>POST THIS</Button>
                     </DialogActions>
                 </Dialog>
                 {posts.map((post) => (
-                    <Post key={post.title} post={posts} setposts={setposts} />
+                    <Post key={post._id} id={post._id} post={post} posts={posts} setposts={setposts} />
                 ))}
             </ThemeProvider>
         </div>

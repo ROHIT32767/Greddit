@@ -1,25 +1,25 @@
 const mongoose = require('mongoose')
 
 const ReportSchema = new mongoose.Schema({
-  Concern:{type:String,required:true},
-  Post: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Posts'
-    }
-  ],
-  By: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ],
-  On: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ]
+  Concern: { type: String, required: true },
+  Post:
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Posts'
+  }
+  ,
+  By:
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+  ,
+  On:
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  date:{type:Date,required:true}
 })
 
 ReportSchema.set('toJSON', {

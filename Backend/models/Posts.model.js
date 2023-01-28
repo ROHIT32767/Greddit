@@ -4,27 +4,28 @@ const PostsSchema = new mongoose.Schema({
   Text: { type: String, required: true },
   Upvotes: { type: Number, required: true },
   Downvotes: { type: Number, required: true },
-  In: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'SubGreddit'
-    }
-  ],
-  By: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ],
+  In:
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'SubGreddit'
+  }
+  ,
+  By:
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+  ,
   Comments: [
     {
-      comment:{ type: String },
-      commented:{
+      comment: { type: String },
+      commented: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
       }
     }
-  ]
+  ],
+  date:{type:Date,required:true}
 })
 
 PostsSchema.set('toJSON', {

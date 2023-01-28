@@ -5,19 +5,16 @@ const PostsRouter = require('express').Router()
 PostsRouter.post('/', async (request, response) => {
     console.log(request.body)
     const { Text,
-        Upvotes,
-        Downvotes,
         In,
-        By,
-        Comments } = request.body
+        By } = request.body
     const date = Date.parse(request.body.date)
     const post = new Post({
         Text,
-        Upvotes,
-        Downvotes,
+        Upvotes : 0,
+        Downvotes : 0,
         In,
         By,
-        Comments,
+        Comments:[],
         date
     })
     const savedpost = await post.save()
@@ -51,11 +48,34 @@ PostsRouter.get('/User/:id', async (request, response) => {
 })
 
 
+PostsRouter.put('/upvotes/:id', async (request, response) => {
+    console.log(request.body)
+    const { Upvotes } = request.body
+    const post = await Post.findById(request.params.id)
+    post.Upvotes = Upvotes
+    const updatedpost = await post.save()
+    console.log(post)
+    response.status(201).json(post) 
+})
 
+PostsRouter.put('/downvotes/:id', async (request, response) => {
+    console.log(request.body)
+    const { Downvotes } = request.body
+    const post = await Post.findById(request.params.id)
+    post.Downvotes = Downvotes
+    const updatedpost = await post.save()
+    console.log(post)
+    response.status(201).json(post) 
+})
 
-// ! Not part of the Router Actually
-PostsRouter.put('/update/:id', async (request, response) => {
-
+PostsRouter.put('/comments/:id', async (request, response) => {
+    console.log(request.body)
+    const { Comments } = request.body
+    const post = await Post.findById(request.params.id)
+    post.Comments = Comments
+    const updatedpost = await post.save()
+    console.log(post)
+    response.status(201).json(post) 
 })
 
 
