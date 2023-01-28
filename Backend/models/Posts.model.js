@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 
 const PostsSchema = new mongoose.Schema({
-  Text:{type:String,required:true},
-  Upvotes:{type:Number,required:true},
-  Downvotes:{type:Number,required:true},
+  Text: { type: String, required: true },
+  Upvotes: { type: Number, required: true },
+  Downvotes: { type: Number, required: true },
   In: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -16,6 +16,15 @@ const PostsSchema = new mongoose.Schema({
       ref: 'User'
     }
   ],
+  Comments: [
+    {
+      comment:{ type: String },
+      commented:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    }
+  ]
 })
 
 PostsSchema.set('toJSON', {

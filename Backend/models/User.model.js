@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema({
       ref: 'User'
     }
   ],
+  SavedPosts:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Posts'
+    }
+  ]
 })
 
 userSchema.set('toJSON', {

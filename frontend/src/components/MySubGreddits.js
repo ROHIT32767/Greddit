@@ -115,14 +115,14 @@ export default function MySubGreddits(props) {
             // Image: null,
         });
     };
-    function handleDelete(event,id){
+    function handleDelete(event, id) {
         console.log(id)
         const DeleteSubGreddiit = async () => {
             try {
                 console.log("props user for Deleting MySubreddiit = ", props.user)
                 console.log(JSON.parse(window.localStorage.getItem('token')).id)
                 const data = await SubGredditService.Delete(id)
-                setSubreddits(subreddits.filter(element => element._id!==id));
+                setSubreddits(subreddits.filter(element => element._id !== id));
                 console.log(subreddits)
                 console.log("recieved for Deleting MySubGrediiit", data)
             }
@@ -318,7 +318,7 @@ export default function MySubGreddits(props) {
                     <Grid container spacing={4}>
                         {subreddits.map(subreddit => {
                             return <Grid sx={{ mt: 5 }} xs={12} sm={6}>
-                                <Card sx={{ maxWidth:500 ,bgcolor: green[500] }}>
+                                <Card sx={{ maxWidth: 500, bgcolor: green[500] }}>
                                     <CardHeader
                                         avatar={
                                             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -346,7 +346,7 @@ export default function MySubGreddits(props) {
                                         <IconButton aria-label="add to favorites">
                                             <OpenInNewIcon onClick={event => navigate(`/OpenSubGreddits/${subreddit._id}`)} />
                                         </IconButton>
-                                        <IconButton onClick={(event) => handleDelete(event,subreddit._id)} aria-label="share">
+                                        <IconButton onClick={(event) => handleDelete(event, subreddit._id)} aria-label="share">
                                             <DeleteIcon />
                                         </IconButton>
                                     </CardActions>
