@@ -24,35 +24,24 @@ PostsRouter.post('/', async (request, response) => {
 
 PostsRouter.get('/', async (request, response) => {
     const AllPosts = await Post
-        .find({}).populate('In').populate('By').populate('Comments')
+        .find({}).populate('In').populate('By').populate('Comments.commented')
     response.json(AllPosts)
 })
 
 PostsRouter.get('/:id', async (request, response) => {
     const ID = request.params.id
     const post = await Post
-        .findById(ID).populate('In').populate('By').populate('Comments')
+        .findById(ID).populate('In').populate('By').populate('Comments.commented')
     console.log(post)
     response.json(post)
 })
-
-PostsRouter.get('/User/:id', async (request, response) => {
-    // ! For 
-    const ID = request.params.id
-    const AllSubGreddits = await SubGreddit
-        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports')
-    console.log(AllSubGreddits)
-    const MySubGreddits = AllSubGreddits.filter(subgreddit => subgreddit.Moderator._id == ID)
-    console.log(MySubGreddits)
-    response.json(MySubGreddits)
-})
-
 
 PostsRouter.put('/upvotes/:id', async (request, response) => {
     console.log(request.body)
     const { Upvotes } = request.body
     const post = await Post.findById(request.params.id)
-    post.Upvotes = Upvotes
+    console.log(post)
+    post.Upvotes = Number(Upvotes)
     const updatedpost = await post.save()
     console.log(post)
     response.status(201).json(post) 
@@ -62,7 +51,7 @@ PostsRouter.put('/downvotes/:id', async (request, response) => {
     console.log(request.body)
     const { Downvotes } = request.body
     const post = await Post.findById(request.params.id)
-    post.Downvotes = Downvotes
+    post.Downvotes = Number(Downvotes)
     const updatedpost = await post.save()
     console.log(post)
     response.status(201).json(post) 

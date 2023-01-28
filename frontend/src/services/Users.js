@@ -41,19 +41,35 @@ const UpdateProfile = (id, newObject) => {
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const UpdateFollowers = (id ,newObject) => {
+const UpdateFollowers = (id, newObject) => {
   const config = {
     headers: { Authorization: token },
   }
-  const request  = axios.put(`${baseUrl}/followers/${id}`,newObject,config)
+  const request = axios.put(`${baseUrl}/followers/${id}`, newObject, config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const UpdateFollowing = (id ,newObject) => {
+const UpdateFollowing = (id, newObject) => {
   const config = {
     headers: { Authorization: token },
   }
-  const request  = axios.put(`${baseUrl}/following/${id}`,newObject,config)
+  const request = axios.put(`${baseUrl}/following/${id}`, newObject, config)
+  return request.then(response => response.data).catch(error => console.log(error))
+}
+
+const Addfollowers = (id, newObject) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.put(`${baseUrl}/addfollowers/${id}`, newObject, config)
+  return request.then(response => response.data).catch(error => console.log(error))
+}
+
+const AddFollowing = (id, newObject) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.put(`${baseUrl}/addfollowing/${id}`, newObject, config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
@@ -64,5 +80,22 @@ const Delete = (id) => {
   const request = axios.delete(`${baseUrl}/${id}`, config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
-const newobj = { getAll, getID, create, UpdateProfile, setToken, Delete , UpdateFollowers , UpdateFollowing }
+
+const AddSavedPosts = (id, newObject) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.put(`${baseUrl}/AddSavedPosts/${id}`, newObject, config)
+  return request.then(response => response.data).catch(error => console.log(error))
+}
+
+const RemoveSavedPosts = (id, newObject) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.put(`${baseUrl}/RemoveSavedPosts/${id}`, newObject, config)
+  return request.then(response => response.data).catch(error => console.log(error))
+}
+
+const newobj = { getAll, getID, create, UpdateProfile, setToken, Delete, UpdateFollowers, UpdateFollowing, AddFollowing, Addfollowers, RemoveSavedPosts, AddSavedPosts }
 export default newobj

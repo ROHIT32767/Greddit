@@ -26,15 +26,32 @@ import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import PostService from '../services/Posts';
+import UserService from "../services/Users"
 import { useParams } from "react-router-dom"
 const theme = createTheme();
 const Post = ({ id, post, posts, setposts }) => {
     console.log(post)
-    const [Upvotes, setUpvotes] = useState(post.upvotes);
-    const [Downvotes, setDownvotes] = useState(post.downvotes);
-    const [Comments, setComments] = useState(post.comments);
+    const [Upvotes, setUpvotes] = useState(post.Upvotes);
+    const [Downvotes, setDownvotes] = useState(post.Downvotes);
+    const [Comments, setComments] = useState(post.Comments);
     const [newComment, setNewComment] = useState('');
     const handleUpvote = () => {
+        const UpVoteData = async () => {
+            try {
+                const data = await PostService.UpdateUpvotes(id,
+                    {
+                        Upvotes: Upvotes + 1
+                    }
+                )
+                console.log("recieved", data)
+
+                console.log("posts on Loading are", posts)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        UpVoteData();
         setUpvotes(Upvotes + 1);
         setposts(posts.map(element => element._id === id ? {
             ...element,
@@ -43,6 +60,22 @@ const Post = ({ id, post, posts, setposts }) => {
     };
 
     const handleDownvote = () => {
+        const DownVoteData = async () => {
+            try {
+                const data = await PostService.UpdateDownvotes(id,
+                    {
+                        Downvotes: Downvotes + 1
+                    }
+                )
+                console.log("recieved", data)
+
+                console.log("posts on Loading are", posts)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        DownVoteData();
         setDownvotes(Downvotes + 1)
         setposts(posts.map(element => element._id === id ? {
             ...element,
@@ -52,13 +85,64 @@ const Post = ({ id, post, posts, setposts }) => {
 
     const handleComment = (event) => {
         event.preventDefault();
-        setComments([...Comments, newComment]);
+        const CommentData = async () => {
+            try {
+                const data = await PostService.UpdateComments(id,
+                    {
+                        Comments: [...Comments, { comment: newComment, commented: (JSON.parse(window.localStorage.getItem('token'))).id }]
+                    }
+                )
+                console.log("recieved", data)
+                console.log("posts on Loading are", posts)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        CommentData();
+        setComments([...Comments, { comment: newComment, commented: (JSON.parse(window.localStorage.getItem('token'))).id }]);
         setposts(posts.map(element => element._id === id ? {
             ...element,
-            Comments: Comments.concat(newComment)
+            Comments: { comment: newComment, commented: (JSON.parse(window.localStorage.getItem('token'))).id }
         } : element))
         setNewComment('');
     };
+
+    const handleFollow = (event) => {
+        event.preventDefault();
+        const HandleFollowing = async () => {
+            try {
+                const data = await UserService.AddFollowing((JSON.parse(window.localStorage.getItem('token'))).id,
+                    {
+                        TargetID: post._id
+                    }
+                )
+                console.log("recieved", data)
+                console.log("I want to follow him", post.By._id)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        HandleFollowing();
+    }
+    const handleSaveposts = (event) => {
+        const HandleSavedPosts = async () => {
+            try {
+                const data = await UserService.AddSavedPosts((JSON.parse(window.localStorage.getItem('token'))).id,
+                    {
+                        PostID: post._id
+                    }
+                )
+                console.log("recieved", data)
+                console.log("I want to follow him", post.By._id)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        HandleSavedPosts();
+    }
     return (
         <div>
             <Container component="main" sx={{ maxWidth: 500 }}>
@@ -77,15 +161,15 @@ const Post = ({ id, post, posts, setposts }) => {
                             <IconButton aria-label="upvote" onClick={handleUpvote}>
                                 <ThumbUpIcon />
                             </IconButton>
-                            {Upvotes}
+                            {post.Upvotes}
                             <IconButton aria-label="downvote" onClick={handleDownvote}>
                                 <ThumbDownIcon />
                             </IconButton>
-                            {Downvotes}
-                            <IconButton aria-label="Save" onClick={handleUpvote}>
+                            {post.Downvotes}
+                            <IconButton aria-label="Save" onClick={handleSaveposts}>
                                 <BookmarkAddIcon />
                             </IconButton>
-                            <IconButton aria-label="Follow" onClick={handleDownvote}>
+                            <IconButton aria-label="Follow" onClick={handleFollow}>
                                 <FollowTheSignsIcon />
                             </IconButton>
                         </div>
@@ -102,7 +186,7 @@ const Post = ({ id, post, posts, setposts }) => {
                                     onChange={(event) => setNewComment(event.target.value)}
                                     required
                                 />
-                                <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                                <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
                                     <CommentIcon />
                                 </IconButton>
                             </form>
@@ -110,7 +194,7 @@ const Post = ({ id, post, posts, setposts }) => {
                         <div>
                             {Comments.map((comment) => (
                                 <Typography key={comment} variant="body2" component="p">
-                                    {comment}
+                                    {comment.comment} by {comment.commented.Username}
                                 </Typography>
                             ))}
                         </div>
@@ -152,17 +236,7 @@ const RedditClone = () => {
                     }
                 )
                 console.log("recieved", data)
-                setposts(data.map(element => {
-                    return {
-                        ...element,
-                        Text: element.Text,
-                        By: element.By,
-                        In: element.In,
-                        Upvotes: element.Upvotes,
-                        Downvotes: element.Downvotes,
-                        Comments: element.Comments,
-                    }
-                }))
+                setposts([...posts, data])
                 console.log("posts on Loading are", posts)
             }
             catch (error) {
@@ -175,8 +249,8 @@ const RedditClone = () => {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await
-                    console.log("recieved", data)
+                const data = await PostService.getAll()
+                console.log("recieved", data)
                 setposts(data.map(element => {
                     return {
                         ...element,
@@ -196,7 +270,6 @@ const RedditClone = () => {
         }
         fetchData();
     }, [])
-
     return (
         <div>
             <ThemeProvider theme={theme} sx={{ mt: 8 }}>
