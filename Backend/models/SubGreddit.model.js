@@ -28,13 +28,26 @@ const SubGredditSchema = new mongoose.Schema({
             ref: 'Posts'
         }
     ],
-    Reports:[
+    Reports: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Report'
         }
     ],
-    date:{type:Date,required:true}
+    date: { type: Date, required: true },
+    Followed: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }],
+    JoinRequests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    Blocked:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }]
 })
 
 SubGredditSchema.set('toJSON', {

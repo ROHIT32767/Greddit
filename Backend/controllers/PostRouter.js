@@ -67,21 +67,10 @@ PostsRouter.put('/comments/:id', async (request, response) => {
     response.status(201).json(post) 
 })
 
-
-
 PostsRouter.delete('/:id', async (request, response) => {
     const ID = request.params.id
-    const subgreddit = await SubGreddit
-        .findById(ID).populate('Followers').populate('Post').populate('Reports')
-    const PostIDs = subgreddit.Post.map(element => element._id)
-    const ReportIDs = subgreddit.Reports.map(element => element._id)
-    const deleteallPosts = await Posts.deleteMany({ _id: { $in: PostIDs } })
-    console.log("Delete all Posts", deleteallPosts)
-    const deleteallReports = await Report.deleteMany({ _id: { $in: ReportIDs } })
-    console.log("Delete all Reports", deleteallReports)
-    // TODO: Delete Followers ?
-    const DeleteSubGreddit = await SubGreddit.findByIdAndDelete(ID)
-    response.json(DeleteSubGreddit)
+    const DeletePost = await Post.findByIdAndDelete(ID)
+    response.json(DeletePost)
 })
 
 module.exports = PostsRouter

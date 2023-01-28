@@ -12,11 +12,10 @@ const getAll = () => {
     return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const getID = () => {
+const getID = (id) => {
     const loggedUserJSON = window.localStorage.getItem('token')
     if (loggedUserJSON) {
-        const user = JSON.parse(loggedUserJSON)
-        const request = axios.get(`${baseUrl}/${user.id}`)
+        const request = axios.get(`${baseUrl}/${id}`)
         return request.then(response => response.data).catch(error => console.log(error))
     }
     else {
@@ -65,5 +64,5 @@ const Delete = (id) => {
     return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const newobj = { getAll, getID, create, UpdateUpvotes,UpdateDownvotes,UpdateComments, setToken, Delete }
+const newobj = { getAll, getID, create, UpdateUpvotes, UpdateDownvotes, UpdateComments, setToken, Delete }
 export default newobj

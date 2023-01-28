@@ -19,7 +19,8 @@ const ReportSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  date:{type:Date,required:true}
+  date:{type:Date,required:true},
+  Ignored : { type: Boolean }
 })
 
 ReportSchema.set('toJSON', {

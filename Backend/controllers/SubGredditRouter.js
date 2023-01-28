@@ -29,14 +29,14 @@ SubGredditRouter.post('/', async (request, response) => {
 
 SubGredditRouter.get('/', async (request, response) => {
     const AllSubGreddits = await SubGreddit
-        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports')
+        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests')
     response.json(AllSubGreddits)
 })
 
 SubGredditRouter.get('/:id', async (request, response) => {
     const ID = request.params.id
     const subgreddit = await SubGreddit
-        .findById(ID).populate('Followers').populate('Following').populate('Post').populate('Reports')
+        .findById(ID).populate('Followers').populate('Following').populate('Post').populate('Reports').populate('Followed').populate('JoinRequests')
     console.log(subgreddit)
     response.json(subgreddit)
 })
@@ -45,34 +45,70 @@ SubGredditRouter.get('/User/:id', async (request, response) => {
     // ! For 
     const ID = request.params.id
     const AllSubGreddits = await SubGreddit
-        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports')
+        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests')
     console.log(AllSubGreddits)
     const MySubGreddits = AllSubGreddits.filter(subgreddit => subgreddit.Moderator._id == ID)
     console.log(MySubGreddits)
     response.json(MySubGreddits)
 })
 
-
-
-
-// ! Not part of the Router Actually
-SubGredditRouter.put('/following/:id', async (request, response) => {
-    // * For Updating Followers Data
+// * Related to joining Subgreddit
+SubGredditRouter.put('/join/:id', async (request, response) => {
     console.log(request.body)
-    const { TargetID } = request.body
-    // TODO: Have to Check Validity of id , TargetID
+    const { UserID } = request.body
+    const subgreddit = await SubGreddit.findById(request.params.id)
+    subgreddit.Followers =  subgreddit.Followers.concat(UserID)
+    subgreddit.Followed =  subgreddit.Followed.concat(UserID)
+    subgreddit.JoinRequests = subgreddit.JoinRequests.concat(UserID)
+    const updatedsubgreddit = await subgreddit.save()
+    console.log(updatedsubgreddit)
+    response.status(201).json(updatedsubgreddit) 
+})
 
-    // ! Delete Number 1
-    const UserProfile1 = await User.findById(TargetID)
-    UserProfile1.Followers = UserProfile1.Followers.filter(element => element._id !== request.params.id)
-    const updatedFollowers = await UserProfile1.save()
-    console.log("updatedFollowers", updatedFollowers)
-    // ! Delete Number 2
-    const UserProfile2 = await User.findById(request.params.id)
-    UserProfile2.Following = UserProfile2.Following.filter(element => element._id !== TargetID)
-    const updatedFollowing = await UserProfile2.save()
-    console.log("updatedFollowing", updatedFollowing)
-    response.status(201).json(updatedFollowing)
+
+SubGredditRouter.put('/leave/:id', async (request, response) => {
+    console.log(request.body)
+    const { UserID } = request.body
+    const subgreddit = await SubGreddit.findById(request.params.id)
+    subgreddit.Followers =  subgreddit.Followers.filter(element => element!=UserID)
+    const updatedsubgreddit = await subgreddit.save()
+    console.log(updatedsubgreddit)
+    response.status(201).json(updatedsubgreddit) 
+})
+
+// * Related to Accepting/Rejecting Join Requests
+SubGredditRouter.put('/accept/:id', async (request, response) => {
+    console.log(request.body)
+    const { UserID } = request.body
+    const subgreddit = await SubGreddit.findById(request.params.id)
+    subgreddit.Followers =  subgreddit.Followers.concat(UserID)
+    subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element!=UserID)
+    subgreddit.Followed =  subgreddit.Followed.concat(UserID)
+    const updatedsubgreddit = await subgreddit.save()
+    console.log(updatedsubgreddit)
+    response.status(201).json(updatedsubgreddit) 
+})
+
+SubGredditRouter.put('/reject/:id', async (request, response) => {
+    console.log(request.body)
+    const { UserID } = request.body
+    const subgreddit = await SubGreddit.findById(request.params.id)
+    subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element!=UserID)
+    const updatedsubgreddit = await subgreddit.save()
+    console.log(updatedsubgreddit)
+    response.status(201).json(updatedsubgreddit) 
+})
+
+
+// * Block Users
+SubGredditRouter.put('/block/:id', async (request, response) => {
+    console.log(request.body)
+    const { UserID } = request.body
+    const subgreddit = await SubGreddit.findById(request.params.id)
+    subgreddit.Blocked = subgreddit.Blocked.concat(UserID)
+    const updatedsubgreddit = await subgreddit.save()
+    console.log(updatedsubgreddit)
+    response.status(201).json(updatedsubgreddit) 
 })
 
 
