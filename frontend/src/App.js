@@ -33,7 +33,7 @@ export default function App() {
           <Route path="/MySubGreddits" element={window.localStorage.getItem('token') ? <MySubGreddits user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
           <Route path="/OpenSubGreddits/:id" element={window.localStorage.getItem('token') ? <OpenSubGreddits user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
          <Route path="/SubGreddits" element={window.localStorage.getItem('token') ? <SubGreddits user={user} setuser={setuser} /> :<Navigate replace to="/" />}/> 
-         <Route path="/ViewSubGreddits" element={window.localStorage.getItem('token') ? <ViewSubGreddits user={user} setuser={setuser}/> :<Navigate replace to="/" />}/> 
+         <Route path="/ViewSubGreddits/:id" element={window.localStorage.getItem('token') ? <ViewSubGreddits user={user} setuser={setuser}/> :<Navigate replace to="/" />}/> 
          <Route path="/SavedPosts" element={window.localStorage.getItem('token') ? <SavedPosts user={user} setuser={setuser}/> :<Navigate replace to="/" />}/> 
           {/*   <Route path="/AllSubGreddits" element={window.localStorage.getItem('token') ? <AllSubGreddits/> :<Navigate replace to="/" />}/>
             <Route path="*" element={<Navigate replace to="/"/>} /> */}

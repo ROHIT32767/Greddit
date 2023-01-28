@@ -461,7 +461,7 @@ export default function MySubGreddits(props) {
                                             </CardContent>
                                             <CardActions disableSpacing>
                                                 <IconButton aria-label="add to favorites">
-                                                    <OpenInNewIcon onClick={event => navigate(`/OpenSubGreddits/${subreddit._id}`)} />
+                                                    <OpenInNewIcon onClick={event => navigate(`/ViewSubGreddits/${subreddit._id}`)} />
                                                 </IconButton>
                                                 {
                                                     subreddit.Moderator._id == JSON.parse(window.localStorage.getItem('token')).id ?
@@ -506,7 +506,7 @@ export default function MySubGreddits(props) {
                                             </CardContent>
                                             <CardActions disableSpacing>
                                                 <IconButton aria-label="add to favorites">
-                                                    <OpenInNewIcon onClick={event => navigate(`/OpenSubGreddits/${subreddit._id}`)} />
+                                                    <OpenInNewIcon onClick={event => navigate(`/ViewSubGreddits/${subreddit._id}`)} />
                                                 </IconButton>
                                                 {
                                                     subreddit.Moderator._id == JSON.parse(window.localStorage.getItem('token')).id ?
