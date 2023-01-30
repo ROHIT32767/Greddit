@@ -25,7 +25,12 @@ import { styled } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
 import SubGredditService from "../services/SubGreddiit"
 import Button from '@mui/material/Button';
-import { useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
+import ReportService from "../services/Report";
+import PostService from "../services/Posts"
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import { green } from '@mui/material/colors';
 const theme = createTheme();
 export default function OpenSubGreddits(props) {
     const [open1, setOpen1] = React.useState(true);
@@ -67,7 +72,7 @@ export default function OpenSubGreddits(props) {
         const fetchUsers = async () => {
             try {
                 const data = await SubGredditService.getid(params.id)
-                console.log("recieved", data)
+                console.log("Received Subgreddit", data)
                 setsubgreddit(
                     {
                         ...data,
@@ -94,8 +99,8 @@ export default function OpenSubGreddits(props) {
         fetchUsers();
     }, [])
 
-    function handleAccept(id1,id2) {
-        console.log(id1,id2)
+    function handleAccept(id1, id2) {
+        console.log(id1, id2)
         const AcceptRequests = async () => {
             try {
                 const data = await SubGredditService.AcceptRequest(id1, { UserID: id2 })
@@ -112,8 +117,8 @@ export default function OpenSubGreddits(props) {
         }
         AcceptRequests();
     }
-    function handleReject(id1,id2) {
-        console.log(id1,id2)
+    function handleReject(id1, id2) {
+        console.log(id1, id2)
         const RejectRequests = async () => {
             try {
                 const data = await SubGredditService.RejectRequest(id1, { UserID: id2 })
@@ -125,10 +130,52 @@ export default function OpenSubGreddits(props) {
             }
             const updatedjoinrequests = subgreddit.JoinRequests.filter(element => element._id !== id2)
             console.log("before",)
-            console.log("after",updatedjoinrequests)
-            setsubgreddit({ ...subgreddit, JoinRequests: updatedjoinrequests})
+            console.log("after", updatedjoinrequests)
+            setsubgreddit({ ...subgreddit, JoinRequests: updatedjoinrequests })
         }
         RejectRequests();
+    }
+
+    // ! Related to Reports Page
+    function HandleDeletePost(postid,reportid) {
+        const DeletePost = async () => {
+            try {
+                const data = await PostService.Delete(postid)
+                console.log("recieved", data)
+                const finalposts = subgreddit.Post.filter(element => element._id!==postid)
+                setsubgreddit({...subgreddit,Post:finalposts})
+            }
+            catch (error) {
+                console.log(error) 
+            }
+        }
+        DeletePost();
+        const DeleteReport = async () => {
+            try {
+                const data = await ReportService.Delete(reportid)
+                console.log("recieved", data)
+                const finalreports = subgreddit.Reports.filter(element => element._id!==reportid)
+                setsubgreddit({...subgreddit,Reports:finalreports})
+            }
+            catch (error) {
+                console.log(error) 
+            }
+        }
+        DeleteReport();
+    }
+    function HandleIgnore(id){
+        const IgnoreReport = async () => {
+            try {
+                const data = await ReportService.Ignore(id)
+                console.log("recieved", data)
+                const finalreports = subgreddit.Reports.map(element => element._id===id ? {...element,Ignored:true}:element)
+                setsubgreddit({...subgreddit,Reports:finalreports})
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        IgnoreReport();
     }
     return (
         <div>
@@ -238,8 +285,8 @@ export default function OpenSubGreddits(props) {
                                                                         <PersonIcon />
                                                                     </ListItemIcon>
                                                                     <ListItemText primary={element.Username} />
-                                                                    <Button onClick={event => handleAccept(subgreddit._id,element._id)} sx={{ marginLeft: 5 }} variant="contained" color="secondary">ACCEPT</Button>
-                                                                    <Button onClick={event => handleReject(subgreddit._id,element._id)} sx={{ marginLeft: 5 }} variant="contained" color="secondary">REJECT</Button>
+                                                                    <Button onClick={event => handleAccept(subgreddit._id, element._id)} sx={{ marginLeft: 5 }} variant="contained" color="secondary">ACCEPT</Button>
+                                                                    <Button onClick={event => handleReject(subgreddit._id, element._id)} sx={{ marginLeft: 5 }} variant="contained" color="secondary">REJECT</Button>
                                                                 </ListItem>
                                                             </List>
                                                         </nav>
@@ -254,24 +301,45 @@ export default function OpenSubGreddits(props) {
                                     Stats
                                 </TabPanel>
                                 <TabPanel>
-                                    <Box
-                                        sx={{
-                                            marginTop: 8,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        {
-                                            subgreddit.Reports.map(element => {
-                                                return (
-                                                    <div>
-                                                        {element.By.Username}
-                                                    </div>
-                                                )
-                                            })
-                                        }
-                                    </Box>
+                                    {subgreddit.Reports.map(element => {
+                                        return (
+                                            <div>
+                                                <Container component="main" sx={{ maxWidth: 500 }}>
+                                                    <Card style={{ marginBottom: '20px' }} sx={{ marginTop: 8, bgcolor: green[500] }}>
+                                                        <CardContent>
+                                                            <Typography variant="h5" component="h2">
+                                                                {element.By.Username}   on  {element.On.Username}
+                                                            </Typography>
+                                                            <Typography color="textSecondary" style={{ marginBottom: 12 }}>
+                                                                {element.Concern}
+                                                            </Typography>
+                                                            <Typography variant="body2" component="p">
+                                                                {element.Post.Text}
+                                                            </Typography>
+                                                            <div>
+                                                                {
+                                                                    element.Ignored ?
+                                                                        <div>
+                                                                            <Button disabled variant="contained" color="secondary">BLOCK USER</Button>
+                                                                            <Button disabled variant="contained" color="secondary">DELETE POST</Button>
+                                                                            <Button variant="contained" color="secondary">IGNORE</Button>
+                                                                        </div>
+                                                                        :
+                                                                        <div>
+                                                                            <Button onClick={() => HandleIgnore(element._id)} variant="contained" color="secondary">BLOCK USER</Button>
+                                                                            <Button onClick={() => HandleDeletePost(element.Post._id,element._id)} variant="contained" color="secondary">DELETE POST</Button>
+                                                                            <Button variant="contained" color="secondary">IGNORE</Button>
+                                                                        </div>
+
+                                                                }
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card >
+                                                </Container>
+                                            </div>
+                                        )
+                                    })
+                                    }
                                 </TabPanel>
                             </Tabs>
                         </div>
@@ -281,3 +349,28 @@ export default function OpenSubGreddits(props) {
         </div>
     )
 }
+
+
+{/* <Box
+sx={{
+    marginTop: 8,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+}}
+>
+{
+    subgreddit.Reports.map(element => {
+        return (
+            <div>
+                {element.By.Username}
+            </div>
+        )
+    })
+}
+</Box> */}
+
+
+// Write code in reactjs so that When button is pressed it changes to another button with
+// a countdown like “Cancel in 3 secs” (where 3 will change to 2
+// after 1 second and so on). If the timer reaches 0, A function gets executed, otherwise the user can press cancel to abort

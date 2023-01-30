@@ -1,14 +1,15 @@
 const Report = require("../models/Report.model")
 const { request } = require('express')
 const ReportRouter = require('express').Router()
-
+const SubGreddit = require("../models/SubGreddit.model")
 ReportRouter.post('/', async (request, response) => {
     console.log(request.body)
     const { 
         Concern,
         Post,
         By,
-        On } = request.body
+        On,
+        SubGredditID } = request.body
     const date = Date.parse(request.body.date)
     const report = new Report({
         Concern,
@@ -19,8 +20,11 @@ ReportRouter.post('/', async (request, response) => {
         Ignored:false
     })
     const savedreport = await report.save()
-    console.log(savedsubgreddit)
-    response.status(201).json(savedsubgreddit)
+    const currentsubgreddit = await SubGreddit.findById(SubGredditID)
+    currentsubgreddit.Reports = currentsubgreddit.Reports.concat(savedreport._id)
+    const savedsubgreddit = await currentsubgreddit.save()
+    console.log(savedreport)
+    response.status(201).json(savedreport)
 })
 
 ReportRouter.get('/', async (request, response) => {

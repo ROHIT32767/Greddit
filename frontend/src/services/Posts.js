@@ -23,6 +23,17 @@ const getID = (id) => {
     }
 }
 
+const getSubGredditID = (id) => {
+    const loggedUserJSON = window.localStorage.getItem('token')
+    if (loggedUserJSON) {
+        const request = axios.get(`${baseUrl}/SubGreddit/${id}`)
+        return request.then(response => response.data).catch(error => console.log(error))
+    }
+    else {
+        console.log("User is not logged in, but is trying to Fetch get request")
+    }
+}
+
 const create = async newObject => {
     const config = {
         headers: { Authorization: token },
@@ -64,5 +75,5 @@ const Delete = (id) => {
     return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const newobj = { getAll, getID, create, UpdateUpvotes, UpdateDownvotes, UpdateComments, setToken, Delete }
+const newobj = { getAll, getID, create, getSubGredditID,UpdateUpvotes, UpdateDownvotes, UpdateComments, setToken, Delete }
 export default newobj

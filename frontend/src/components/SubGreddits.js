@@ -41,7 +41,7 @@ export default function MySubGreddits(props) {
     const [emptydisplaysubreddits, setemptydisplaysubreddits] = useState([])
     const handleTagClick = (tag) => {
         if (selectedTags.includes(tag)) {
-            if (selectedTags.length == 1 && searchtext) {
+            if (selectedTags.length === 1 && searchtext) {
                 setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).sort((a, b) => {
                     if (a.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return -1;
@@ -195,6 +195,7 @@ export default function MySubGreddits(props) {
         }
         JoiningRequests();
     }
+    console.log(subreddits)
     return (
         <div>
             <ThemeProvider theme={theme}>

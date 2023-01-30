@@ -29,43 +29,24 @@ import PostService from '../services/Posts';
 import UserService from "../services/Users"
 import { useParams } from "react-router-dom";
 import FlagIcon from '@mui/icons-material/Flag';
-import ReportService from "../services/Report"
+import ReportService from "../services/Report";
+import SubGredditService from "../services/SubGreddiit"
 const theme = createTheme();
 const Post = ({ id, post, posts, setposts }) => {
     console.log(post)
+    const params = useParams()
     const [Upvotes, setUpvotes] = useState(post.Upvotes);
     const [Downvotes, setDownvotes] = useState(post.Downvotes);
     const [Comments, setComments] = useState(post.Comments);
     const [newComment, setNewComment] = useState('');
     const [concern, setconcern] = React.useState("");
+    const [open, setOpen] = useState(false);
     const handleClickOpen = () => {
         setOpen(true);
     };
     const handleClose = () => {
         setOpen(false);
-        setText("")
-    };
-    const handlePost = () => {
-        const PostData = async () => {
-            try {
-                const data = await PostService.create(
-                    {
-                        Text: Text,
-                        By: (JSON.parse(window.localStorage.getItem('token'))).id,
-                        In: params.id,
-                        date: new Date()
-                    }
-                )
-                console.log("recieved", data)
-                setposts([...posts, data])
-                console.log("posts on Loading are", posts)
-            }
-            catch (error) {
-                console.log(error)
-            }
-        }
-        PostData();
-        setOpen(false);
+        setconcern("")
     };
     const handleUpvote = () => {
         const UpVoteData = async () => {
@@ -176,13 +157,16 @@ const Post = ({ id, post, posts, setposts }) => {
         HandleSavedPosts();
     }
     const handleReport = (event) => {
+        console.log("This is post",post)
         const HandleReports = async () => {
             try {
                 const data = await ReportService.create({
                     Concern: concern,
                     Post: post._id,
                     By: JSON.parse(window.localStorage.getItem('token')).id,
-                    On: post.By._id
+                    On: post.By._id,
+                    date : new Date(),
+                    SubGredditID : params.id
                 }
                 )
                 console.log("recieved", data)
@@ -193,6 +177,7 @@ const Post = ({ id, post, posts, setposts }) => {
             }
         }
         HandleReports();
+        setOpen(false);
     }
     return (
         <div>
@@ -294,6 +279,7 @@ const RedditClone = () => {
     const [posts, setposts] = React.useState([])
     const [open, setOpen] = useState(false);
     const [Text, setText] = useState("")
+    const [subgreddit,setsubgreddit] = React.useState({})
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -302,6 +288,18 @@ const RedditClone = () => {
         setText("")
     };
     const handlePost = () => {
+        let inputLowerCase = Text.toLowerCase();
+        let containsBannedWord = false;
+        subgreddit.Banned.forEach(word => {
+            if (inputLowerCase.includes(word)) {
+                containsBannedWord = true;
+                inputLowerCase = inputLowerCase.split(word).join("*".repeat(word.length));
+            }
+        });
+        if (containsBannedWord) {
+            alert("Your post contains banned keywords, they have been replaced with asterisks.");
+            setText(inputLowerCase);
+        }
         const PostData = async () => {
             try {
                 const data = await PostService.create(
@@ -324,10 +322,23 @@ const RedditClone = () => {
         setOpen(false);
     };
     React.useEffect(() => {
-        const fetchData = async () => {
+        const fetchSubGreddit = async () => {
             try {
-                const data = await PostService.getAll()
-                console.log("recieved", data)
+                const data = await SubGredditService.getid(params.id)
+                setsubgreddit(data)
+                console.log("set subgreddit to",data)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        fetchSubGreddit();
+    }, [])
+    React.useEffect(() => {
+        const fetchposts = async () => {
+            try {
+                const data = await PostService.getSubGredditID(params.id)
+                console.log("posts recieved", data)
                 setposts(data.map(element => {
                     return {
                         ...element,
@@ -345,7 +356,7 @@ const RedditClone = () => {
                 console.log(error)
             }
         }
-        fetchData();
+        fetchposts();
     }, [])
     return (
         <div>

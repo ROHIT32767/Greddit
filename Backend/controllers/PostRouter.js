@@ -1,6 +1,7 @@
 const Post = require("../models/Posts.model")
 const { request } = require('express')
 const PostsRouter = require('express').Router()
+const SubGreddit = require("../models/SubGreddit.model")
 
 PostsRouter.post('/', async (request, response) => {
     console.log(request.body)
@@ -10,14 +11,17 @@ PostsRouter.post('/', async (request, response) => {
     const date = Date.parse(request.body.date)
     const post = new Post({
         Text,
-        Upvotes : 0,
-        Downvotes : 0,
+        Upvotes: 0,
+        Downvotes: 0,
         In,
         By,
-        Comments:[],
+        Comments: [],
         date
     })
     const savedpost = await post.save()
+    const currentsubgreddit = await SubGreddit.findById(In)
+    currentsubgreddit.Post = currentsubgreddit.Post.concat(savedpost._id)
+    const savedsubgreddit = await currentsubgreddit.save()
     console.log(savedpost)
     response.status(201).json(savedpost)
 })
@@ -36,6 +40,15 @@ PostsRouter.get('/:id', async (request, response) => {
     response.json(post)
 })
 
+PostsRouter.get('/SubGreddit/:id', async (request, response) => {
+    const ID = request.params.id
+    const allpost = await Post
+        .find({}).populate('In').populate('By').populate('Comments.commented')
+    const myposts = allpost.filter(element => element.In._id == ID)
+    console.log(myposts)
+    response.json(myposts)
+})
+
 PostsRouter.put('/upvotes/:id', async (request, response) => {
     console.log(request.body)
     const { Upvotes } = request.body
@@ -44,7 +57,7 @@ PostsRouter.put('/upvotes/:id', async (request, response) => {
     post.Upvotes = Number(Upvotes)
     const updatedpost = await post.save()
     console.log(post)
-    response.status(201).json(post) 
+    response.status(201).json(post)
 })
 
 PostsRouter.put('/downvotes/:id', async (request, response) => {
@@ -54,7 +67,7 @@ PostsRouter.put('/downvotes/:id', async (request, response) => {
     post.Downvotes = Number(Downvotes)
     const updatedpost = await post.save()
     console.log(post)
-    response.status(201).json(post) 
+    response.status(201).json(post)
 })
 
 PostsRouter.put('/comments/:id', async (request, response) => {
@@ -64,7 +77,7 @@ PostsRouter.put('/comments/:id', async (request, response) => {
     post.Comments = Comments
     const updatedpost = await post.save()
     console.log(post)
-    response.status(201).json(post) 
+    response.status(201).json(post)
 })
 
 // ! Delete the Report as well
