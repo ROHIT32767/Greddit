@@ -1,21 +1,86 @@
 import * as React from 'react';
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-// import Avatar from '@mui/material/Avatar';
-// import TextField from '@mui/material/TextField';
-// import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-// import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Button } from '@mui/material';
-// import Table from "@mui/material/Table";
-// import TableBody from "@mui/material/TableBody";
-// import TableCell from "@mui/material/TableCell";
-// import TableHead from "@mui/material/TableHead";
-// import TableRow from "@mui/material/TableRow";
+import ListSubheader from '@mui/material/ListSubheader';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Collapse from '@mui/material/Collapse';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import StarBorder from '@mui/icons-material/StarBorder';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { styled } from '@mui/material/styles';
+import PersonIcon from '@mui/icons-material/Person';
+import SubGredditService from "../services/SubGreddiit"
+import { useParams } from "react-router-dom"
 const theme = createTheme();
 export default function OpenSubGreddits(props) {
+    const [open1, setOpen1] = React.useState(true);
+    const params = useParams()
+    const handleClick1 = () => {
+        setOpen1(!open1);
+    };
+    const [subgreddit, setsubgreddit] = REact.useState(null);
+    const [open2, setOpen2] = React.useState(true);
+
+    const handleClick2 = () => {
+        setOpen2(!open2);
+    };
+    function generate(element: React.ReactElement) {
+        return [0, 1, 2].map((value) =>
+            React.cloneElement(element, {
+                key: value,
+            }),
+        );
+    }
+    const Demo = styled('div')(({ theme }) => ({
+        backgroundColor: theme.palette.background.paper,
+    }));
+    const [dense, setDense] = React.useState(false);
+    const [secondary, setSecondary] = React.useState(false);
+    React.useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const data = await SubGredditService.getid(params.id)
+                console.log("recieved", data)
+                setsubgreddit(
+                    {
+                        ...data,
+                        Name: data.Name,
+                        Description: data.Description,
+                        Tags: data.Tags,
+                        Banned: data.Banned,
+                        Moderator: data.Moderator,
+                        Followers: data.Followers,
+                        Post: data.Post,
+                        Reports: data.Reports,
+                        date: data.date,
+                        Followed: data.Followed,
+                        JoinRequests: data.JoinRequests,
+                        Blocked: data.Blocked
+                    }
+                )
+                console.log("particular subgreddit on Loading are", posts)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        fetchUsers();
+    }, [])
+
     return (
         <div>
             <ThemeProvider theme={theme}>
@@ -37,10 +102,110 @@ export default function OpenSubGreddits(props) {
                                     <Tab>REPORTED</Tab>
                                 </TabList>
                                 <TabPanel>
-                                    Users
+                                    <Box
+                                        sx={{
+                                            marginTop: 8,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <List
+                                            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+                                            component="nav"
+                                            aria-labelledby="nested-list-subheader"
+                                            subheader={
+                                                <ListSubheader component="div" id="nested-list-subheader">
+                                                    Users
+                                                </ListSubheader>
+                                            }
+                                        >
+                                            <ListItemButton onClick={handleClick1}>
+                                                <ListItemIcon>
+                                                    <InboxIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="Blocked" />
+                                                {open1 ? <ExpandLess /> : <ExpandMore />}
+                                            </ListItemButton>
+                                            <Collapse in={open1} timeout="auto" unmountOnExit>
+                                                {
+                                                    subgreddit.Blocked.map(element => {
+                                                        return (
+                                                            <List component="div" disablePadding>
+                                                                <ListItemButton sx={{ pl: 4 }}>
+                                                                    <ListItemIcon>
+                                                                        <PersonIcon />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText primary={element.Username} />
+                                                                </ListItemButton>
+                                                            </List>
+                                                        )
+                                                    })
+                                                }
+                                            </Collapse>
+                                            <ListItemButton onClick={handleClick2}>
+                                                <ListItemIcon>
+                                                    <InboxIcon />
+                                                </ListItemIcon>
+                                                <ListItemText primary="UnBlocked" />
+                                                {open2 ? <ExpandLess /> : <ExpandMore />}
+                                            </ListItemButton>
+                                            <Collapse in={open2} timeout="auto" unmountOnExit>
+                                            {
+                                                    subgreddit.Blocked.map(element => {
+                                                        return (
+                                                            <List component="div" disablePadding>
+                                                                <ListItemButton sx={{ pl: 4 }}>
+                                                                    <ListItemIcon>
+                                                                        <PersonIcon />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText primary={element.Username} />
+                                                                </ListItemButton>
+                                                            </List>
+                                                        )
+                                                    })
+                                                }
+                                            </Collapse>
+                                        </List>
+                                    </Box>
                                 </TabPanel>
                                 <TabPanel>
-                                    Joining Requests
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} md={6}>
+                                            <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
+                                                Avatar with text and icon
+                                            </Typography>
+                                            <Demo>
+                                                <List dense={dense}>
+                                                    {generate(
+                                                        <ListItem
+                                                            secondaryAction={
+                                                                <div>
+                                                                    <IconButton edge="end" aria-label="delete">
+                                                                        <DeleteIcon />
+                                                                    </IconButton>
+                                                                    <IconButton edge="end" aria-label="delete">
+                                                                        <DeleteIcon />
+                                                                    </IconButton>
+                                                                </div>
+
+                                                            }
+                                                        >
+                                                            <ListItemAvatar>
+                                                                <Avatar>
+                                                                    <FolderIcon />
+                                                                </Avatar>
+                                                            </ListItemAvatar>
+                                                            <ListItemText
+                                                                primary="Single-line item"
+                                                                secondary={secondary ? 'Secondary text' : null}
+                                                            />
+                                                        </ListItem>,
+                                                    )}
+                                                </List>
+                                            </Demo>
+                                        </Grid>
+                                    </Grid>
                                 </TabPanel>
                                 <TabPanel>
                                     Stats

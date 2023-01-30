@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import DirectionsIcon from '@mui/icons-material/Directions';
 import Chip from '@mui/material/Chip';
 import TagIcon from '@mui/icons-material/Tag';
 import Box from '@mui/material/Box';
@@ -25,11 +23,9 @@ import { red, green } from '@mui/material/colors';
 import Avatar from '@mui/material/Avatar';
 import RedditIcon from '@mui/icons-material/Reddit';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import DeleteIcon from '@mui/icons-material/Delete';
 import SubGredditService from '../services/SubGreddiit';
 import { useNavigate } from "react-router-dom";
-import Sort from '@mui/icons-material/Sort';
-import Tag from '@mui/icons-material/Tag';
+
 const theme = createTheme();
 export default function MySubGreddits(props) {
     const navigate = useNavigate()
@@ -47,10 +43,10 @@ export default function MySubGreddits(props) {
         if (selectedTags.includes(tag)) {
             if (selectedTags.length == 1 && searchtext) {
                 setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).sort((a, b) => {
-                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                    if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return -1;
                     }
-                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                    if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return 1;
                     }
                     return 0;
@@ -60,10 +56,10 @@ export default function MySubGreddits(props) {
             else {
                 setSelectedTags(selectedTags.filter((t) => t !== tag));
                 setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.filter(item => item !== tag).indexOf(r) >= 0)).sort((a, b) => {
-                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                    if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return -1;
                     }
-                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                    if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return 1;
                     }
                     return 0;
@@ -73,10 +69,10 @@ export default function MySubGreddits(props) {
         else {
             setSelectedTags([...selectedTags, tag]);
             setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.concat(tag).indexOf(r) >= 0)).sort((a, b) => {
-                if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                     return -1;
                 }
-                if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                     return 1;
                 }
                 return 0;
@@ -105,10 +101,10 @@ export default function MySubGreddits(props) {
                 }).sort((a, b) => {
                     console.log(a, a.Moderator._id, JSON.parse(window.localStorage.getItem('token')).id)
                     console.log(b, b.Moderator._id, JSON.parse(window.localStorage.getItem('token')).id)
-                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                    if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return -1;
                     }
-                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                    if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return 1;
                     }
                     return 0;
@@ -126,10 +122,10 @@ export default function MySubGreddits(props) {
                         date: element.date
                     }
                 }).sort((a, b) => {
-                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                    if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return -1;
                     }
-                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                    if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return 1;
                     }
                     return 0;
@@ -147,10 +143,10 @@ export default function MySubGreddits(props) {
                         date: element.date
                     }
                 }).sort((a, b) => {
-                    if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                    if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return -1;
                     }
-                    if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                    if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                         return 1;
                     }
                     return 0;
@@ -203,10 +199,10 @@ export default function MySubGreddits(props) {
                                 setsearchtext(event.target.value)
                                 if (!event.target.value) {
                                     setdisplaysubreddits(subreddits.filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
-                                        if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                        if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                             return -1;
                                         }
-                                        if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                        if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                             return 1;
                                         }
                                         return 0;
@@ -215,21 +211,21 @@ export default function MySubGreddits(props) {
                                 else {
                                     if (!selectedTags.length) {
                                         setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).sort((a, b) => {
-                                            if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
-                                                return -1;
-                                            }
-                                            if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
-                                                return 1;
-                                            }
-                                            return 0;
+                                        if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
+                                            return -1;
+                                        }
+                                        if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
+                                            return 1;
+                                        }
+                                        return 0;
                                         }))
                                     }
                                     else {
                                         setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
-                                            if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                            if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                                 return -1;
                                             }
-                                            if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                            if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                                 return 1;
                                             }
                                             return 0;
@@ -359,10 +355,10 @@ export default function MySubGreddits(props) {
                                 }
                                 else if (!searchtext) {
                                     setdisplaysubreddits(subreddits.filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
-                                        if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                        if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                             return -1;
                                         }
-                                        if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                        if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                             return 1;
                                         }
                                         return 0;
@@ -370,10 +366,10 @@ export default function MySubGreddits(props) {
                                 }
                                 else if (!selectedTags.length) {
                                     setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).sort((a, b) => {
-                                        if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                        if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                             return -1;
                                         }
-                                        if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                        if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                             return 1;
                                         }
                                         return 0;
@@ -381,10 +377,10 @@ export default function MySubGreddits(props) {
                                 }
                                 else {
                                     setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((searchtext).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
-                                        if (a.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id) {
+                                        if (a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                             return -1;
                                         }
-                                        if (a.Moderator._id !== JSON.parse(window.localStorage.getItem('token')).id && b.Moderator._id === JSON.parse(window.localStorage.getItem('token')).id) {
+                                        if (!a.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                             return 1;
                                         }
                                         return 0;

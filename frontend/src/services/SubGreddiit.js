@@ -12,10 +12,22 @@ const getAll = () => {
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const getID = (id) => {
+const getid = (id) => {
   const loggedUserJSON = window.localStorage.getItem('token')
   if (loggedUserJSON) {
     const request = axios.get(`${baseUrl}/${id}`)
+    return request.then(response => response.data).catch(error => console.log(error))
+  }
+  else {
+    console.log("User is not logged in, but is trying to Fetch get request")
+  }
+}
+
+const getID = () => {
+  const loggedUserJSON = window.localStorage.getItem('token')
+  if (loggedUserJSON) {
+    const user = JSON.parse(loggedUserJSON)
+    const request = axios.get(`${baseUrl}/User/${user.id}`)
     return request.then(response => response.data).catch(error => console.log(error))
   }
   else {
@@ -88,5 +100,5 @@ const Delete = (id) => {
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const newobj = { getAll, getID, create, UpdateProfile, setToken, Delete , BlockUser , JoinSubGreddit , LeaveSubGreddit , AcceptRequest , RejectRequest}
+const newobj = { getAll, getID, getid, create, UpdateProfile, setToken, Delete , BlockUser , JoinSubGreddit , LeaveSubGreddit , AcceptRequest , RejectRequest}
 export default newobj

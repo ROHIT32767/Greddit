@@ -67,6 +67,7 @@ PostsRouter.put('/comments/:id', async (request, response) => {
     response.status(201).json(post) 
 })
 
+// ! Delete the Report as well
 PostsRouter.delete('/:id', async (request, response) => {
     const ID = request.params.id
     const DeletePost = await Post.findByIdAndDelete(ID)
