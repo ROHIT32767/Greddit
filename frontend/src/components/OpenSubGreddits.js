@@ -24,6 +24,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
 import SubGredditService from "../services/SubGreddiit"
+import Button from '@mui/material/Button';
 import { useParams } from "react-router-dom"
 const theme = createTheme();
 export default function OpenSubGreddits(props) {
@@ -182,48 +183,59 @@ export default function OpenSubGreddits(props) {
                                     </Box>
                                 </TabPanel>
                                 <TabPanel>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} md={6}>
-                                            <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
-                                                Avatar with text and icon
-                                            </Typography>
-                                            <Demo>
-                                                <List dense={dense}>
-                                                    {generate(
-                                                        <ListItem
-                                                            secondaryAction={
-                                                                <div>
-                                                                    <IconButton edge="end" aria-label="delete">
-                                                                        <DeleteIcon />
-                                                                    </IconButton>
-                                                                    <IconButton edge="end" aria-label="delete">
-                                                                        <DeleteIcon />
-                                                                    </IconButton>
-                                                                </div>
-
-                                                            }
-                                                        >
-                                                            <ListItemAvatar>
-                                                                <Avatar>
-                                                                    <FolderIcon />
-                                                                </Avatar>
-                                                            </ListItemAvatar>
-                                                            <ListItemText
-                                                                primary="Single-line item"
-                                                                secondary={secondary ? 'Secondary text' : null}
-                                                            />
-                                                        </ListItem>,
-                                                    )}
-                                                </List>
-                                            </Demo>
-                                        </Grid>
-                                    </Grid>
+                                    <Box
+                                        sx={{
+                                            marginTop: 8,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        {
+                                            subgreddit.JoinRequests.map(element => {
+                                                return (
+                                                    <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                                                        <nav aria-label="main mailbox folders">
+                                                            <List>
+                                                                <ListItem >
+                                                                    <ListItemIcon>
+                                                                        <PersonIcon />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText primary={element.Username} />
+                                                                    <Button sx={{ marginLeft: 5 }} variant="contained" color="secondary">ACCEPT</Button>
+                                                                    <Button sx={{ marginLeft: 5 }} variant="contained" color="secondary">REJECT</Button>
+                                                                </ListItem>
+                                                            </List>
+                                                        </nav>
+                                                        {/* <Divider /> */}
+                                                    </Box>
+                                                )
+                                            })
+                                        }
+                                    </Box>
                                 </TabPanel>
                                 <TabPanel>
                                     Stats
                                 </TabPanel>
                                 <TabPanel>
-                                    Reported
+                                    <Box
+                                        sx={{
+                                            marginTop: 8,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        {
+                                            subgreddit.Reports.map(element => {
+                                                return (
+                                                    <div>
+                                                        {element.By.Username}
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </Box>
                                 </TabPanel>
                             </Tabs>
                         </div>
