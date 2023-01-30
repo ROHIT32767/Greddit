@@ -27,7 +27,9 @@ import ImageListItemBar from '@mui/material/ImageListItemBar';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import PostService from '../services/Posts';
 import UserService from "../services/Users"
-import { useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
+import FlagIcon from '@mui/icons-material/Flag';
+import ReportService from "../services/Report"
 const theme = createTheme();
 const Post = ({ id, post, posts, setposts }) => {
     console.log(post)
@@ -35,6 +37,36 @@ const Post = ({ id, post, posts, setposts }) => {
     const [Downvotes, setDownvotes] = useState(post.Downvotes);
     const [Comments, setComments] = useState(post.Comments);
     const [newComment, setNewComment] = useState('');
+    const [concern, setconcern] = React.useState("");
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+    const handleClose = () => {
+        setOpen(false);
+        setText("")
+    };
+    const handlePost = () => {
+        const PostData = async () => {
+            try {
+                const data = await PostService.create(
+                    {
+                        Text: Text,
+                        By: (JSON.parse(window.localStorage.getItem('token'))).id,
+                        In: params.id,
+                        date: new Date()
+                    }
+                )
+                console.log("recieved", data)
+                setposts([...posts, data])
+                console.log("posts on Loading are", posts)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        PostData();
+        setOpen(false);
+    };
     const handleUpvote = () => {
         const UpVoteData = async () => {
             try {
@@ -143,6 +175,25 @@ const Post = ({ id, post, posts, setposts }) => {
         }
         HandleSavedPosts();
     }
+    const handleReport = (event) => {
+        const HandleReports = async () => {
+            try {
+                const data = await ReportService.create({
+                    Concern: concern,
+                    Post: post._id,
+                    By: JSON.parse(window.localStorage.getItem('token')).id,
+                    On: post.By._id
+                }
+                )
+                console.log("recieved", data)
+                console.log("Report Him", post.By._id)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        HandleReports();
+    }
     return (
         <div>
             <Container component="main" sx={{ maxWidth: 500 }}>
@@ -171,6 +222,9 @@ const Post = ({ id, post, posts, setposts }) => {
                             </IconButton>
                             <IconButton aria-label="Follow" onClick={handleFollow}>
                                 <FollowTheSignsIcon />
+                            </IconButton>
+                            <IconButton aria-label="Follow" onClick={handleClickOpen}>
+                                <FlagIcon />
                             </IconButton>
                         </div>
                         <div style={{
@@ -201,6 +255,29 @@ const Post = ({ id, post, posts, setposts }) => {
                     </CardContent>
                 </Card >
             </Container>
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Report</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        To Report this post in the SubGreddit, enter your Concern.
+                        All the Reports are text based only
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Concern"
+                        fullWidth
+                        variant="standard"
+                        value={concern}
+                        onChange={event => setconcern(event.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleReport}>REPORT THIS POST</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };

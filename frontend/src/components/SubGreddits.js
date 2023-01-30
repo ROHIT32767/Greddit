@@ -164,12 +164,36 @@ export default function MySubGreddits(props) {
         fetchData();
     }, [])
 
-    function handleLeave(event, id) {
+    function handleLeave(id) {
         console.log(id)
         const LeaveSubGreddiit = async () => {
-            // TODO: Write code for Leaving SubGreddit
+            try {
+                const data = await SubGredditService.LeaveSubGreddit(id, { UserID: JSON.parse(window.localStorage.getItem('token')).id })
+                console.log("recieved", data)
+                setSubreddits(subreddits => subreddits.map(element => element._id === id ? {
+                    ...element,
+                    Followers: element.Followers.filter(element => element._id===JSON.parse(window.localStorage.getItem('token')).id)
+                } : element))
+            }
+            catch (error) {
+                console.log(error)
+            }
         }
         LeaveSubGreddiit();
+    }
+    function handleJoin(id) {
+        console.log(id)
+        const JoiningRequests = async () => {
+            try {
+                const data = await SubGredditService.JoinSubGreddit(id, { UserID: JSON.parse(window.localStorage.getItem('token')).id })
+                console.log("recieved", data)
+                // TODO: Is a change in UI required ? LIke doing setstate for any variable
+            }
+            catch (error) {
+                console.log(error) 
+            }
+        }
+        JoiningRequests();
     }
     return (
         <div>
@@ -456,17 +480,24 @@ export default function MySubGreddits(props) {
                                                 </Typography>
                                             </CardContent>
                                             <CardActions disableSpacing>
-                                                <IconButton aria-label="add to favorites">
-                                                    <OpenInNewIcon onClick={event => navigate(`/ViewSubGreddits/${subreddit._id}`)} />
-                                                </IconButton>
+                                                {
+                                                    subreddit.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) ?
+                                                        <IconButton aria-label="add to favorites">
+                                                            <OpenInNewIcon onClick={event => navigate(`/ViewSubGreddits/${subreddit._id}`)} />
+                                                        </IconButton>
+                                                        :
+                                                        <IconButton disabled aria-label="add to favorites">
+                                                            <OpenInNewIcon />
+                                                        </IconButton>
+                                                }
                                                 {
                                                     subreddit.Moderator._id == JSON.parse(window.localStorage.getItem('token')).id ?
                                                         <Button variant="contained" color="secondary" disabled>LEAVE</Button>
                                                         :
                                                         subreddit.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) ?
-                                                            <Button variant="contained" color="secondary">LEAVE</Button>
+                                                            <Button onClick={event => handleLeave(subreddit._id)} variant="contained" color="secondary">LEAVE</Button>
                                                             :
-                                                            <Button variant="contained" color="secondary">JOIN</Button>
+                                                            <Button onClick={event => handleJoin(subreddit._id)} variant="contained" color="secondary">JOIN</Button>
                                                 }
                                             </CardActions>
                                         </Card>
@@ -500,18 +531,25 @@ export default function MySubGreddits(props) {
                                                 </Typography>
                                             </CardContent>
                                             <CardActions disableSpacing>
-                                                <IconButton aria-label="add to favorites">
-                                                    <OpenInNewIcon onClick={event => navigate(`/ViewSubGreddits/${subreddit._id}`)} />
-                                                </IconButton>
+                                                {
+                                                    subreddit.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) ?
+                                                        <IconButton aria-label="add to favorites">
+                                                            <OpenInNewIcon onClick={event => navigate(`/ViewSubGreddits/${subreddit._id}`)} />
+                                                        </IconButton>
+                                                        :
+                                                        <IconButton disabled aria-label="add to favorites">
+                                                            <OpenInNewIcon />
+                                                        </IconButton>
+                                                }
                                                 {
                                                     subreddit.Moderator._id == JSON.parse(window.localStorage.getItem('token')).id ?
                                                         <Button variant="contained" color="secondary" disabled>LEAVE</Button>
                                                         :
                                                         (subreddit.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) ?
 
-                                                            <Button variant="contained" color="secondary">LEAVE</Button>
+                                                            <Button onClick={event => handleLeave(subreddit._id)} variant="contained" color="secondary">LEAVE</Button>
                                                             :
-                                                            <Button variant="contained" color="secondary">JOIN</Button>)
+                                                            <Button onClick={event => handleJoin(subreddit._id)} variant="contained" color="secondary">JOIN</Button>)
                                                 }
                                             </CardActions>
                                         </Card>

@@ -94,6 +94,42 @@ export default function OpenSubGreddits(props) {
         fetchUsers();
     }, [])
 
+    function handleAccept(id1,id2) {
+        console.log(id1,id2)
+        const AcceptRequests = async () => {
+            try {
+                const data = await SubGredditService.AcceptRequest(id1, { UserID: id2 })
+                console.log("recieved", data)
+                // TODO: Is a change in UI required ? LIke doing setstate for any variable
+            }
+            catch (error) {
+                console.log(error)
+            }
+            const updatedjoinrequests = subgreddit.JoinRequests.filter(element => element._id !== id2)
+            const updatedFollowers = subgreddit.Followers.concat(id2)
+            const updatedFollowed = subgreddit.Followed.concat(id2)
+            setsubgreddit({ ...subgreddit, JoinRequests: updatedjoinrequests, Followers: updatedFollowers, Followed: updatedFollowed })
+        }
+        AcceptRequests();
+    }
+    function handleReject(id1,id2) {
+        console.log(id1,id2)
+        const RejectRequests = async () => {
+            try {
+                const data = await SubGredditService.RejectRequest(id1, { UserID: id2 })
+                console.log("recieved", data)
+                // TODO: Is a change in UI required ? LIke doing setstate for any variable
+            }
+            catch (error) {
+                console.log(error)
+            }
+            const updatedjoinrequests = subgreddit.JoinRequests.filter(element => element._id !== id2)
+            console.log("before",)
+            console.log("after",updatedjoinrequests)
+            setsubgreddit({ ...subgreddit, JoinRequests: updatedjoinrequests})
+        }
+        RejectRequests();
+    }
     return (
         <div>
             <ThemeProvider theme={theme}>
@@ -202,8 +238,8 @@ export default function OpenSubGreddits(props) {
                                                                         <PersonIcon />
                                                                     </ListItemIcon>
                                                                     <ListItemText primary={element.Username} />
-                                                                    <Button sx={{ marginLeft: 5 }} variant="contained" color="secondary">ACCEPT</Button>
-                                                                    <Button sx={{ marginLeft: 5 }} variant="contained" color="secondary">REJECT</Button>
+                                                                    <Button onClick={event => handleAccept(subgreddit._id,element._id)} sx={{ marginLeft: 5 }} variant="contained" color="secondary">ACCEPT</Button>
+                                                                    <Button onClick={event => handleReject(subgreddit._id,element._id)} sx={{ marginLeft: 5 }} variant="contained" color="secondary">REJECT</Button>
                                                                 </ListItem>
                                                             </List>
                                                         </nav>

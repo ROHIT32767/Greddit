@@ -20,12 +20,16 @@ SubGredditRouter.post('/', async (request, response) => {
         Banned,
         Moderator,
         Followers,
-        date
+        date,
+        JoinRequests:[],
+        Blocked:[],
+        Reports:[],
+        Post:[]
     })
     const savedsubgreddit = await subgreddit.save()
     console.log(savedsubgreddit)
     response.status(201).json(savedsubgreddit)
-})
+}) 
 
 SubGredditRouter.get('/', async (request, response) => {
     const AllSubGreddits = await SubGreddit
@@ -57,8 +61,6 @@ SubGredditRouter.put('/join/:id', async (request, response) => {
     console.log(request.body)
     const { UserID } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
-    subgreddit.Followers =  subgreddit.Followers.concat(UserID)
-    subgreddit.Followed =  subgreddit.Followed.concat(UserID)
     subgreddit.JoinRequests = subgreddit.JoinRequests.concat(UserID)
     const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
