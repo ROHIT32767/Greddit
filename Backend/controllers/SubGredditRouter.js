@@ -36,7 +36,7 @@ SubGredditRouter.get('/', async (request, response) => {
 SubGredditRouter.get('/:id', async (request, response) => {
     const ID = request.params.id
     const subgreddit = await SubGreddit
-        .findById(ID).populate('Followers').populate('Following').populate('Post').populate('Reports').populate('Followed').populate('JoinRequests')
+        .findById(ID).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests')
     console.log(subgreddit)
     response.json(subgreddit)
 })

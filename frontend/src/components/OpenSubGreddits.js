@@ -32,7 +32,19 @@ export default function OpenSubGreddits(props) {
     const handleClick1 = () => {
         setOpen1(!open1);
     };
-    const [subgreddit, setsubgreddit] = REact.useState(null);
+    const [subgreddit, setsubgreddit] = React.useState({
+        Name: "",
+        Description: "",
+        Tags: [],
+        Banned: [],
+        Moderator: null,
+        Followers: [],
+        Post: [],
+        Reports: [],
+        Followed: [],
+        JoinRequests: [],
+        Blocked: []
+    });
     const [open2, setOpen2] = React.useState(true);
 
     const handleClick2 = () => {
@@ -72,7 +84,7 @@ export default function OpenSubGreddits(props) {
                         Blocked: data.Blocked
                     }
                 )
-                console.log("particular subgreddit on Loading are", posts)
+                console.log("particular subgreddit on Loading are", subgreddit)
             }
             catch (error) {
                 console.log(error)
@@ -151,8 +163,8 @@ export default function OpenSubGreddits(props) {
                                                 {open2 ? <ExpandLess /> : <ExpandMore />}
                                             </ListItemButton>
                                             <Collapse in={open2} timeout="auto" unmountOnExit>
-                                            {
-                                                    subgreddit.Blocked.map(element => {
+                                                {
+                                                    subgreddit.Followers.filter(element => ((!subgreddit.Blocked.length) || (!subgreddit.Blocked.map(element1 => element1._id).includes(element._id)))).map(element => {
                                                         return (
                                                             <List component="div" disablePadding>
                                                                 <ListItemButton sx={{ pl: 4 }}>
