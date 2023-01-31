@@ -33,14 +33,14 @@ SubGredditRouter.post('/', async (request, response) => {
 
 SubGredditRouter.get('/', async (request, response) => {
     const AllSubGreddits = await SubGreddit
-        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests')
+        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked')
     response.json(AllSubGreddits)
 })
 
 SubGredditRouter.get('/:id', async (request, response) => {
     const ID = request.params.id
     const subgreddit = await SubGreddit
-        .findById(ID).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests')
+        .findById(ID).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked')
     console.log(subgreddit)
     response.json(subgreddit)
 })
@@ -49,7 +49,7 @@ SubGredditRouter.get('/User/:id', async (request, response) => {
     // ! For 
     const ID = request.params.id
     const AllSubGreddits = await SubGreddit
-        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests')
+        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked')
     console.log(AllSubGreddits)
     const MySubGreddits = AllSubGreddits.filter(subgreddit => subgreddit.Moderator._id == ID)
     console.log(MySubGreddits)
@@ -98,7 +98,7 @@ SubGredditRouter.put('/reject/:id', async (request, response) => {
     subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element!=UserID)
     const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
-    response.status(201).json(updatedsubgreddit) 
+    response.status(201).json(updatedsubgreddit)  
 })
 
 

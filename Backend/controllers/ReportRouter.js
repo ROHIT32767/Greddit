@@ -33,6 +33,15 @@ ReportRouter.get('/', async (request, response) => {
     response.json(AllReports)
 })
 
+ReportRouter.get('/SubGreddit/:id',async (request, response) => {
+    const AllReports = await Report
+        .find({}).populate('Post').populate('By').populate('On')
+    const currentsubgreddit = await SubGreddit.findById(request.params.id)
+    const myreports = AllReports.filter(element => currentsubgreddit.Reports.includes(element._id))
+    response.json(myreports)
+    console.log("My reports are",myreports)
+})
+
 ReportRouter.get('/:id', async (request, response) => {
     const ID = request.params.id
     const report = await Report
