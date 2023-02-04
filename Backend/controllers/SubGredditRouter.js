@@ -24,7 +24,9 @@ SubGredditRouter.post('/', async (request, response) => {
         JoinRequests:[],
         Blocked:[],
         Reports:[],
-        Post:[]
+        Post:[],
+        Reported:[],
+        Clicks:0
     })
     const savedsubgreddit = await subgreddit.save()
     console.log(savedsubgreddit)
@@ -33,14 +35,14 @@ SubGredditRouter.post('/', async (request, response) => {
 
 SubGredditRouter.get('/', async (request, response) => {
     const AllSubGreddits = await SubGreddit
-        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked')
+        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked').populate('Reported')
     response.json(AllSubGreddits)
 })
 
 SubGredditRouter.get('/:id', async (request, response) => {
     const ID = request.params.id
     const subgreddit = await SubGreddit
-        .findById(ID).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked')
+        .findById(ID).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked').populate('Reported')
     console.log(subgreddit)
     response.json(subgreddit)
 })
@@ -49,7 +51,7 @@ SubGredditRouter.get('/User/:id', async (request, response) => {
     // ! For 
     const ID = request.params.id
     const AllSubGreddits = await SubGreddit
-        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked')
+        .find({}).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked').populate('Reported')
     console.log(AllSubGreddits)
     const MySubGreddits = AllSubGreddits.filter(subgreddit => subgreddit.Moderator._id == ID)
     console.log(MySubGreddits)
@@ -115,12 +117,32 @@ SubGredditRouter.put('/block/:id', async (request, response) => {
     response.status(201).json(updatedsubgreddit) 
 })
 
+// Delete Report
+SubGredditRouter.put('/Reports/:id', async (request, response) => {
+    console.log(request.body)
+    const { ReportID } = request.body
+    const subgreddit = await SubGreddit.findById(request.params.id)
+    subgreddit.Reports = subgreddit.Reports.filter(element => element!=ReportID)
+    const updatedsubgreddit = await subgreddit.save()
+    console.log(updatedsubgreddit)
+    response.status(201).json(updatedsubgreddit) 
+})
+
+// Update Clicks 
+SubGredditRouter.put('/Click/:id', async (request, response) => {
+    console.log(request.body)
+    const subgreddit = await SubGreddit.findById(request.params.id)
+    subgreddit.Clicks = new Date()
+    const updatedsubgreddit = await subgreddit.save()
+    console.log(updatedsubgreddit)
+    response.status(201).json(updatedsubgreddit) 
+})
 
 
 SubGredditRouter.delete('/:id', async (request, response) => {
     const ID = request.params.id
     const subgreddit = await SubGreddit
-        .findById(ID).populate('Followers').populate('Post').populate('Reports')
+        .findById(ID).populate('Followers').populate('Post').populate('Reports').populate('Reported')
     const PostIDs = subgreddit.Post.map(element => element._id)
     const ReportIDs = subgreddit.Reports.map(element => element._id)
     const deleteallPosts = await Posts.deleteMany({ _id: { $in: PostIDs } })

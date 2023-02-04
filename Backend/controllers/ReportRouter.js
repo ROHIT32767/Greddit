@@ -22,6 +22,7 @@ ReportRouter.post('/', async (request, response) => {
     const savedreport = await report.save()
     const currentsubgreddit = await SubGreddit.findById(SubGredditID)
     currentsubgreddit.Reports = currentsubgreddit.Reports.concat(savedreport._id)
+    currentsubgreddit.Reported = currentsubgreddit.Reported.concat(savedreport._id)
     const savedsubgreddit = await currentsubgreddit.save()
     console.log(savedreport)
     response.status(201).json(savedreport)
@@ -62,6 +63,7 @@ ReportRouter.put('/ignore/:id', async (request, response) => {
 ReportRouter.delete('/:id', async (request, response) => {
     const ID = request.params.id
     const DeleteReport = await Report.findByIdAndDelete(ID)
+
     response.json(DeleteReport)
 })
 

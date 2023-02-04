@@ -43,6 +43,14 @@ const create = async newObject => {
   return response.data
 }
 
+const UpdateClicks = (id) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.put(`${baseUrl}/Click/${id}`,config)
+  return request.then(response => response.data).catch(error => console.log(error))
+}
+
 const UpdateProfile = (id, newObject) => {
   const config = {
     headers: { Authorization: token },
@@ -90,8 +98,14 @@ const LeaveSubGreddit = (id, newObject) => {
   const request = axios.put(`${baseUrl}/leave/${id}`, newObject, config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
-
-
+// Updating Reports and Reported
+const DeleteReport = (id , newObject) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.delete(`${baseUrl}/Reports/${id}`,newObject,config)
+  return request.then(response => response.data).catch(error => console.log(error))
+}
 const Delete = (id) => {
   const config = {
     headers: { Authorization: token },
@@ -100,5 +114,5 @@ const Delete = (id) => {
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const newobj = { getAll, getID, getid, create, UpdateProfile, setToken, Delete , BlockUser , JoinSubGreddit , LeaveSubGreddit , AcceptRequest , RejectRequest}
+const newobj = { getAll, getID, getid, create, UpdateProfile, setToken, Delete , DeleteReport , BlockUser , JoinSubGreddit , LeaveSubGreddit , AcceptRequest , RejectRequest , UpdateClicks}
 export default newobj

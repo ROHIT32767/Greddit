@@ -38,7 +38,8 @@ import TableRow from "@mui/material/TableRow";
 const theme = createTheme();
 export default function OpenSubGreddits(props) {
     const [open1, setOpen1] = React.useState(true);
-    const [postgrowthData, setpostGrowthData] = useState([]);
+    const [postgrowthData, setpostGrowthData] = React.useState([]);
+    const [clickarray,setclickarray] = React.useState([])
     const params = useParams()
     const handleClick1 = () => {
         setOpen1(!open1);
@@ -54,7 +55,8 @@ export default function OpenSubGreddits(props) {
         Reports: [],
         Followed: [],
         JoinRequests: [],
-        Blocked: []
+        Blocked: [],
+        Reported:[]
     });
     const [myreports, setmyreports] = React.useState([])
     const [open2, setOpen2] = React.useState(true);
@@ -93,22 +95,39 @@ export default function OpenSubGreddits(props) {
                         date: data.date,
                         Followed: data.Followed,
                         JoinRequests: data.JoinRequests,
-                        Blocked: data.Blocked
+                        Blocked: data.Blocked,
+                        Reported:data.Reported,
+                        Clicks:data.Clicks
                     }
                 )
                 console.log("particular subgreddit on Loading are", subgreddit)
                 const postdates = new Set();
-                data.Post.forEach(subdata => {
-                    postdates.add(subdata.date);
-                });
-                setpostGrowthData(Array.from(dates).map(date => {
-                    const members = subredditData.filter(data => data.date === date).length;
+                var postsfrom = new Date(data.date.substring(0, 10));
+                var poststo = new Date();
+                console.log("postsfrom", postsfrom)
+                console.log("poststo", poststo)
+                for (var day = postsfrom; day <= poststo; day.setDate(day.getDate() + 1)) {
+                    console.log(day.toISOString().substring(0, 10))
+                    postdates.add(day.toISOString().substring(0, 10))
+                }
+                setpostGrowthData(Array.from(postdates).map(date => {
+                    const posts = data.Post.filter(subdata => subdata.date.substring(0, 10) === date).length;
                     return {
                         date: date,
-                        members: members,
+                        posts: posts,
                     };
                 }))
-
+                var clicksfrom = new Date(data.date.substring(0, 10));
+                var clicksto = new Date();
+                console.log("clicksfrom", clicksfrom)
+                console.log("clicksto", clicksto)
+                for (var day = clicksfrom; day <= clicksto; day.setDate(day.getDate() + 1)) {
+                    console.log(day.toISOString().substring(0, 10))
+                    postdates.add(day.toISOString().substring(0, 10))
+                }
+                const count = {};
+                subgreddit.Clicks.forEach(e => count[e] ? count[e]++ : count[e] = 1 );
+                setclickarray(count)
             }
             catch (error) {
                 console.log(error)
@@ -188,6 +207,19 @@ export default function OpenSubGreddits(props) {
             }
         }
         DeleteReport();
+        const UpdateSubGreddit = async () => {
+            try {
+                const data = await SubGredditService.DeleteReport(params.id, {
+                    ReportID : reportid
+                })
+                const updatesubgredditreports = subgreddit.Reports.filter(element => element._id!==reportid)
+                setsubgreddit({...subgreddit,Reports:updatesubgredditreports})
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        UpdateSubGreddit();
     }
     console.log("subgreddit now", subgreddit)
     function HandleIgnore(id) {
@@ -348,15 +380,53 @@ export default function OpenSubGreddits(props) {
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <Table sx={{ maxWidth: 125 }} aria-label="simple table">
+                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
                                             <TableHead>
                                                 <TableRow>
-                                                    <TableCell>Daily Posts</TableCell>
-                                                    <TableCell align="right">Date</TableCell>
+                                                    <TableCell>Date</TableCell>
+                                                    <TableCell align="right">DailyPosts</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-
+                                                {postgrowthData.filter(data => new Date(data.date) >= new Date(new Date(subgreddit.date)) && new Date(data.date) <= new Date(new Date().toISOString().substring(0, 10))).map((data, index, arr) => {
+                                                    let posts = 0;
+                                                    posts = data.posts;
+                                                    return (
+                                                        <TableRow key={index}>
+                                                            <TableCell>{data.date}</TableCell>
+                                                            <TableCell>{posts}</TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                            </TableBody>
+                                        </Table>
+                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Reported Posts</TableCell>
+                                                    <TableCell align="right">Deleted Posts</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                <TableRow key={2}>
+                                                    <TableCell>{subgreddit.Reported.length}</TableCell>
+                                                    <TableCell>{subgreddit.Reported.length-subgreddit.Reports.length}</TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Date</TableCell>
+                                                    <TableCell align="right">Daily Clicks</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                
+                                                <TableRow key={2}>
+                                                    <TableCell>{subgreddit.Reported.length}</TableCell>
+                                                    <TableCell>{subgreddit.Reported.length-subgreddit.Reports.length}</TableCell>
+                                                </TableRow>
                                             </TableBody>
                                         </Table>
                                     </Box>

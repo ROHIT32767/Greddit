@@ -484,7 +484,20 @@ export default function MySubGreddits(props) {
                                                 {
                                                     subreddit.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) ?
                                                         <IconButton aria-label="add to favorites">
-                                                            <OpenInNewIcon onClick={event => navigate(`/ViewSubGreddits/${subreddit._id}`)} />
+                                                            <OpenInNewIcon onClick={event => {
+                                                                const UpdateClicks = async () => {
+                                                                    try {
+                                                                        const data = await SubGredditService.UpdateClicks(subreddit._id)
+                                                                        setmyreports(data)
+                                                                        console.log("Updated Clicks", data)
+                                                                    }
+                                                                    catch (error) {
+                                                                        console.log(error) 
+                                                                    }
+                                                                }
+                                                                UpdateClicks();
+                                                                navigate(`/ViewSubGreddits/${subreddit._id}`)
+                                                                }} />
                                                         </IconButton>
                                                         :
                                                         <IconButton disabled aria-label="add to favorites">

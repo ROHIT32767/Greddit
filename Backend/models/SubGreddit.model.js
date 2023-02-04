@@ -57,7 +57,14 @@ const SubGredditSchema = new mongoose.Schema({
             },
             Join: { type: Boolean }
         }
-    ]
+    ],
+    Reported: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Report'
+        }
+    ],
+    Clicks:{ type: Date}
 })
 
 SubGredditSchema.set('toJSON', {

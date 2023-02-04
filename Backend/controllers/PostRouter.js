@@ -89,4 +89,9 @@ PostsRouter.delete('/:id', async (request, response) => {
     response.json(DeletePost)
 })
 
+PostsRouter.delete('/NonReport/:id', async (request, response) => {
+    const ID = request.params.id
+    const DeletePost = await Post.findByIdAndDelete(ID)
+    response.json(DeletePost)
+})
 module.exports = PostsRouter
