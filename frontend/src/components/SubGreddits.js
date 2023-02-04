@@ -488,7 +488,7 @@ export default function MySubGreddits(props) {
                                                                 const UpdateClicks = async () => {
                                                                     try {
                                                                         const data = await SubGredditService.UpdateClicks(subreddit._id)
-                                                                        setmyreports(data)
+                                                                        
                                                                         console.log("Updated Clicks", data)
                                                                     }
                                                                     catch (error) {

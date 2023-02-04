@@ -64,7 +64,7 @@ const SubGredditSchema = new mongoose.Schema({
             ref: 'Report'
         }
     ],
-    Clicks:{ type: Date}
+    Clicks:[{ type: Date}]
 })
 
 SubGredditSchema.set('toJSON', {

@@ -37,13 +37,12 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 const theme = createTheme();
 export default function OpenSubGreddits(props) {
+
     const [open1, setOpen1] = React.useState(true);
     const [postgrowthData, setpostGrowthData] = React.useState([]);
-    const [clickarray,setclickarray] = React.useState([])
-    const params = useParams()
-    const handleClick1 = () => {
-        setOpen1(!open1);
-    };
+    const [membergrowthData, setmembergrowthData] = React.useState([]);
+    const [keyarray, setkeyarray] = React.useState([])
+    const [valuearray, setvaluearray] = React.useState([]);
     const [subgreddit, setsubgreddit] = React.useState({
         Name: "",
         Description: "",
@@ -56,27 +55,106 @@ export default function OpenSubGreddits(props) {
         Followed: [],
         JoinRequests: [],
         Blocked: [],
-        Reported:[]
+        Reported: [],
+        Clicks: []
     });
     const [myreports, setmyreports] = React.useState([])
     const [open2, setOpen2] = React.useState(true);
-
+    const params = useParams()
+    const handleClick1 = () => {
+        setOpen1(!open1);
+    };
     const handleClick2 = () => {
         setOpen2(!open2);
     };
-    function generate(element: React.ReactElement) {
-        return [0, 1, 2].map((value) =>
-            React.cloneElement(element, {
-                key: value,
-            }),
-        );
-    }
-    const Demo = styled('div')(({ theme }) => ({
-        backgroundColor: theme.palette.background.paper,
-    }));
-    const [dense, setDense] = React.useState(false);
-    const [secondary, setSecondary] = React.useState(false);
     React.useEffect(() => {
+        const fetchPostGrowth = async (data) => {
+            try {
+                const postdates = new Set();
+                var postsfrom = new Date(data.date);
+                var poststo = new Date();
+                console.log("postsfrom", postsfrom)
+                console.log("poststo", poststo)
+                for (var day = postsfrom; day <= poststo; day.setDate(day.getDate() + 1)) {
+                    console.log(day.toISOString().substring(0, 10))
+                    postdates.add(day.toISOString().substring(0, 10))
+                }
+                setpostGrowthData(Array.from(postdates).map(date => {
+                    const posts = data.Post.filter(subdata => subdata.date.substring(0, 10) === date).length;
+                    console.log("element of postGrowth", {
+                        date: date,
+                        posts: posts,
+                    })
+                    return {
+                        date: date,
+                        posts: posts,
+                    };
+                }))
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        const MemberGrowth = async (data) => {
+            try {
+                const memberdates = new Set();
+                var membersfrom = new Date(data.date);
+                var membersto = new Date();
+                console.log("membersfrom", membersfrom)
+                console.log("membersto", membersto)
+                for (var day = membersfrom; day <= membersto; day.setDate(day.getDate() + 1)) {
+                    console.log(day.toISOString().substring(0, 10))
+                    memberdates.add(day.toISOString().substring(0, 10))
+                }
+                setmembergrowthData(Array.from(memberdates).map(date => {
+                    const members = data.GrowthData.filter(subdata => subdata.date.substring(0, 10) === date);
+                    const joinmembers = members.filter(element => element.Join).length
+                    console.log("element of postGrowth", {
+                        date: date,
+                        members: (2 * joinmembers - members.length)
+                    })
+                    return {
+                        date: date,
+                        members: (2 * joinmembers - members.length)
+                    };
+                }))
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        const ClickGrowth = async (data) => {
+            try {
+                let varray = []
+                let karray = []
+                var clicksfrom = new Date(data.date);
+                var clicksto = new Date();
+                console.log("clicksfrom", clicksfrom)
+                console.log("clicksto", clicksto)
+                for (var day = clicksfrom; day <= clicksto; day.setDate(day.getDate() + 1)) {
+                    karray.push(day.toISOString().substring(0, 10))
+                    varray.push(0)
+                }
+                console.log("karray before", karray, "varray before", varray)
+                subgreddit.Clicks.forEach(element => {
+                    const index = karray.indexOf(element.toString().substring(0, 10))
+                    if (index + 1) {
+                        console.log("index", index, "element", varray[index])
+                        varray[index] = varray[index] + 1;
+                        console.log("index", index, "element + 1", varray[index])
+                    }
+                    else {
+                        console.log("Didnt find index in OpenSbg 148", element.substring(0, 10))
+                    }
+                });
+                console.log("karray", karray, "varray", varray)
+                setkeyarray(karray)
+                setvaluearray(varray)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
         const fetchUsers = async () => {
             try {
                 const data = await SubGredditService.getid(params.id)
@@ -96,45 +174,21 @@ export default function OpenSubGreddits(props) {
                         Followed: data.Followed,
                         JoinRequests: data.JoinRequests,
                         Blocked: data.Blocked,
-                        Reported:data.Reported,
-                        Clicks:data.Clicks
+                        Reported: data.Reported,
+                        Clicks: data.Clicks
                     }
                 )
+                fetchPostGrowth(data)
+                ClickGrowth(data)
+                MemberGrowth(data)
                 console.log("particular subgreddit on Loading are", subgreddit)
-                const postdates = new Set();
-                var postsfrom = new Date(data.date.substring(0, 10));
-                var poststo = new Date();
-                console.log("postsfrom", postsfrom)
-                console.log("poststo", poststo)
-                for (var day = postsfrom; day <= poststo; day.setDate(day.getDate() + 1)) {
-                    console.log(day.toISOString().substring(0, 10))
-                    postdates.add(day.toISOString().substring(0, 10))
-                }
-                setpostGrowthData(Array.from(postdates).map(date => {
-                    const posts = data.Post.filter(subdata => subdata.date.substring(0, 10) === date).length;
-                    return {
-                        date: date,
-                        posts: posts,
-                    };
-                }))
-                var clicksfrom = new Date(data.date.substring(0, 10));
-                var clicksto = new Date();
-                console.log("clicksfrom", clicksfrom)
-                console.log("clicksto", clicksto)
-                for (var day = clicksfrom; day <= clicksto; day.setDate(day.getDate() + 1)) {
-                    console.log(day.toISOString().substring(0, 10))
-                    postdates.add(day.toISOString().substring(0, 10))
-                }
-                const count = {};
-                subgreddit.Clicks.forEach(e => count[e] ? count[e]++ : count[e] = 1 );
-                setclickarray(count)
             }
             catch (error) {
                 console.log(error)
             }
         }
         fetchUsers();
-        const fetchReports = async () => {
+        const fetchReports = async (data) => {
             try {
                 const data = await ReportService.getBySubGreddit(params.id)
                 setmyreports(data)
@@ -210,10 +264,11 @@ export default function OpenSubGreddits(props) {
         const UpdateSubGreddit = async () => {
             try {
                 const data = await SubGredditService.DeleteReport(params.id, {
-                    ReportID : reportid
+                    ReportID: reportid
                 })
-                const updatesubgredditreports = subgreddit.Reports.filter(element => element._id!==reportid)
-                setsubgreddit({...subgreddit,Reports:updatesubgredditreports})
+                console.log("UpdatedSubGredditdata", data)
+                const updatesubgredditreports = subgreddit.Reports.filter(element => element._id !== reportid)
+                setsubgreddit({ ...subgreddit, Reports: updatesubgredditreports })
             }
             catch (error) {
                 console.log(error)
@@ -380,7 +435,7 @@ export default function OpenSubGreddits(props) {
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
+                                        <Table sx={{ maxWidth: 250, mb: 2 }} aria-label="simple table">
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>Date</TableCell>
@@ -388,7 +443,7 @@ export default function OpenSubGreddits(props) {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {postgrowthData.filter(data => new Date(data.date) >= new Date(new Date(subgreddit.date)) && new Date(data.date) <= new Date(new Date().toISOString().substring(0, 10))).map((data, index, arr) => {
+                                                {postgrowthData.map((data, index, arr) => {
                                                     let posts = 0;
                                                     posts = data.posts;
                                                     return (
@@ -397,10 +452,12 @@ export default function OpenSubGreddits(props) {
                                                             <TableCell>{posts}</TableCell>
                                                         </TableRow>
                                                     );
-                                                })}
+                                                })
+                                                }
                                             </TableBody>
                                         </Table>
-                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
+                                        <Divider />
+                                        <Table sx={{ maxWidth: 250, mb: 2 }} aria-label="simple table">
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>Reported Posts</TableCell>
@@ -410,11 +467,11 @@ export default function OpenSubGreddits(props) {
                                             <TableBody>
                                                 <TableRow key={2}>
                                                     <TableCell>{subgreddit.Reported.length}</TableCell>
-                                                    <TableCell>{subgreddit.Reported.length-subgreddit.Reports.length}</TableCell>
+                                                    <TableCell>{subgreddit.Reported.length - subgreddit.Reports.length}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
-                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
+                                        <Table sx={{ maxWidth: 250, mb: 2 }} aria-label="simple table">
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>Date</TableCell>
@@ -422,11 +479,42 @@ export default function OpenSubGreddits(props) {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                
-                                                <TableRow key={2}>
-                                                    <TableCell>{subgreddit.Reported.length}</TableCell>
-                                                    <TableCell>{subgreddit.Reported.length-subgreddit.Reports.length}</TableCell>
+                                                {
+                                                    keyarray.map((element, index) => {
+                                                        return (
+                                                            <TableRow key={2}>
+                                                                <TableCell>{keyarray[index]}</TableCell>
+                                                                <TableCell>{valuearray[index]}</TableCell>
+                                                            </TableRow>
+                                                        )
+                                                    })
+                                                }
+                                            </TableBody>
+                                        </Table>
+                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Date</TableCell>
+                                                    <TableCell>Members</TableCell>
                                                 </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {membergrowthData.map((data, index, arr) => {
+                                                    let members = 0;
+                                                    if (index === 0) {
+                                                        members = data.members;
+                                                    } else if (arr[index - 1].members > 0) {
+                                                        members = arr[index - 1].members + data.members;
+                                                    } else {
+                                                        members = arr[index - 1].members;
+                                                    }
+                                                    return (
+                                                        <TableRow key={index}>
+                                                            <TableCell>{data.date}</TableCell>
+                                                            <TableCell>{members}</TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
                                             </TableBody>
                                         </Table>
                                     </Box>
