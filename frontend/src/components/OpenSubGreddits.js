@@ -19,8 +19,6 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import FolderIcon from '@mui/icons-material/Folder';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
 import SubGredditService from "../services/SubGreddiit"
@@ -32,9 +30,15 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { green } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 const theme = createTheme();
 export default function OpenSubGreddits(props) {
     const [open1, setOpen1] = React.useState(true);
+    const [postgrowthData, setpostGrowthData] = useState([]);
     const params = useParams()
     const handleClick1 = () => {
         setOpen1(!open1);
@@ -52,7 +56,7 @@ export default function OpenSubGreddits(props) {
         JoinRequests: [],
         Blocked: []
     });
-    const [myreports,setmyreports]= React.useState([])
+    const [myreports, setmyreports] = React.useState([])
     const [open2, setOpen2] = React.useState(true);
 
     const handleClick2 = () => {
@@ -93,6 +97,18 @@ export default function OpenSubGreddits(props) {
                     }
                 )
                 console.log("particular subgreddit on Loading are", subgreddit)
+                const postdates = new Set();
+                data.Post.forEach(subdata => {
+                    postdates.add(subdata.date);
+                });
+                setpostGrowthData(Array.from(dates).map(date => {
+                    const members = subredditData.filter(data => data.date === date).length;
+                    return {
+                        date: date,
+                        members: members,
+                    };
+                }))
+
             }
             catch (error) {
                 console.log(error)
@@ -149,14 +165,14 @@ export default function OpenSubGreddits(props) {
         RejectRequests();
     }
     // ! Related to Reports Page
-    function HandleDeletePost(postid,reportid) {
+    function HandleDeletePost(postid, reportid) {
         const DeletePost = async () => {
             try {
                 const data = await PostService.Delete(postid)
                 console.log("recieved", data)
             }
             catch (error) {
-                console.log(error) 
+                console.log(error)
             }
         }
         DeletePost();
@@ -164,22 +180,22 @@ export default function OpenSubGreddits(props) {
             try {
                 const data = await ReportService.Delete(reportid)
                 console.log("recieved", data)
-                const finalreports = myreports.filter(element => element._id!==reportid)
+                const finalreports = myreports.filter(element => element._id !== reportid)
                 setmyreports(finalreports)
             }
             catch (error) {
-                console.log(error) 
+                console.log(error)
             }
         }
         DeleteReport();
     }
-    console.log("subgreddit now",subgreddit)
-    function HandleIgnore(id){
+    console.log("subgreddit now", subgreddit)
+    function HandleIgnore(id) {
         const IgnoreReport = async () => {
             try {
                 const data = await ReportService.Ignore(id)
                 console.log("recieved", data)
-                const finalreports = myreports.map(element => element._id===id ? {...element,Ignored:true}:element)
+                const finalreports = myreports.map(element => element._id === id ? { ...element, Ignored: true } : element)
                 setmyreports(finalreports)
             }
             catch (error) {
@@ -188,14 +204,14 @@ export default function OpenSubGreddits(props) {
         }
         IgnoreReport();
     }
-    function HandleBlock(id,User){
+    function HandleBlock(id, User) {
         const BlockUserRequest = async () => {
             try {
-                const data = await SubGredditService.BlockUser(params.id,{UserID : id})
+                const data = await SubGredditService.BlockUser(params.id, { UserID: id })
                 console.log("recieved", data)
                 var updatedBlocked = subgreddit.Blocked
                 updatedBlocked = subgreddit.Blocked.concat(User)
-                setsubgreddit({...subgreddit,Blocked:updatedBlocked})
+                setsubgreddit({ ...subgreddit, Blocked: updatedBlocked })
             }
             catch (error) {
                 console.log(error)
@@ -324,7 +340,26 @@ export default function OpenSubGreddits(props) {
                                     </Box>
                                 </TabPanel>
                                 <TabPanel>
-                                    Stats
+                                    <Box
+                                        sx={{
+                                            marginTop: 8,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <Table sx={{ maxWidth: 125 }} aria-label="simple table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Daily Posts</TableCell>
+                                                    <TableCell align="right">Date</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+
+                                            </TableBody>
+                                        </Table>
+                                    </Box>
                                 </TabPanel>
                                 <TabPanel>
                                     {myreports.map(element => {
@@ -350,15 +385,15 @@ export default function OpenSubGreddits(props) {
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                                                                             <Button disabled variant="contained" color="secondary">DELETE POST</Button>
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                                                                            <Button onClick={()=>HandleIgnore(element._id)} variant="contained" color="secondary">IGNORE</Button>
+                                                                            <Button onClick={() => HandleIgnore(element._id)} variant="contained" color="secondary">IGNORE</Button>
                                                                         </div>
                                                                         :
                                                                         <div>
-                                                                            <Button onClick={() => HandleBlock(element.By._id,element.By)} variant="contained" color="secondary">BLOCK USER</Button>
+                                                                            <Button onClick={() => HandleBlock(element.By._id, element.By)} variant="contained" color="secondary">BLOCK USER</Button>
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                                                                            <Button onClick={() => HandleDeletePost(element.Post._id,element._id)} variant="contained" color="secondary">DELETE POST</Button>
+                                                                            <Button onClick={() => HandleDeletePost(element.Post._id, element._id)} variant="contained" color="secondary">DELETE POST</Button>
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                                                                            <Button onClick={()=>HandleIgnore(element._id)} variant="contained" color="secondary">IGNORE</Button>
+                                                                            <Button onClick={() => HandleIgnore(element._id)} variant="contained" color="secondary">IGNORE</Button>
                                                                         </div>
 
                                                                 }

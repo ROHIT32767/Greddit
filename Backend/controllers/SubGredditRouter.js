@@ -73,6 +73,7 @@ SubGredditRouter.put('/leave/:id', async (request, response) => {
     const { UserID } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Followers =  subgreddit.Followers.filter(element => element!=UserID)
+    subgreddit.GrowthData = subgreddit.GrowthData.concat({date : new Date(), User : UserID , Join : false})
     const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit) 
@@ -86,6 +87,7 @@ SubGredditRouter.put('/accept/:id', async (request, response) => {
     subgreddit.Followers =  subgreddit.Followers.concat(UserID)
     subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element!=UserID)
     subgreddit.Followed =  subgreddit.Followed.concat(UserID)
+    subgreddit.GrowthData = subgreddit.GrowthData.concat({date : new Date(), User : UserID , Join : true})
     const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit) 

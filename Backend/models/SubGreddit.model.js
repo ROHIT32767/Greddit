@@ -44,10 +44,20 @@ const SubGredditSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
-    Blocked:[{
+    Blocked: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }]
+    }],
+    GrowthData: [
+        {
+            date: { type: Date, required: true },
+            User: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            },
+            Join: { type: Boolean }
+        }
+    ]
 })
 
 SubGredditSchema.set('toJSON', {

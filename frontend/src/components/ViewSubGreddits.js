@@ -157,7 +157,7 @@ const Post = ({ id, post, posts, setposts }) => {
         HandleSavedPosts();
     }
     const handleReport = (event) => {
-        console.log("This is post",post)
+        console.log("This is post", post)
         const HandleReports = async () => {
             try {
                 const data = await ReportService.create({
@@ -165,8 +165,8 @@ const Post = ({ id, post, posts, setposts }) => {
                     Post: post._id,
                     By: JSON.parse(window.localStorage.getItem('token')).id,
                     On: post.By._id,
-                    date : new Date(),
-                    SubGredditID : params.id
+                    date: new Date(),
+                    SubGredditID: params.id
                 }
                 )
                 console.log("recieved", data)
@@ -186,9 +186,6 @@ const Post = ({ id, post, posts, setposts }) => {
                     <CardContent>
                         <Typography variant="h5" component="h2">
                             {post.By.Username}
-                        </Typography>
-                        <Typography color="textSecondary" style={{ marginBottom: 12 }}>
-                            {post.By.FirstName}
                         </Typography>
                         <Typography variant="body2" component="p">
                             {post.Text}
@@ -279,7 +276,7 @@ const RedditClone = () => {
     const [posts, setposts] = React.useState([])
     const [open, setOpen] = useState(false);
     const [Text, setText] = useState("")
-    const [subgreddit,setsubgreddit] = React.useState({})
+    const [subgreddit, setsubgreddit] = React.useState({})
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -288,37 +285,65 @@ const RedditClone = () => {
         setText("")
     };
     const handlePost = () => {
-        let inputLowerCase = Text.toLowerCase();
+        var inputLowerCase = Text.toLowerCase();
         let containsBannedWord = false;
+        console.log("Banned Keywords are",subgreddit.Banned)
         subgreddit.Banned.forEach(word => {
-            if (inputLowerCase.includes(word)) {
+            if (inputLowerCase.includes(word.toLowerCase())) {
                 containsBannedWord = true;
-                inputLowerCase = inputLowerCase.split(word).join("*".repeat(word.length));
+                console.log("Before split", inputLowerCase)
+                inputLowerCase = inputLowerCase.split(word.toLowerCase()).join("*".repeat(word.length));
+                console.log("After split", inputLowerCase)
             }
         });
         if (containsBannedWord) {
             alert("Your post contains banned keywords, they have been replaced with asterisks.");
             setText(inputLowerCase);
-        }
-        const PostData = async () => {
-            try {
-                const data = await PostService.create(
-                    {
-                        Text: Text,
-                        By: (JSON.parse(window.localStorage.getItem('token'))).id,
-                        In: params.id,
-                        date: new Date()
-                    }
-                )
-                console.log("recieved", data)
-                setposts([...posts, data])
-                console.log("posts on Loading are", posts)
+            console.log("Before posting", inputLowerCase)
+            const PostData = async () => {
+                try {
+                    const data = await PostService.create(
+                        {
+                            Text: inputLowerCase,
+                            By: (JSON.parse(window.localStorage.getItem('token'))).id,
+                            In: params.id,
+                            date: new Date()
+                        }
+                    )
+                    console.log("recieved", data)
+                    setposts([...posts, data])
+                    console.log("posts on Loading are", posts)
+                }
+                catch (error) {
+                    console.log(error)
+                }
+                
             }
-            catch (error) {
-                console.log(error)
-            }
+            PostData();
+            setText("")
         }
-        PostData();
+        else {
+            const PostData = async () => {
+                try {
+                    const data = await PostService.create(
+                        {
+                            Text: Text,
+                            By: (JSON.parse(window.localStorage.getItem('token'))).id,
+                            In: params.id,
+                            date: new Date()
+                        }
+                    )
+                    console.log("recieved", data)
+                    setposts([...posts, data])
+                    console.log("posts on Loading are", posts)
+                }
+                catch (error) {
+                    console.log(error)
+                }
+            }
+            PostData();
+            setText("")
+        }
         setOpen(false);
     };
     React.useEffect(() => {
@@ -326,7 +351,7 @@ const RedditClone = () => {
             try {
                 const data = await SubGredditService.getid(params.id)
                 setsubgreddit(data)
-                console.log("set subgreddit to",data)
+                console.log("set subgreddit to", data)
             }
             catch (error) {
                 console.log(error)

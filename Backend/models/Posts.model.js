@@ -25,6 +25,7 @@ const PostsSchema = new mongoose.Schema({
       }
     }
   ],
+  BlockedUser : { type: Boolean },
   date:{type:Date,required:true}
 })
 
