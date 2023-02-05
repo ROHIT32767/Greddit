@@ -163,7 +163,6 @@ export default function MySubGreddits(props) {
         }
         fetchData();
     }, [])
-
     function handleLeave(id) {
         console.log(id)
         const LeaveSubGreddiit = async () => {
@@ -172,7 +171,7 @@ export default function MySubGreddits(props) {
                 console.log("recieved", data)
                 setSubreddits(subreddits => subreddits.map(element => element._id === id ? {
                     ...element,
-                    Followers: element.Followers.filter(element => element._id!==JSON.parse(window.localStorage.getItem('token')).id)
+                    Followers: element.Followers.filter(element => element._id !== JSON.parse(window.localStorage.getItem('token')).id)
                 } : element))
             }
             catch (error) {
@@ -181,19 +180,25 @@ export default function MySubGreddits(props) {
         }
         LeaveSubGreddiit();
     }
-    function handleJoin(id) {
+    function handleJoin(id, subreddit){
         console.log(id)
-        const JoiningRequests = async () => {
-            try {
-                const data = await SubGredditService.JoinSubGreddit(id, { UserID: JSON.parse(window.localStorage.getItem('token')).id })
-                console.log("recieved", data)
-                // TODO: Is a change in UI required ? LIke doing setstate for any variable
+        const followedarray = subreddit.Followed.map(element => element._id)
+        if (!followedarray.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
+            const JoiningRequests = async () => {
+                try {
+                    const data = await SubGredditService.JoinSubGreddit(id, { UserID: JSON.parse(window.localStorage.getItem('token')).id })
+                    console.log("recieved", data)
+                    // TODO: Is a change in UI required ? LIke doing setstate for any variable
+                }
+                catch (error) {
+                    console.log(error)
+                }
             }
-            catch (error) {
-                console.log(error) 
-            }
+            JoiningRequests();
         }
-        JoiningRequests();
+        else {
+            alert("You are trying to Join a SubGreddit that you have already Left which is against policy")
+        }
     }
     console.log(subreddits)
     return (
@@ -488,16 +493,16 @@ export default function MySubGreddits(props) {
                                                                 const UpdateClicks = async () => {
                                                                     try {
                                                                         const data = await SubGredditService.UpdateClicks(subreddit._id)
-                                                                        
+
                                                                         console.log("Updated Clicks", data)
                                                                     }
                                                                     catch (error) {
-                                                                        console.log(error) 
+                                                                        console.log(error)
                                                                     }
                                                                 }
                                                                 UpdateClicks();
                                                                 navigate(`/ViewSubGreddits/${subreddit._id}`)
-                                                                }} />
+                                                            }} />
                                                         </IconButton>
                                                         :
                                                         <IconButton disabled aria-label="add to favorites">
@@ -511,7 +516,7 @@ export default function MySubGreddits(props) {
                                                         subreddit.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) ?
                                                             <Button onClick={event => handleLeave(subreddit._id)} variant="contained" color="secondary">LEAVE</Button>
                                                             :
-                                                            <Button onClick={event => handleJoin(subreddit._id)} variant="contained" color="secondary">JOIN</Button>
+                                                            <Button onClick={event => handleJoin(subreddit._id, subreddit)} variant="contained" color="secondary">JOIN</Button>
                                                 }
                                             </CardActions>
                                         </Card>
@@ -563,7 +568,7 @@ export default function MySubGreddits(props) {
 
                                                             <Button onClick={event => handleLeave(subreddit._id)} variant="contained" color="secondary">LEAVE</Button>
                                                             :
-                                                            <Button onClick={event => handleJoin(subreddit._id)} variant="contained" color="secondary">JOIN</Button>)
+                                                            <Button onClick={event => handleJoin(subreddit._id, subreddit)} variant="contained" color="secondary">JOIN</Button>)
                                                 }
                                             </CardActions>
                                         </Card>

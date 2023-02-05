@@ -112,9 +112,18 @@ const DeleteReport = (id , newObject) => {
   const config = {
     headers: { Authorization: token },
   }
-  const request = axios.delete(`${baseUrl}/Reports/${id}`,newObject,config)
+  const request = axios.put(`${baseUrl}/Reports/${id}`,newObject,config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
+
+const DeletePost = (id , newObject) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.put(`${baseUrl}/Posts/${id}`,newObject,config)
+  return request.then(response => response.data).catch(error => console.log(error))
+}
+
 const Delete = (id) => {
   const config = {
     headers: { Authorization: token },
@@ -123,5 +132,5 @@ const Delete = (id) => {
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const newobj = { getAll, getID, getid, create, UpdateProfile, setToken, Delete , DeleteReport , BlockUser , JoinSubGreddit , LeaveSubGreddit , AcceptRequest , RejectRequest , UpdateClicks}
+const newobj = { getAll, getID, getid, create, UpdateProfile, setToken, Delete , DeleteReport , BlockUser , JoinSubGreddit , LeaveSubGreddit , AcceptRequest , RejectRequest , UpdateClicks , DeletePost}
 export default newobj

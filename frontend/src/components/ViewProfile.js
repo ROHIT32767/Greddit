@@ -50,7 +50,6 @@ export default function ViewProfile(props) {
     function handleEdit() {
         setedit(!edit)
     }
-
     React.useEffect(() => {
         const fetchData = async () => {
             try {

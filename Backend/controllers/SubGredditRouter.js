@@ -130,6 +130,17 @@ SubGredditRouter.put('/Reports/:id', async (request, response) => {
     response.status(201).json(updatedsubgreddit)
 })
 
+// Delete Post
+SubGredditRouter.put('/Posts/:id', async (request, response) => {
+    console.log(request.body)
+    const { PostID } = request.body
+    const subgreddit = await SubGreddit.findById(request.params.id)
+    subgreddit.Post = subgreddit.Post.filter(element => element != PostID)
+    const updatedsubgreddit = await subgreddit.save()
+    console.log(updatedsubgreddit)
+    response.status(201).json(updatedsubgreddit)
+})
+
 // Update Clicks 
 SubGredditRouter.put('/Click/:id', async (request, response) => {
     console.log(request.body)

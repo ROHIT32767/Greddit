@@ -120,7 +120,7 @@ export default function OpenSubGreddits(props) {
                     };
                 }))
             }
-            catch (error) {
+            catch (error) { 
                 console.log(error)
             }
         }
@@ -258,7 +258,7 @@ export default function OpenSubGreddits(props) {
         DeletePost();
         const DeleteReport = async () => {
             try {
-                const data = await ReportService.Delete(reportid)
+                const data = await ReportService.Delete(reportid,params.id)
                 console.log("recieved", data)
                 const finalreports = myreports.filter(element => element._id !== reportid)
                 setmyreports(finalreports)
@@ -268,7 +268,7 @@ export default function OpenSubGreddits(props) {
             }
         }
         DeleteReport();
-        const UpdateSubGreddit = async () => {
+        const UpdateSubGredditReport = async () => {
             try {
                 const data = await SubGredditService.DeleteReport(params.id, {
                     ReportID: reportid
@@ -281,7 +281,19 @@ export default function OpenSubGreddits(props) {
                 console.log(error)
             }
         }
-        UpdateSubGreddit();
+        UpdateSubGredditReport();
+        const UpdateSubGredditPost = async () => {
+            try {
+                const data = await SubGredditService.DeletePost(params.id, {
+                    PostID: postid
+                })
+                console.log("UpdatedSubGredditdata", data)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        UpdateSubGredditPost();
     }
     console.log("subgreddit now", subgreddit)
     function HandleIgnore(id) {

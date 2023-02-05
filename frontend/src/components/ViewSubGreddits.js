@@ -32,6 +32,14 @@ import FlagIcon from '@mui/icons-material/Flag';
 import ReportService from "../services/Report";
 import SubGredditService from "../services/SubGreddiit"
 const theme = createTheme();
+var itemData = [
+    {
+        img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
+        title: 'Breakfast',
+        author: '@bkristastucchio',
+        featured: true,
+    }
+];
 const Post = ({ id, post, posts, setposts, blocked }) => {
     console.log(post)
     const params = useParams()
@@ -262,7 +270,12 @@ const Post = ({ id, post, posts, setposts, blocked }) => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleReport}>REPORT THIS POST</Button>
+                    {
+                        concern ?
+                            <Button onClick={handleReport}>REPORT THIS POST</Button>
+                            :
+                            <Button disabled>REPORT THIS POST</Button>
+                    }
                 </DialogActions>
             </Dialog>
         </div>
@@ -437,12 +450,12 @@ const RedditClone = () => {
                                             'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
                                             'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
                                     }}
-                                    title={item.title}
+                                    title={subgreddit.Name}
                                     position="top"
                                     actionIcon={
                                         <IconButton
                                             sx={{ color: 'white' }}
-                                            aria-label={`star ${item.title}`}
+                                            aria-label={`star ${subgreddit.Name}`}
                                         >
                                             <StarBorderIcon />
                                         </IconButton>
@@ -450,7 +463,7 @@ const RedditClone = () => {
                                     actionPosition="left"
                                 />
                                 <ImageListItemBar
-                                    title={<span>Description: {item.author}</span>}
+                                    title={<span>Description: {subgreddit.Description}</span>}
                                     position="below"
                                 />
                             </ImageListItem>
@@ -491,7 +504,12 @@ const RedditClone = () => {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={handlePost}>POST THIS</Button>
+                        {
+                            Text ?
+                                <Button onClick={handlePost}>POST THIS</Button>
+                                :
+                                <Button disabled>POST THIS</Button>
+                        }
                     </DialogActions>
                 </Dialog>
                 {posts.map((post) =>
@@ -505,33 +523,5 @@ const RedditClone = () => {
         </div>
     );
 };
-const itemData = [
-    {
-        img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-        title: 'Breakfast',
-        author: '@bkristastucchio',
-        featured: true,
-    }
-];
 export default RedditClone;
-
-
-// const posts = [
-//     {
-//         title: 'Hello World',
-//         author: 'John Doe',
-//         body: 'This is my first post',
-//         upvotes: 0,
-//         downvotes: 0,
-//         comments: [],
-//     },
-//     {
-//         title: 'React is Awesome',
-//         author: 'Jane Smith',
-//         body: 'I just started learning React and it is amazing',
-//         upvotes: 0,
-//         downvotes: 0,
-//         comments: [],
-//     },
-// ];
 
