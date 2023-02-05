@@ -4,28 +4,36 @@ const baseUrl = 'http://localhost:3003/api/Reports'
 let token = null
 
 const setToken = newToken => {
-  token = `bearer ${newToken}`
+  token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
 }
 
 const getAll = () => {
-  const request = axios.get(baseUrl)
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.get(baseUrl,config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
 const getID = (id) => {
+  const config = {
+    headers: { Authorization: token },
+  }
   const loggedUserJSON = window.localStorage.getItem('token')
   if (loggedUserJSON) {
-    const request = axios.get(`${baseUrl}/${id}`)
+    const request = axios.get(`${baseUrl}/${id}`,config)
     return request.then(response => response.data).catch(error => console.log(error))
   }
   else {
     console.log("User is not logged in, but is trying to Fetch get request")
   }
-
 }
 
 const getBySubGreddit = (id) => {
-  const loggedUserJSON = window.localStorage.getItem('token')
+  const config = {
+    headers: { Authorization: token },
+  }
+  const loggedUserJSON = window.localStorage.getItem('token',config)
   if (loggedUserJSON) {
     const request = axios.get(`${baseUrl}/SubGreddit/${id}`)
     return request.then(response => response.data).catch(error => console.log(error))

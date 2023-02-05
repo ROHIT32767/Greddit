@@ -35,11 +35,11 @@ usersRouter.post('/', async (request, response) => {
   response.status(201).json(savedUser)
 })
 
-usersRouter.get('/', async (request, response) => {
-  const users = await User
-    .find({}).populate('Followers').populate('Following').populate('SavedPosts')
-  response.json(users)
-})
+// usersRouter.get('/', async (request, response) => {
+//   const users = await User
+//     .find({}).populate('Followers').populate('Following').populate('SavedPosts')
+//   response.json(users)
+// })
 
 usersRouter.get('/:id', async (request, response) => {
   const ID = request.params.id

@@ -4,18 +4,24 @@ const baseUrl = 'http://localhost:3003/api/Posts'
 let token = null
 
 const setToken = newToken => {
-    token = `bearer ${newToken}`
+    token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
 }
 
 const getAll = () => {
-    const request = axios.get(baseUrl)
+    const config = {
+        headers: { Authorization: token },
+      }
+    const request = axios.get(baseUrl,config)
     return request.then(response => response.data).catch(error => console.log(error))
 }
 
 const getID = (id) => {
+    const config = {
+        headers: { Authorization: token },
+      }
     const loggedUserJSON = window.localStorage.getItem('token')
     if (loggedUserJSON) {
-        const request = axios.get(`${baseUrl}/${id}`)
+        const request = axios.get(`${baseUrl}/${id}`,config)
         return request.then(response => response.data).catch(error => console.log(error))
     }
     else {
@@ -24,9 +30,12 @@ const getID = (id) => {
 }
 
 const getSubGredditID = (id) => {
+    const config = {
+        headers: { Authorization: token },
+      }
     const loggedUserJSON = window.localStorage.getItem('token')
     if (loggedUserJSON) {
-        const request = axios.get(`${baseUrl}/SubGreddit/${id}`)
+        const request = axios.get(`${baseUrl}/SubGreddit/${id}`,config)
         return request.then(response => response.data).catch(error => console.log(error))
     }
     else {

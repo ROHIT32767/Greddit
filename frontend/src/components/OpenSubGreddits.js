@@ -36,6 +36,7 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 const theme = createTheme();
+var EXPIRE = 10 * 86400
 export default function OpenSubGreddits(props) {
 
     const [open1, setOpen1] = React.useState(true);
@@ -191,6 +192,12 @@ export default function OpenSubGreddits(props) {
         const fetchReports = async (data) => {
             try {
                 const data = await ReportService.getBySubGreddit(params.id)
+                var currentdate = new Date()
+                const reportdata = data.filter(element => {
+                    var createddate = new Date(element.date)
+                    const timeelapsed = (currentdate.getTime()-createddate.getTime())/1000
+                    return timeelapsed<EXPIRE
+                })
                 setmyreports(data)
                 console.log("Reports of the particular subgreddit on Loading are", data)
             }

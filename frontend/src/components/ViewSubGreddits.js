@@ -32,7 +32,7 @@ import FlagIcon from '@mui/icons-material/Flag';
 import ReportService from "../services/Report";
 import SubGredditService from "../services/SubGreddiit"
 const theme = createTheme();
-const Post = ({ id, post, posts, setposts }) => {
+const Post = ({ id, post, posts, setposts, blocked }) => {
     console.log(post)
     const params = useParams()
     const [Upvotes, setUpvotes] = useState(post.Upvotes);
@@ -184,9 +184,14 @@ const Post = ({ id, post, posts, setposts }) => {
             <Container component="main" sx={{ maxWidth: 500 }}>
                 <Card style={{ marginBottom: '20px' }} sx={{ marginTop: 8, bgcolor: green[500] }}>
                     <CardContent>
-                        <Typography variant="h5" component="h2">
-                            {post.By.Username}
-                        </Typography>
+                        {blocked ?
+                            <Typography variant="h5" component="h2">
+                                Blocked User
+                            </Typography> :
+                            <Typography variant="h5" component="h2">
+                                {post.By.Username}
+                            </Typography>
+                        }
                         <Typography variant="body2" component="p">
                             {post.Text}
                         </Typography>
@@ -287,7 +292,7 @@ const RedditClone = () => {
     const handlePost = () => {
         var inputLowerCase = Text.toLowerCase();
         let containsBannedWord = false;
-        console.log("Banned Keywords are",subgreddit.Banned)
+        console.log("Banned Keywords are", subgreddit.Banned)
         subgreddit.Banned.forEach(word => {
             if (inputLowerCase.includes(word.toLowerCase())) {
                 containsBannedWord = true;
@@ -311,13 +316,17 @@ const RedditClone = () => {
                         }
                     )
                     console.log("recieved", data)
-                    setposts([...posts, data])
+                    setposts([...posts, {
+                        ...data, By: {
+                            Username: window.localStorage.getItem('token').Username
+                        }
+                    }])
                     console.log("posts on Loading are", posts)
                 }
                 catch (error) {
                     console.log(error)
                 }
-                
+
             }
             PostData();
             setText("")
@@ -334,7 +343,11 @@ const RedditClone = () => {
                         }
                     )
                     console.log("recieved", data)
-                    setposts([...posts, data])
+                    setposts([...posts, {
+                        ...data, By: {
+                            Username: window.localStorage.getItem('token').Username
+                        }
+                    }])
                     console.log("posts on Loading are", posts)
                 }
                 catch (error) {
@@ -481,9 +494,13 @@ const RedditClone = () => {
                         <Button onClick={handlePost}>POST THIS</Button>
                     </DialogActions>
                 </Dialog>
-                {posts.map((post) => (
-                    <Post key={post._id} id={post._id} post={post} posts={posts} setposts={setposts} />
-                ))}
+                {posts.map((post) =>
+                    subgreddit.Blocked && subgreddit.Blocked.map(element => element._id).includes(post._id) ?
+                        <Post key={post._id} blocked={true} id={post._id} post={post} posts={posts} setposts={setposts} />
+                        :
+                        <Post key={post._id} blocked={false} id={post._id} post={post} posts={posts} setposts={setposts} />
+
+                )}
             </ThemeProvider>
         </div>
     );
@@ -517,3 +534,4 @@ export default RedditClone;
 //         comments: [],
 //     },
 // ];
+

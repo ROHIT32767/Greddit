@@ -4,7 +4,7 @@ const baseUrl = 'http://localhost:3003/api/users'
 let token = null
 
 const setToken = newToken => {
-  token = `bearer ${newToken}`
+  token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
 }
 
 const getAll = () => {

@@ -28,11 +28,11 @@ ReportRouter.post('/', async (request, response) => {
     response.status(201).json(savedreport)
 })
 
-ReportRouter.get('/', async (request, response) => {
-    const AllReports = await Report
-        .find({}).populate('Post').populate('By').populate('On')
-    response.json(AllReports)
-})
+// ReportRouter.get('/', async (request, response) => {
+//     const AllReports = await Report
+//         .find({}).populate('Post').populate('By').populate('On')
+//     response.json(AllReports)
+// })
 
 ReportRouter.get('/SubGreddit/:id',async (request, response) => {
     const AllReports = await Report

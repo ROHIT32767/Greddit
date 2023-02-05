@@ -27,11 +27,11 @@ PostsRouter.post('/', async (request, response) => {
     response.status(201).json(savedpost)
 })
 
-PostsRouter.get('/', async (request, response) => {
-    const AllPosts = await Post
-        .find({}).populate('In').populate('By').populate('Comments.commented')
-    response.json(AllPosts)
-})
+// PostsRouter.get('/', async (request, response) => {
+//     const AllPosts = await Post
+//         .find({}).populate('In').populate('By').populate('Comments.commented')
+//     response.json(AllPosts)
+// })
 
 PostsRouter.get('/:id', async (request, response) => {
     const ID = request.params.id

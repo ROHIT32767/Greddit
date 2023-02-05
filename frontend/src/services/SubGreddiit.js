@@ -4,18 +4,24 @@ const baseUrl = 'http://localhost:3003/api/SubGreddiits'
 let token = null
 
 const setToken = newToken => {
-  token = `bearer ${newToken}`
+  token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
 }
 
 const getAll = () => {
-  const request = axios.get(baseUrl)
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.get(baseUrl,config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
 const getid = (id) => {
+  const config = {
+    headers: { Authorization: token },
+  }
   const loggedUserJSON = window.localStorage.getItem('token')
   if (loggedUserJSON) {
-    const request = axios.get(`${baseUrl}/${id}`)
+    const request = axios.get(`${baseUrl}/${id}`,config)
     return request.then(response => response.data).catch(error => console.log(error))
   }
   else {
@@ -25,9 +31,12 @@ const getid = (id) => {
 
 const getID = () => {
   const loggedUserJSON = window.localStorage.getItem('token')
+  const config = {
+    headers: { Authorization: token },
+  }
   if (loggedUserJSON) {
     const user = JSON.parse(loggedUserJSON)
-    const request = axios.get(`${baseUrl}/User/${user.id}`)
+    const request = axios.get(`${baseUrl}/User/${user.id}`,config)
     return request.then(response => response.data).catch(error => console.log(error))
   }
   else {
