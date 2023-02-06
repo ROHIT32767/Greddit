@@ -11,14 +11,15 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import UserService from "../services/Users"
 const theme = createTheme();
-function validate(Email, FirstName, password, LastName, Username, Age, ContactNumber) {
+function validate(FirstName, LastName, Username, Email, Age, ContactNumber, password) {
   // true means invalid, so our conditions got reversed
+  console.log("Age",Age,Age > 0)
   return {
     Email: Email.length === 0,
     password: password.length === 0,
     FirstName: FirstName.length === 0,
     LastName: LastName.length === 0,
-    Age: Age > 0,
+    Age: Age <= 0,
     Username: Username.length === 0,
     ContactNumber: ContactNumber.length === 0
   };
@@ -44,7 +45,7 @@ export default function Register(props) {
     LastName: "",
     Username: "",
     Email: "",
-    Age: "",
+    Age: 18,
     ContactNumber: "",
     password: ""
   })
@@ -63,6 +64,7 @@ export default function Register(props) {
     return !isDisabled;
   }
   const errors = validate(FormValues.FirstName, FormValues.LastName, FormValues.Username, FormValues.Email, FormValues.Age, FormValues.ContactNumber, FormValues.password);
+  console.log(errors)
   const isDisabled = Object.keys(errors).some(x => errors[x]);
   const shouldMarkError = field => {
     const hasError = errors[field];
@@ -79,7 +81,7 @@ export default function Register(props) {
         LastName: "",
         Username: "",
         Email: "",
-        Age: "",
+        Age: 18,
         ContactNumber: "",
         password: "",
       })
@@ -102,7 +104,7 @@ export default function Register(props) {
             LastName: "",
             Username: "",
             Email: "",
-            Age: "",
+            Age: 18,
             ContactNumber: "",
             password: ""
           })
@@ -141,7 +143,7 @@ export default function Register(props) {
                     shouldMarkError("FirstName") ?
                       <TextField
                         error
-                        id="filled-error-helper-text"
+                        id="FirstName"
                         helperText="Invalid entry"
                         onBlur={event => settouched({ ...touched, FirstName: true })}
                         autoComplete="given-name"
@@ -175,7 +177,7 @@ export default function Register(props) {
                     shouldMarkError("LastName") ?
                       <TextField
                         error
-                        id="filled-error-helper-text"
+                        id="LastName"
                         helperText="Invalid entry"
                         onBlur={event => settouched({ ...touched, LastName: true })}
                         required
@@ -204,7 +206,7 @@ export default function Register(props) {
                     shouldMarkError("Username") ?
                       <TextField
                         error
-                        id="filled-error-helper-text"
+                        id="Username"
                         helperText="Invalid entry"
                         onBlur={event => settouched({ ...touched, Username: true })}
                         required
@@ -233,7 +235,7 @@ export default function Register(props) {
                     shouldMarkError("Age") ?
                       <TextField
                         error
-                        id="filled-error-helper-text"
+                        id="Age"
                         helperText="Invalid entry"
                         onBlur={event => settouched({ ...touched, Age: true })}
                         required
@@ -267,16 +269,13 @@ export default function Register(props) {
                       <TextField
                         variant="filled"
                         error
-                        id="filled-error-helper-text"
+                        id="ContactNumber"
                         helperText="Invalid entry"
                         onBlur={event => settouched({ ...touched, ContactNumber: true })}
                         value={FormValues.ContactNumber}
                         required
                         placeholder="Contact Number"
                         name="Contact Number"
-                        inputStyle={{
-                          background: "lightblue"
-                        }}
                         onChange={event => setFormValues({ ...FormValues, ContactNumber: event.target.value })}
                       />
                       :
@@ -285,9 +284,6 @@ export default function Register(props) {
                         required
                         placeholder="Contact Number"
                         name="Contact Number"
-                        inputStyle={{
-                          background: "lightblue"
-                        }}
                         onBlur={event => settouched({ ...touched, ContactNumber: true })}
                         onChange={event => setFormValues({ ...FormValues, ContactNumber: event.target.value })}
                       />
@@ -299,7 +295,7 @@ export default function Register(props) {
                       <TextField
                         variant="filled"
                         error
-                        id="filled-error-helper-text"
+                        id="Email"
                         helperText="Invalid entry"
                         onBlur={event => settouched({ ...touched, Email: true })}
                         required
@@ -330,7 +326,7 @@ export default function Register(props) {
                       <TextField
                         variant="filled"
                         error
-                        id="filled-error-helper-text"
+                        id="password"
                         helperText="Invalid entry"
                         onBlur={event => settouched({ ...touched, password: true })}
                         required

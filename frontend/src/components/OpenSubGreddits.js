@@ -41,30 +41,33 @@ const CancelButton = ({ HandleClick }) => {
     const [count, setCount] = React.useState(3);
     const [cancelled, setCancelled] = React.useState(true);
     React.useEffect(() => {
-        if(cancelled){
+        let intervalId = null;
+        if (cancelled) {
             setCount(3)
             return
         }
-        if (!cancelled && count > 0) {
-            setTimeout(() => {
-                setCount(count - 1);
-            }, 1000);
-        } else {
-            if (count === 0) {
-                setCount(3)
-                HandleClick();
-                setCancelled(!cancelled)
+        else {
+            if (!cancelled && count > 0) {
+                intervalId = setTimeout(() => {
+                    setCount(count - 1);
+                }, 1000);
+            } else {
+                clearTimeout(intervalId);
+                if (count === 0) {
+                    setCount(3)
+                    HandleClick();
+                    setCancelled(!cancelled)
+                }
             }
+            return () => clearTimeout(intervalId);
         }
     }, [count, cancelled, HandleClick]);
-
     const handleButtonClick = () => {
         if (cancelled) {
             setCount(3);
         }
         setCancelled(!cancelled);
     };
-
     return (
         <Button onClick={handleButtonClick} variant="contained" color="secondary">
             {cancelled ? "Block User" : `Cancel in ${count} secs`}
@@ -231,7 +234,7 @@ export default function OpenSubGreddits(props) {
             try {
                 const data = await ReportService.getBySubGreddit(params.id)
                 var currentdate = new Date()
-                const reportdata = data.filter(element =>  (currentdate.getTime() - new Date(element.date).getTime()) / 1000 < EXPIRE)
+                const reportdata = data.filter(element => (currentdate.getTime() - new Date(element.date).getTime()) / 1000 < EXPIRE)
                 setmyreports(data)
                 console.log("Reports of the particular subgreddit on Loading are", data)
             }
@@ -346,6 +349,7 @@ export default function OpenSubGreddits(props) {
     }
     function HandleBlock(id, User) {
         console.log("Here")
+        console.log("block",id,User)
         const BlockUserRequest = async () => {
             try {
                 const data = await SubGredditService.BlockUser(params.id, { UserID: id })
@@ -601,7 +605,7 @@ export default function OpenSubGreddits(props) {
                                                                         </div>
                                                                         :
                                                                         <div>
-                                                                            <CancelButton HandleClick={() => HandleBlock(element.By._id, element.By)}  />
+                                                                            <CancelButton HandleClick={() => HandleBlock(element.On._id, element.On)} />
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                                                                             <Button onClick={() => HandleDeletePost(element.Post._id, element._id)} variant="contained" color="secondary">DELETE POST</Button>
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />

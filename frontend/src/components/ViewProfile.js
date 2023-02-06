@@ -17,14 +17,15 @@ import TableRow from "@mui/material/TableRow";
 // import axios from 'axios';
 import UserService from "../services/Users"
 const theme = createTheme();
-function validate(Email, FirstName, password, LastName, Username, Age, ContactNumber) {
+function validate(FirstName, LastName, Username, Email, Age, ContactNumber, password) {
     // true means invalid, so our conditions got reversed
+    console.log("Age",Age,Age > 0)
     return {
       Email: Email.length === 0,
       password: password.length === 0,
       FirstName: FirstName.length === 0,
       LastName: LastName.length === 0,
-      Age: Age > 0,
+      Age: Age <= 0,
       Username: Username.length === 0,
       ContactNumber: ContactNumber.length === 0
     };
