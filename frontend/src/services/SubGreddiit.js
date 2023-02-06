@@ -2,16 +2,17 @@ import axios from 'axios'
 const baseUrl = 'http://localhost:3003/api/SubGreddiits'
 
 let token = null
-
+token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
 const setToken = newToken => {
   token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
 }
+
 
 const getAll = () => {
   const config = {
     headers: { Authorization: token },
   }
-  const request = axios.get(baseUrl,config)
+  const request = axios.get(baseUrl, config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
@@ -21,7 +22,7 @@ const getid = (id) => {
   }
   const loggedUserJSON = window.localStorage.getItem('token')
   if (loggedUserJSON) {
-    const request = axios.get(`${baseUrl}/${id}`,config)
+    const request = axios.get(`${baseUrl}/${id}`, config)
     return request.then(response => response.data).catch(error => console.log(error))
   }
   else {
@@ -36,7 +37,7 @@ const getID = () => {
   }
   if (loggedUserJSON) {
     const user = JSON.parse(loggedUserJSON)
-    const request = axios.get(`${baseUrl}/User/${user.id}`,config)
+    const request = axios.get(`${baseUrl}/User/${user.id}`, config)
     return request.then(response => response.data).catch(error => console.log(error))
   }
   else {
@@ -56,7 +57,7 @@ const UpdateClicks = (id) => {
   const config = {
     headers: { Authorization: token },
   }
-  const request = axios.put(`${baseUrl}/Click/${id}`,config)
+  const request = axios.put(`${baseUrl}/Click/${id}`, config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
@@ -108,19 +109,19 @@ const LeaveSubGreddit = (id, newObject) => {
   return request.then(response => response.data).catch(error => console.log(error))
 }
 // Updating Reports and Reported
-const DeleteReport = (id , newObject) => {
+const DeleteReport = (id, newObject) => {
   const config = {
     headers: { Authorization: token },
   }
-  const request = axios.put(`${baseUrl}/Reports/${id}`,newObject,config)
+  const request = axios.put(`${baseUrl}/Reports/${id}`, newObject, config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const DeletePost = (id , newObject) => {
+const DeletePost = (id, newObject) => {
   const config = {
     headers: { Authorization: token },
   }
-  const request = axios.put(`${baseUrl}/Posts/${id}`,newObject,config)
+  const request = axios.put(`${baseUrl}/Posts/${id}`, newObject, config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
@@ -132,5 +133,5 @@ const Delete = (id) => {
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
-const newobj = { getAll, getID, getid, create, UpdateProfile, setToken, Delete , DeleteReport , BlockUser , JoinSubGreddit , LeaveSubGreddit , AcceptRequest , RejectRequest , UpdateClicks , DeletePost}
-export default newobj
+const newobj = { getAll, getID, getid, create, UpdateProfile, setToken, Delete, DeleteReport, BlockUser, JoinSubGreddit, LeaveSubGreddit, AcceptRequest, RejectRequest, UpdateClicks, DeletePost }
+export default newobj 

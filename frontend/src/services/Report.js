@@ -2,7 +2,7 @@ import axios from 'axios'
 const baseUrl = 'http://localhost:3003/api/Reports'
 
 let token = null
-
+token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
 const setToken = newToken => {
   token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
 }

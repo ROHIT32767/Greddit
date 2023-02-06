@@ -32,7 +32,7 @@ const Notification = ({ message }) => {
     )
 }
 export default function ViewProfile(props) {
-    const [FormValues, setFormValues] = React.useState({
+    const [ReadOnlyValues, setReadOnlyValues] = React.useState({
         FirstName: "",
         LastName: "",
         Username: "",
@@ -43,12 +43,52 @@ export default function ViewProfile(props) {
         Followers: [],
         Following: []
     })
+    const [errorMessage, setErrorMessage] = React.useState(null)
+    const [FormValues, setFormValues] = React.useState({
+        FirstName: "",
+        LastName: "",
+        Username: "",
+        Email: "",
+        Age: "",
+        ContactNumber: "",
+        password: ""
+    })
+    const [touched, settouched] = React.useState({
+        FirstName: false,
+        LastName: false,
+        Username: false,
+        Email: false,
+        Age: false,
+        ContactNumber: false,
+        password: false
+    })
     const [show1, setshow1] = React.useState(false)
     const [show2, setshow2] = React.useState(false)
-    const [errorMessage, setErrorMessage] = React.useState(null)
     const [edit, setedit] = React.useState(false)
+    function canBeSubmitted() {
+        const errors = validate(touched.FirstName, touched.LastName, touched.Username, touched.Email, touched.Age, touched.ContactNumber, touched.password);
+        const isDisabled = Object.keys(errors).some(x => errors[x]);
+        return !isDisabled;
+    }
+    const errors = validate(FormValues.FirstName, FormValues.LastName, FormValues.Username, FormValues.Email, FormValues.Age, FormValues.ContactNumber, FormValues.password);
+    const isDisabled = Object.keys(errors).some(x => errors[x]);
+    const shouldMarkError = field => {
+        const hasError = errors[field];
+        const shouldShow = touched[field];
+        return hasError ? shouldShow : false;
+    };
+    // TODO : const [errorMessage, setErrorMessage] = React.useState(null)
     function handleEdit() {
         setedit(!edit)
+        setFormValues({
+            ...FormValues, FirstName: "",
+            LastName: "",
+            Username: "",
+            Email: "",
+            Age: "",
+            ContactNumber: "",
+            password: ""
+        })
     }
     React.useEffect(() => {
         const fetchData = async () => {
@@ -56,7 +96,7 @@ export default function ViewProfile(props) {
                 // console.log("props user =", props.user)
                 const data = await UserService.getID()
                 console.log("recieved", data)
-                setFormValues({
+                setReadOnlyValues({
                     FirstName: data.FirstName,
                     LastName: data.LastName,
                     Username: data.Username,
@@ -74,53 +114,47 @@ export default function ViewProfile(props) {
         }
         fetchData();
     }, [])
-
     function handleSubmit(event) {
         event.preventDefault();
-        const data = new FormData(event.target)
-        const FirstName = data.get('firstName')
-        const LastName = data.get('lastName')
-        const Username = data.get('Username')
-        const Email = data.get('email')
-        const Age = data.get('Age')
-        const ContactNumber = data.get('ContactNumber')
-        const Password = data.get('password')
-        console.log("Before", FormValues)
-        if (!FirstName || !LastName || !Username || !Email || (Age <= 0) || (!ContactNumber) || (!Password)) {
+        if (!canBeSubmitted()) {
+            setFormValues({
+                FirstName: "",
+                LastName: "",
+                Username: "",
+                Email: "",
+                Age: "",
+                ContactNumber: "",
+                password: "",
+            })
             setErrorMessage(
-                `Given Form Inputs are Invalid`
+                `Given Form Inputs are Invalid `
             )
             setTimeout(() => {
                 setErrorMessage(null)
             }, 3000)
-            setedit(!edit)
-            console.log(FormValues)
         }
         else {
             const UpdateProfile = async () => {
                 try {
-                    console.log("props user for UPdate = ", props.user)
+                    console.log("props user for Update = ", props.user)
                     const data = await UserService.UpdateProfile(props.user.id, {
-                        ...FormValues,
-                        FirstName: FirstName,
-                        LastName: LastName,
-                        Username: Username,
-                        Email: Email,
-                        Age: Age,
-                        ContactNumber: ContactNumber,
-                        password: Password
+                        ...ReadOnlyValues,
+                        ...FormValues
                     })
-                    console.log(FormValues)
+                    console.log("ReadOnlyValue", ReadOnlyValues)
                     console.log("recieved for Update", data)
+                    setReadOnlyValues({
+                        ...ReadOnlyValues,
+                        ...FormValues
+                    })
                     setFormValues({
-                        ...FormValues,
-                        FirstName: FirstName,
-                        LastName: LastName,
-                        Username: Username,
-                        Email: Email,
-                        Age: Age,
-                        ContactNumber: ContactNumber,
-                        Password: Password
+                        ...FormValues, FirstName: "",
+                        LastName: "",
+                        Username: "",
+                        Email: "",
+                        Age: "",
+                        ContactNumber: "",
+                        password: ""
                     })
                 }
                 catch (error) {
@@ -129,7 +163,7 @@ export default function ViewProfile(props) {
             }
             UpdateProfile();
             setedit(!edit)
-            console.log(FormValues)
+            console.log(ReadOnlyValues)
         }
     }
     function Deleterow1(event, id) {
@@ -139,7 +173,7 @@ export default function ViewProfile(props) {
                 // console.log("props user =", props.user)
                 const data = await UserService.UpdateFollowers(props.user.id, { TargetID: id })
                 console.log("recieved", data)
-                setFormValues({ ...FormValues, Followers: FormValues.Followers.filter(element => element.id !== id) })
+                setReadOnlyValues({ ...ReadOnlyValues, Followers: ReadOnlyValues.Followers.filter(element => element.id !== id) })
             }
             catch (error) {
                 console.log(error)
@@ -154,7 +188,7 @@ export default function ViewProfile(props) {
                 // console.log("props user =", props.user)
                 const data = await UserService.UpdateFollowing(props.user.id, { TargetID: id })
                 console.log("recieved", data)
-                setFormValues({ ...FormValues, Following: FormValues.Following.filter(element => element.id !== id) })
+                setReadOnlyValues({ ...ReadOnlyValues, Following: ReadOnlyValues.Following.filter(element => element.id !== id) })
             }
             catch (error) {
                 console.log(error)
@@ -185,86 +219,240 @@ export default function ViewProfile(props) {
                             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            autoComplete="given-name"
-                                            name="firstName"
-                                            required
-                                            fullWidth
-                                            id="firstName"
-                                            label="FirstName"
-                                            autoFocus
-                                        />
+                                        {
+                                            shouldMarkError("FirstName") ?
+                                                <TextField
+                                                    error
+                                                    id="filled-error-helper-text"
+                                                    helperText="Invalid entry"
+                                                    onBlur={event => settouched({ ...touched, FirstName: true })}
+                                                    autoComplete="given-name"
+                                                    name="firstName"
+                                                    required
+                                                    fullWidth
+                                                    label="FirstName"
+                                                    autoFocus
+                                                    variant="filled"
+                                                    value={FormValues.FirstName}
+                                                    onChange={event => setFormValues({ ...FormValues, FirstName: event.target.value })}
+                                                />
+                                                :
+                                                <TextField
+                                                    autoComplete="given-name"
+                                                    name="firstName"
+                                                    required
+                                                    fullWidth
+                                                    id="firstName"
+                                                    label="FirstName"
+                                                    autoFocus
+                                                    value={FormValues.FirstName}
+                                                    onBlur={event => settouched({ ...touched, FirstName: true })}
+                                                    onChange={event => setFormValues({ ...FormValues, FirstName: event.target.value })}
+                                                />
+                                        }
+
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            required
-                                            fullWidth
-                                            id="lastName"
-                                            label="Last Name"
-                                            name="lastName"
-                                        />
+                                        {
+                                            shouldMarkError("LastName") ?
+                                                <TextField
+                                                    error
+                                                    id="filled-error-helper-text"
+                                                    helperText="Invalid entry"
+                                                    onBlur={event => settouched({ ...touched, LastName: true })}
+                                                    required
+                                                    fullWidth
+                                                    label="Last Name"
+                                                    name="lastName"
+                                                    variant="filled"
+                                                    value={FormValues.LastName}
+                                                    onChange={event => setFormValues({ ...FormValues, LastName: event.target.value })}
+                                                />
+                                                :
+                                                <TextField
+                                                    required
+                                                    fullWidth
+                                                    id="lastName"
+                                                    label="Last Name"
+                                                    name="lastName"
+                                                    value={FormValues.LastName}
+                                                    onBlur={event => settouched({ ...touched, LastName: true })}
+                                                    onChange={event => setFormValues({ ...FormValues, LastName: event.target.value })}
+                                                />
+                                        }
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <TextField
-                                            required
-                                            fullWidth
-                                            id="Username"
-                                            label="Username"
-                                            name="Username"
-                                        />
+                                        {
+                                            shouldMarkError("Username") ?
+                                                <TextField
+                                                    error
+                                                    id="filled-error-helper-text"
+                                                    helperText="Invalid entry"
+                                                    onBlur={event => settouched({ ...touched, Username: true })}
+                                                    required
+                                                    fullWidth
+                                                    label="Username"
+                                                    name="Username"
+                                                    variant="filled"
+                                                    value={FormValues.Username}
+                                                    onChange={event => setFormValues({ ...FormValues, Username: event.target.value })}
+                                                />
+                                                :
+                                                <TextField
+                                                    required
+                                                    fullWidth
+                                                    id="Username"
+                                                    label="Username"
+                                                    name="Username"
+                                                    value={FormValues.Username}
+                                                    onBlur={event => settouched({ ...touched, Username: true })}
+                                                    onChange={event => setFormValues({ ...FormValues, Username: event.target.value })}
+                                                />
+                                        }
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            id="outlined-number"
-                                            required
-                                            label="Age"
-                                            name="Age"
-                                            type="number"
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                        />
+                                        {
+                                            shouldMarkError("Age") ?
+                                                <TextField
+                                                    error
+                                                    id="filled-error-helper-text"
+                                                    helperText="Invalid entry"
+                                                    onBlur={event => settouched({ ...touched, Age: true })}
+                                                    required
+                                                    label="Age"
+                                                    type="number"
+                                                    variant="filled"
+                                                    InputLabelProps={{
+                                                        shrink: true,
+                                                    }}
+                                                    value={FormValues.Age}
+                                                    onChange={event => setFormValues({ ...FormValues, Age: event.target.value })}
+                                                />
+                                                :
+                                                <TextField
+                                                    id="outlined-number"
+                                                    required
+                                                    label="Age"
+                                                    type="number"
+                                                    InputLabelProps={{
+                                                        shrink: true,
+                                                    }}
+                                                    value={FormValues.Age}
+                                                    onBlur={event => settouched({ ...touched, Age: true })}
+                                                    onChange={event => setFormValues({ ...FormValues, Age: event.target.value })}
+                                                />
+                                        }
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            required
-                                            placeholder="Contact Number"
-                                            name="ContactNumber"
-                                            inputStyle={{
-                                                background: "lightblue"
-                                            }}
-                                        />
+                                        {
+                                            shouldMarkError("ContactNumber") ?
+                                                <TextField
+                                                    variant="filled"
+                                                    error
+                                                    id="filled-error-helper-text"
+                                                    helperText="Invalid entry"
+                                                    onBlur={event => settouched({ ...touched, ContactNumber: true })}
+                                                    value={FormValues.ContactNumber}
+                                                    required
+                                                    placeholder="Contact Number"
+                                                    name="Contact Number"
+                                                    inputStyle={{
+                                                        background: "lightblue"
+                                                    }}
+                                                    onChange={event => setFormValues({ ...FormValues, ContactNumber: event.target.value })}
+                                                />
+                                                :
+                                                <TextField
+                                                    value={FormValues.ContactNumber}
+                                                    required
+                                                    placeholder="Contact Number"
+                                                    name="Contact Number"
+                                                    inputStyle={{
+                                                        background: "lightblue"
+                                                    }}
+                                                    onBlur={event => settouched({ ...touched, ContactNumber: true })}
+                                                    onChange={event => setFormValues({ ...FormValues, ContactNumber: event.target.value })}
+                                                />
+                                        }
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <TextField
-                                            required
-                                            fullWidth
-                                            id="email"
-                                            label="Email Address"
-                                            name="email"
-                                            autoComplete="email"
-                                        />
+                                        {
+                                            shouldMarkError("Email") ?
+                                                <TextField
+                                                    variant="filled"
+                                                    error
+                                                    id="filled-error-helper-text"
+                                                    helperText="Invalid entry"
+                                                    onBlur={event => settouched({ ...touched, Email: true })}
+                                                    required
+                                                    fullWidth
+                                                    label="Email Address"
+                                                    name="email"
+                                                    autoComplete="email"
+                                                    value={FormValues.Email}
+                                                    onChange={event => setFormValues({ ...FormValues, Email: event.target.value })}
+                                                />
+                                                :
+                                                <TextField
+                                                    required
+                                                    fullWidth
+                                                    id="email"
+                                                    label="Email Address"
+                                                    name="email"
+                                                    autoComplete="email"
+                                                    value={FormValues.Email}
+                                                    onBlur={event => settouched({ ...touched, Email: true })}
+                                                    onChange={event => setFormValues({ ...FormValues, Email: event.target.value })}
+                                                />
+                                        }
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <TextField
-                                            required
-                                            fullWidth
-                                            name="password"
-                                            label="Password"
-                                            type="password"
-                                            id="password"
-                                            autoComplete="new-password"
-                                        />
+                                        {
+                                            shouldMarkError("password") ?
+                                                <TextField
+                                                    variant="filled"
+                                                    error
+                                                    id="filled-error-helper-text"
+                                                    helperText="Invalid entry"
+                                                    onBlur={event => settouched({ ...touched, password: true })}
+                                                    required
+                                                    fullWidth
+                                                    name="password"
+                                                    label="Password"
+                                                    type="password"
+                                                    autoComplete="new-password"
+                                                    value={FormValues.password}
+                                                    onChange={event => setFormValues({ ...FormValues, password: event.target.value })}
+                                                />
+                                                :
+                                                <TextField
+                                                    required
+                                                    fullWidth
+                                                    name="password"
+                                                    label="Password"
+                                                    type="password"
+                                                    id="password"
+                                                    autoComplete="new-password"
+                                                    value={FormValues.password}
+                                                    onBlur={event => settouched({ ...touched, password: true })}
+                                                    onChange={event => setFormValues({ ...FormValues, password: event.target.value })}
+                                                />
+                                        }
                                     </Grid>
                                 </Grid>
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    sx={{ mt: 3, mb: 2 }}
-                                >
-                                    Save Changes
-                                </Button>
+                                {
+                                    isDisabled ?
+                                        <Button fullWidth disabled sx={{ mt: 3, mb: 2 }}> Save Changes </Button>
+                                        :
+                                        <Button
+                                            type="submit"
+                                            fullWidth
+                                            variant="contained"
+                                            sx={{ mt: 3, mb: 2 }}
+                                        >
+                                            Save Changes
+                                        </Button>
+                                }
                                 <Button
                                     fullWidth
                                     variant="contained"
@@ -289,7 +477,7 @@ export default function ViewProfile(props) {
                                             InputProps={{
                                                 readOnly: true,
                                             }}
-                                            value={FormValues.FirstName}
+                                            value={ReadOnlyValues.FirstName}
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
@@ -302,7 +490,7 @@ export default function ViewProfile(props) {
                                             InputProps={{
                                                 readOnly: true,
                                             }}
-                                            value={FormValues.LastName}
+                                            value={ReadOnlyValues.LastName}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -315,7 +503,7 @@ export default function ViewProfile(props) {
                                             InputProps={{
                                                 readOnly: true,
                                             }}
-                                            value={FormValues.Username}
+                                            value={ReadOnlyValues.Username}
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
@@ -332,7 +520,7 @@ export default function ViewProfile(props) {
                                             InputProps={{
                                                 readOnly: true,
                                             }}
-                                            value={FormValues.Age}
+                                            value={ReadOnlyValues.Age}
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
@@ -347,7 +535,7 @@ export default function ViewProfile(props) {
                                             InputProps={{
                                                 readOnly: true,
                                             }}
-                                            value={FormValues.ContactNumber}
+                                            value={ReadOnlyValues.ContactNumber}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -361,7 +549,7 @@ export default function ViewProfile(props) {
                                             InputProps={{
                                                 readOnly: true,
                                             }}
-                                            value={FormValues.Email}
+                                            value={ReadOnlyValues.Email}
                                         />
                                     </Grid>
                                 </Grid>
@@ -378,8 +566,8 @@ export default function ViewProfile(props) {
                         <div className="FollowerTabs">
                             <Tabs className="Tabs">
                                 <TabList>
-                                    <Tab>Followers <Button variant="contained" color="secondary" onClick={() => setshow1(!show1)}>{FormValues.Followers.length}</Button></Tab>
-                                    <Tab>Following <Button variant="contained" color="secondary" onClick={() => setshow2(!show2)}>{FormValues.Following.length}</Button></Tab>
+                                    <Tab>Followers <Button variant="contained" color="secondary" onClick={() => setshow1(!show1)}>{ReadOnlyValues.Followers.length}</Button></Tab>
+                                    <Tab>Following <Button variant="contained" color="secondary" onClick={() => setshow2(!show2)}>{ReadOnlyValues.Following.length}</Button></Tab>
                                 </TabList>
                                 <TabPanel>
                                     {show1 && <Box
@@ -398,7 +586,7 @@ export default function ViewProfile(props) {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {FormValues.Followers.map(element => {
+                                                {ReadOnlyValues.Followers.map(element => {
                                                     return (
                                                         <TableRow key={element.Username}>
                                                             <TableCell component="th" scope="row">
@@ -431,7 +619,7 @@ export default function ViewProfile(props) {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {FormValues.Following.map(element => {
+                                                {ReadOnlyValues.Following.map(element => {
                                                     return (
                                                         <TableRow key={element.Username}>
                                                             <TableCell component="th" scope="row">

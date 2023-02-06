@@ -72,7 +72,8 @@ export default function OpenSubGreddits(props) {
         const fetchPostGrowth = async (data) => {
             try {
                 const postdates = new Set();
-                var postsfrom = new Date(data.date);
+                console.log("data.date in Postss Growth is ",data.date)
+                var postsfrom = new Date(data.date.substring(0,10));
                 var poststo = new Date();
                 console.log("postsfrom", postsfrom)
                 console.log("poststo", poststo)
@@ -99,7 +100,8 @@ export default function OpenSubGreddits(props) {
         const MemberGrowth = async (data) => {
             try {
                 const memberdates = new Set();
-                var membersfrom = new Date(data.date);
+                console.log("data.date in Members Growth is ",data.date)
+                var membersfrom = new Date(data.date.substring(0,10));
                 var membersto = new Date();
                 console.log("membersfrom", membersfrom)
                 console.log("membersto", membersto)
@@ -107,6 +109,7 @@ export default function OpenSubGreddits(props) {
                     console.log(day.toISOString().substring(0, 10))
                     memberdates.add(day.toISOString().substring(0, 10))
                 }
+                console.log(data.GrowthData)
                 setmembergrowthData(Array.from(memberdates).map(date => {
                     const members = data.GrowthData.filter(subdata => subdata.date.substring(0, 10) === date);
                     const joinmembers = members.filter(element => element.Join).length
@@ -128,7 +131,8 @@ export default function OpenSubGreddits(props) {
             try {
                 let varray = []
                 let karray = []
-                var clicksfrom = new Date(data.date);
+                console.log("data.date in Clicks Growth is ",data.date)
+                var clicksfrom = new Date(data.date.substring(0,10));
                 var clicksto = new Date();
                 console.log("clicksfrom", clicksfrom)
                 console.log("clicksto", clicksto)
