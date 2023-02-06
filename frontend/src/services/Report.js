@@ -33,9 +33,9 @@ const getBySubGreddit = (id) => {
   const config = {
     headers: { Authorization: token },
   }
-  const loggedUserJSON = window.localStorage.getItem('token',config)
+  const loggedUserJSON = window.localStorage.getItem('token')
   if (loggedUserJSON) {
-    const request = axios.get(`${baseUrl}/SubGreddit/${id}`)
+    const request = axios.get(`${baseUrl}/SubGreddit/${id}`,config)
     return request.then(response => response.data).catch(error => console.log(error))
   }
   else {

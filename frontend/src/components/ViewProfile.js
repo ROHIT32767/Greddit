@@ -17,6 +17,18 @@ import TableRow from "@mui/material/TableRow";
 // import axios from 'axios';
 import UserService from "../services/Users"
 const theme = createTheme();
+function validate(Email, FirstName, password, LastName, Username, Age, ContactNumber) {
+    // true means invalid, so our conditions got reversed
+    return {
+      Email: Email.length === 0,
+      password: password.length === 0,
+      FirstName: FirstName.length === 0,
+      LastName: LastName.length === 0,
+      Age: Age > 0,
+      Username: Username.length === 0,
+      ContactNumber: ContactNumber.length === 0
+    };
+  }
 const Notification = ({ message }) => {
     if (message === null) {
         return null
