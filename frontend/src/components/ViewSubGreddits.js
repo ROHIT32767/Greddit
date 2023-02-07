@@ -357,9 +357,9 @@ const RedditClone = () => {
                     )
                     console.log("recieved", data)
                     setposts([...posts, {
-                        ...data, By: {
-                            Username: window.localStorage.getItem('token').Username
-                        }
+                        ...data, By:
+                            JSON.parse(window.localStorage.getItem('token'))
+
                     }])
                     console.log("posts on Loading are", posts)
                 }
@@ -513,7 +513,7 @@ const RedditClone = () => {
                     </DialogActions>
                 </Dialog>
                 {posts.map((post) =>
-                    subgreddit.Blocked && subgreddit.Blocked.map(element => element._id).includes(post._id) ?
+                    subgreddit.Blocked && subgreddit.Blocked.map(element => element._id).includes(post.By._id) ?
                         <Post key={post._id} blocked={true} id={post._id} post={post} posts={posts} setposts={setposts} />
                         :
                         <Post key={post._id} blocked={false} id={post._id} post={post} posts={posts} setposts={setposts} />

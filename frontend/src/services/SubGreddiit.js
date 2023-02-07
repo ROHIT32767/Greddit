@@ -128,6 +128,14 @@ const DeletePost = (id, newObject) => {
   return request.then(response => response.data).catch(error => console.log(error))
 }
 
+const DeleteRemoveUser = (id, newObject) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.put(`${baseUrl}/RemoveUser/${id}`, newObject, config)
+  return request.then(response => response.data).catch(error => console.log(error))
+}
+
 const Delete = (id) => {
   const config = {
     headers: { Authorization: token },

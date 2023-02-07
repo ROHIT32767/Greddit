@@ -244,7 +244,6 @@ export default function OpenSubGreddits(props) {
         }
         fetchReports();
     }, [])
-
     function handleAccept(id1, id2) {
         console.log(id1, id2)
         const AcceptRequests = async () => {

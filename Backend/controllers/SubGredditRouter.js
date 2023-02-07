@@ -151,6 +151,27 @@ SubGredditRouter.put('/Click/:id', async (request, response) => {
     response.status(201).json(updatedsubgreddit)
 })
 
+// To update GrowthData via API call
+SubGredditRouter.put('/GrowthData/:id', async (request, response) => {
+    console.log(request.body)
+    const subgreddit = await SubGreddit.findById(request.params.id)
+    const {newelement} = request.body
+    subgreddit.GrowthData = subgreddit.GrowthData.concat(newelement)
+    const updatedsubgreddit = await subgreddit.save()
+    console.log(updatedsubgreddit)
+    response.status(201).json(updatedsubgreddit)
+})
+
+SubGredditRouter.delete('/RemoveUser/:id', async (request, response) => {
+    console.log(request.body)
+    const { UserID } = request.body
+    const subgreddit = await SubGreddit.findById(request.params.id)
+    subgreddit.Followers = subgreddit.Followers.filter(element => element != UserID)
+    subgreddit.Reports = subgreddit.Reports.filter(element => element.On!=UserID )
+    const updatedsubgreddit = await subgreddit.save()
+    console.log(updatedsubgreddit)
+    response.status(201).json(updatedsubgreddit)
+})
 
 SubGredditRouter.delete('/:id', async (request, response) => {
     const ID = request.params.id
