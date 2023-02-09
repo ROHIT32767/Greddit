@@ -160,6 +160,7 @@ export default function OpenSubGreddits(props) {
     const handleClick2 = () => {
         setOpen2(!open2);
     };
+    // TODO: Check whether if working for Graphs
     React.useEffect(() => {
         const fetchPostGrowth = async (data) => {
             try {
@@ -373,6 +374,7 @@ export default function OpenSubGreddits(props) {
             }
         }
         UpdateSubGredditReport();
+        // TODO: Check whether if working
         const UpdateSubGredditPost = async () => {
             try {
                 const data = await SubGredditService.DeletePost(params.id, {
@@ -393,6 +395,7 @@ export default function OpenSubGreddits(props) {
         UpdateSubGredditPost();
     }
     console.log("subgreddit now", subgreddit)
+    // TODO: Check whether if working
     function HandleIgnore(id,ReportOn,ReportBy) {
         const IgnoreReport = async () => {
             try {
@@ -435,6 +438,21 @@ export default function OpenSubGreddits(props) {
             }
         }
         BlockUserRequest();
+        // TODO: Check whether if working
+        const LeaveSubGreddiit = async () => {
+            try {
+                const data = await SubGredditService.LeaveSubGreddit(id, { UserID: ReportOn._id })
+                console.log("recieved", data)
+                var updatedfollowers = subgreddit.Followers
+                updatedfollowers  = updatedfollowers.filter(element => element._id!==ReportOn._id)
+                setsubgreddit({...subgreddit,Followers:updatedfollowers})
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        LeaveSubGreddiit();
+
     }
     return (
         <div>

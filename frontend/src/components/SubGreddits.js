@@ -185,7 +185,16 @@ export default function MySubGreddits(props) {
     function handleJoin(id, subreddit) {
         console.log(id)
         const followedarray = subreddit.Followed.map(element => element._id)
-        if (!followedarray.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
+        const blockedarray = subreddit.Blocked.map(element => element._id)
+        if(!blockedarray.includes(JSON.parse(window.localStorage.getItem('token')).id))
+        {
+            alert("You are trying to Join a SubGreddit that has Banned you which is against policy")
+        }
+        else if (!followedarray.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
+            alert("You are trying to Join a SubGreddit that you have already Left which is against policy")
+        }
+        else {
+            
             const JoiningRequests = async () => {
                 try {
                     const data = await SubGredditService.JoinSubGreddit(id, { UserID: JSON.parse(window.localStorage.getItem('token')).id })
@@ -197,9 +206,6 @@ export default function MySubGreddits(props) {
                 }
             }
             JoiningRequests();
-        }
-        else {
-            alert("You are trying to Join a SubGreddit that you have already Left which is against policy")
         }
     }
     console.log(subreddits)
@@ -382,6 +388,7 @@ export default function MySubGreddits(props) {
                             }
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                        // TODO: Check whether if working for fuzzy search 
                         <Grid item xs={15} sm={3}>
                             {
                                 (ascending || descending || datesort || followersort) ? (

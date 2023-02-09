@@ -192,6 +192,7 @@ const Post = ({ id, post, posts, setposts, blocked }) => {
             <Container component="main" sx={{ maxWidth: 500 }}>
                 <Card style={{ marginBottom: '20px' }} sx={{ marginTop: 8, bgcolor: green[500] }}>
                     <CardContent>
+                    // TODO: Check whether if working
                         {blocked ?
                             <Typography variant="h5" component="h2">
                                 Blocked User
