@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
@@ -25,6 +25,7 @@ import RedditIcon from '@mui/icons-material/Reddit';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import SubGredditService from '../services/SubGreddiit';
 import { useNavigate } from "react-router-dom";
+import Fuse from 'fuse.js'
 
 const theme = createTheme();
 export default function MySubGreddits(props) {
@@ -36,6 +37,7 @@ export default function MySubGreddits(props) {
     const [descending, setdescending] = useState(false)
     const [followersort, setfollowersort] = useState(false)
     const [datesort, setdatesort] = useState(false)
+    const [fuzzysort, setfuzzysort] = useState(false)
     const [tags, settags] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
     const [emptydisplaysubreddits, setemptydisplaysubreddits] = useState([])
@@ -180,7 +182,7 @@ export default function MySubGreddits(props) {
         }
         LeaveSubGreddiit();
     }
-    function handleJoin(id, subreddit){
+    function handleJoin(id, subreddit) {
         console.log(id)
         const followedarray = subreddit.Followed.map(element => element._id)
         if (!followedarray.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
@@ -227,20 +229,9 @@ export default function MySubGreddits(props) {
                             value={searchtext}
                             onChange={event => {
                                 setsearchtext(event.target.value)
-                                if (!event.target.value) {
-                                    setdisplaysubreddits(subreddits.filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
-                                        if (a.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id)) {
-                                            return -1;
-                                        }
-                                        if (!a.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id)) {
-                                            return 1;
-                                        }
-                                        return 0;
-                                    }))
-                                }
-                                else {
-                                    if (!selectedTags.length) {
-                                        setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).sort((a, b) => {
+                                if (!fuzzysort) {
+                                    if (!event.target.value) {
+                                        setdisplaysubreddits(subreddits.filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
                                             if (a.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id)) {
                                                 return -1;
                                             }
@@ -251,15 +242,28 @@ export default function MySubGreddits(props) {
                                         }))
                                     }
                                     else {
-                                        setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
-                                            if (a.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id)) {
-                                                return -1;
-                                            }
-                                            if (!a.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id)) {
-                                                return 1;
-                                            }
-                                            return 0;
-                                        }))
+                                        if (!selectedTags.length) {
+                                            setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).sort((a, b) => {
+                                                if (a.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id)) {
+                                                    return -1;
+                                                }
+                                                if (!a.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id)) {
+                                                    return 1;
+                                                }
+                                                return 0;
+                                            }))
+                                        }
+                                        else {
+                                            setdisplaysubreddits(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)).sort((a, b) => {
+                                                if (a.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) && !b.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id)) {
+                                                    return -1;
+                                                }
+                                                if (!a.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) && b.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id)) {
+                                                    return 1;
+                                                }
+                                                return 0;
+                                            }))
+                                        }
                                     }
                                 }
                             }}
@@ -288,7 +292,7 @@ export default function MySubGreddits(props) {
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={18} sm={3}>
                             {
-                                (descending || followersort || datesort) ? (
+                                (descending || followersort || datesort || fuzzysort) ? (
                                     <Button disabled variant="contained" color="secondary" >Ascending</Button>)
                                     :
                                     (
@@ -297,6 +301,7 @@ export default function MySubGreddits(props) {
                                             setdatesort(false)
                                             setdescending(false)
                                             setfollowersort(false)
+                                            setfuzzysort(false)
                                             !searchtext && !selectedTags.length ? setemptydisplaysubreddits([...subreddits].sort((a, b) => {
                                                 return a.Name.localeCompare(b.Name)
                                             })) :
@@ -311,7 +316,7 @@ export default function MySubGreddits(props) {
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={18} sm={3}>
                             {
-                                (ascending || followersort || datesort) ? (
+                                (ascending || followersort || datesort || fuzzysort) ? (
                                     <Button disabled variant="contained" color="secondary" >Descending</Button>)
                                     :
                                     (
@@ -321,6 +326,7 @@ export default function MySubGreddits(props) {
                                             setdatesort(false)
                                             setdescending(true)
                                             setfollowersort(false)
+                                            setfuzzysort(false)
                                             !searchtext && !selectedTags.length ? setemptydisplaysubreddits([...subreddits].sort((a, b) => {
                                                 return b.Name.localeCompare(a.Name)
                                             })) :
@@ -334,7 +340,7 @@ export default function MySubGreddits(props) {
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={15} sm={3}>
                             {
-                                (ascending || descending || datesort) ? (
+                                (ascending || descending || datesort || fuzzysort) ? (
                                     <Button disabled variant="contained" color="secondary" >Followers</Button>)
                                     :
                                     (<Button variant="contained" color="secondary" onClick={event => {
@@ -342,6 +348,7 @@ export default function MySubGreddits(props) {
                                         setdatesort(false)
                                         setdescending(false)
                                         setfollowersort(true)
+                                        setfuzzysort(false)
                                         !searchtext && !selectedTags.length ? setemptydisplaysubreddits([...subreddits].sort((a, b) => {
                                             return b.Followers.length - a.Followers.length;
                                         })) :
@@ -354,7 +361,7 @@ export default function MySubGreddits(props) {
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={18} sm={3}>
                             {
-                                (ascending || descending || followersort) ? (
+                                (ascending || descending || followersort || fuzzysort) ? (
                                     <Button disabled variant="contained" color="secondary" >Date</Button>)
                                     :
                                     (
@@ -363,6 +370,7 @@ export default function MySubGreddits(props) {
                                             setdatesort(true)
                                             setdescending(false)
                                             setfollowersort(false)
+                                            setfuzzysort(false)
                                             !searchtext && !selectedTags.length ? setemptydisplaysubreddits([...subreddits].sort((a, b) => {
                                                 return new Date(b.date) - new Date(a.date);
                                             })) :
@@ -374,6 +382,49 @@ export default function MySubGreddits(props) {
                             }
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                        <Grid item xs={15} sm={3}>
+                            {
+                                (ascending || descending || datesort || followersort) ? (
+                                    <Button disabled variant="contained" color="secondary" >Fuzzy</Button>)
+                                    :
+                                    (<Button variant="contained" color="secondary" onClick={event => {
+                                        setascending(false)
+                                        setdatesort(false)
+                                        setdescending(false)
+                                        setfollowersort(false)
+                                        setfuzzysort(true)
+                                        if (!searchtext) {
+                                            const options = {
+                                                includeScore: true,
+                                                keys: ['Name']
+                                            }
+                                            const fuse = new Fuse(subreddits.filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)), options)
+                                            const result = fuse.search('')
+                                            setemptydisplaysubreddits(result.map(element => element[item]))
+                                        }
+                                        else {
+                                            if (!selectedTags.length) {
+                                                const options = {
+                                                    includeScore: true,
+                                                    keys: ['Name']
+                                                }
+                                                const fuse = new Fuse(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())), options)
+                                                const result = fuse.search(searchtext)
+                                                setdisplaysubreddits(result.map(element => element[item]))
+                                            }
+                                            else {
+                                                const options = {
+                                                    includeScore: true,
+                                                    keys: ['Name']
+                                                }
+                                                const fuse = new Fuse(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)), options)
+                                                const result = fuse.search(searchtext)
+                                                setdisplaysubreddits(result.map(element => element[item]))
+                                            }
+                                        }
+                                    }}>Fuzzy</Button>)
+                            }
+                        </Grid>
                         <Grid item xs={18} sm={3}>
                             <Button variant="contained" color="secondary" onClick={event => {
                                 setascending(false)
@@ -578,6 +629,6 @@ export default function MySubGreddits(props) {
                     </Grid>
                 </Container>
             </ThemeProvider>
-        </div>
+        </div >
     )
 }

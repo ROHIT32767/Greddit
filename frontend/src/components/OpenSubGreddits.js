@@ -35,8 +35,63 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+// import { Bar } from 'react-chartjs-2';
+// import { Chart as ChartJS, Title, Tooltip, BarElement, Legend, CategoryScale, LinearScale, PointElement, Filler } from 'chart.js';
+// ChartJS.register(
+//     Title, Tooltip, BarElement, Legend,
+//     CategoryScale, LinearScale, PointElement, Filler
+// )
 const theme = createTheme();
 var EXPIRE = 10 * 86400
+// TODO: Graph
+// function ChartPlot(params) {
+
+//     // console.log("entry", params)
+
+//     const data = {
+//         title: {
+//             text: params.title
+//         },
+//         labels: params.labels,
+//         datasets: [
+//             {
+//                 data: params.data,
+//                 tension: 0,
+//                 fill: true,
+//                 pointBorderColor: '#00000090',
+//                 pointBackgroundColor: '#00000090',
+//                 showLine: true,
+//                 radius: 0.5,
+//                 borderColor: "#000000",
+//                 linecolor: "black",
+//             },
+//         ]
+//     }
+//     const options = {
+//         plugins: {
+//             title: {
+//                 display: true,
+//                 text: params.title,
+//                 padding: 15,
+//                 font: {
+//                     size: 20
+//                 }
+//             },
+//             legend: {
+//                 display: false
+//             }
+//         },
+//         maintainAspectRatio: true
+//     }
+
+//     options.scales = null;
+
+
+//     return (
+//         <Bar data={data} options={options} ></Bar>
+//     );
+// }
+// 
 const CancelButton = ({ HandleClick }) => {
     const [count, setCount] = React.useState(3);
     const [cancelled, setCancelled] = React.useState(true);
