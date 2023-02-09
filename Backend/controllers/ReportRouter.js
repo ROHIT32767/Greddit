@@ -63,17 +63,17 @@ ReportRouter.get('/:id', async (request, response) => {
 ReportRouter.put('/ignore/:id', async (request, response) => {
     console.log(request.body)
     const {
-        from, to, Username
+        from, ReportedByEmail, ReportedOnUsername
     } = request.body
     const report = await Report.findById(request.params.id)
     report.Ignored = true
     const updatedreport = await report.save()
     let mailOptions = {
         from: from,
-        to: to,
+        to: ReportedByEmail,
         subject: "Your Report has been Ignored",
         text: `Welcome Gredditian!!!!
-        Your Report on ${Username} has been analsysed
+        Your Report on ${ReportedOnUsername} has been analsysed
         and your Report is ignored due to Community
         Guidelines`
     };

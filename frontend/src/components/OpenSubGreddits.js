@@ -393,10 +393,14 @@ export default function OpenSubGreddits(props) {
         UpdateSubGredditPost();
     }
     console.log("subgreddit now", subgreddit)
-    function HandleIgnore(id) {
+    function HandleIgnore(id,ReportOn,ReportBy) {
         const IgnoreReport = async () => {
             try {
-                const data = await ReportService.Ignore(id)
+                const data = await ReportService.Ignore(id,{
+                    from:(JSON.parse(window.localStorage.getItem('token'))).Email, 
+                    ReportedByEmail:ReportBy.Email, 
+                    ReportedOnUsername:ReportOn.Email
+                })
                 console.log("recieved", data)
                 const finalreports = myreports.map(element => element._id === id ? { ...element, Ignored: true } : element)
                 setmyreports(finalreports)
@@ -407,13 +411,13 @@ export default function OpenSubGreddits(props) {
         }
         IgnoreReport();
     }
-    function HandleBlock(id, User) {
+    function HandleBlock(ReportOn,ReportBy) {
         console.log("Here")
-        console.log("block", id, User)
+        console.log("block",ReportOn._id, ReportOn)
         const BlockUserRequest = async () => {
             try {
                 const data = await SubGredditService.BlockUser(params.id, {
-                    UserID: id,
+                    UserID: ReportOn._id,
                     from: (JSON.parse(window.localStorage.getItem('token'))).Email,
                     ReportOnUsername: ReportOn.Username,
                     ReportedByUsername: ReportBy.Username,
@@ -423,7 +427,7 @@ export default function OpenSubGreddits(props) {
                 })
                 console.log("recieved", data)
                 var updatedBlocked = subgreddit.Blocked
-                updatedBlocked = subgreddit.Blocked.concat(User)
+                updatedBlocked = subgreddit.Blocked.concat(ReportOn)
                 setsubgreddit({ ...subgreddit, Blocked: updatedBlocked })
             }
             catch (error) {
@@ -669,15 +673,15 @@ export default function OpenSubGreddits(props) {
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                                                                             <Button disabled variant="contained" color="secondary">DELETE POST</Button>
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                                                                            <Button onClick={() => HandleIgnore(element._id)} variant="contained" color="secondary">IGNORE</Button>
+                                                                            <Button disabled variant="contained" color="secondary">IGNORE</Button>
                                                                         </div>
                                                                         :
                                                                         <div>
-                                                                            <CancelButton HandleClick={() => HandleBlock(element.On._id, element.On)} />
+                                                                            <CancelButton HandleClick={() => HandleBlock(element.On,element.By)} />
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                                                                             <Button onClick={() => HandleDeletePost(element.Post._id, element._id, element.On, element.By)} variant="contained" color="secondary">DELETE POST</Button>
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                                                                            <Button onClick={() => HandleIgnore(element._id)} variant="contained" color="secondary">IGNORE</Button>
+                                                                            <Button onClick={() => HandleIgnore(element._id,element.On,element.By)} variant="contained" color="secondary">IGNORE</Button>
                                                                         </div>
 
                                                                 }

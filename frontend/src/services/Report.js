@@ -55,11 +55,11 @@ const create = async newObject => {
   return response.data
 }
 
-const Ignore = (id) => {
+const Ignore = (id,newObject) => {
   const config = {
     headers: { Authorization: token },
   }
-  const request = axios.put(`${baseUrl}/ignore/${id}`, config)
+  const request = axios.put(`${baseUrl}/ignore/${id}`,newObject,config)
   return request.then(response => response.data).catch(error => console.log(error)) 
 }
 
