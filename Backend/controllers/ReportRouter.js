@@ -2,13 +2,14 @@ const Report = require("../models/Report.model")
 const { request } = require('express')
 const ReportRouter = require('express').Router()
 const SubGreddit = require("../models/SubGreddit.model")
+const config = require('../utils/config')
 var nodemailer = require('nodemailer')
 let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     secure: false,
     auth: {
         user: "greddit172@gmail.com",
-        pass: process.env.SMTP_PASSWORD
+        pass: config.SMTP_PASSWORD
     }
 })
 ReportRouter.post('/', async (request, response) => {

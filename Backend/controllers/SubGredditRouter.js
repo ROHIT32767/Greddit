@@ -1,4 +1,5 @@
 const SubGreddit = require("../models/SubGreddit.model")
+const config = require('../utils/config')
 const Posts = require("../models/Posts.model")
 const Report = require("../models/Report.model")
 const { request } = require('express')
@@ -9,7 +10,7 @@ let transporter = nodemailer.createTransport({
     secure: false,
     auth: {
         user: "greddit172@gmail.com",
-        pass: process.env.SMTP_PASSWORD
+        pass: config.SMTP_PASSWORD
     }
 })
 SubGredditRouter.post('/', async (request, response) => {

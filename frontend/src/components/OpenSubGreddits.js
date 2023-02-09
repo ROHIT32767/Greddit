@@ -35,6 +35,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+
 // import { Bar } from 'react-chartjs-2';
 // import { Chart as ChartJS, Title, Tooltip, BarElement, Legend, CategoryScale, LinearScale, PointElement, Filler } from 'chart.js';
 // ChartJS.register(
@@ -153,6 +154,7 @@ export default function OpenSubGreddits(props) {
     });
     const [myreports, setmyreports] = React.useState([])
     const [open2, setOpen2] = React.useState(true);
+    const [currentTab, setCurrentTab] = useState(0);
     const params = useParams()
     const handleClick1 = () => {
         setOpen1(!open1);
@@ -452,7 +454,6 @@ export default function OpenSubGreddits(props) {
             }
         }
         LeaveSubGreddiit();
-
     }
     return (
         <div>
@@ -469,10 +470,10 @@ export default function OpenSubGreddits(props) {
                         <div className="FollowerTabs">
                             <Tabs className="Tabs">
                                 <TabList>
-                                    <Tab> USERS</Tab>
-                                    <Tab> JOINING REQUESTS </Tab>
-                                    <Tab>STATS</Tab>
-                                    <Tab>REPORTED</Tab>
+                                    <Tab onClick={() => setCurrentTab(0)}> USERS</Tab>
+                                    <Tab onClick={() => setCurrentTab(1)}> JOINING REQUESTS </Tab>
+                                    <Tab onClick={() => setCurrentTab(2)}>STATS</Tab>
+                                    <Tab onClick={() => setCurrentTab(3)}>REPORTED</Tab>
                                 </TabList>
                                 <TabPanel>
                                     <Box
