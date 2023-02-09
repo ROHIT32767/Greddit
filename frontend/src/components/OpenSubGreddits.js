@@ -336,7 +336,7 @@ export default function OpenSubGreddits(props) {
         RejectRequests();
     }
     // ! Related to Reports Page
-    function HandleDeletePost(postid, reportid) {
+    function HandleDeletePost(postid, reportid, ReportOn, ReportBy) {
         const DeletePost = async () => {
             try {
                 const data = await PostService.Delete(postid)
@@ -376,7 +376,13 @@ export default function OpenSubGreddits(props) {
         const UpdateSubGredditPost = async () => {
             try {
                 const data = await SubGredditService.DeletePost(params.id, {
-                    PostID: postid
+                    PostID: postid,
+                    from: (JSON.parse(window.localStorage.getItem('token'))).Email,
+                    ReportOnUsername: ReportOn.Username,
+                    ReportedByUsername: ReportBy.Username,
+                    ReportByEmail: ReportBy.Email,
+                    ReportOnEmail: ReportOn.Email,
+                    SubGredditName: subgreddit.Name
                 })
                 console.log("UpdatedSubGredditdata", data)
             }
@@ -403,10 +409,18 @@ export default function OpenSubGreddits(props) {
     }
     function HandleBlock(id, User) {
         console.log("Here")
-        console.log("block",id,User)
+        console.log("block", id, User)
         const BlockUserRequest = async () => {
             try {
-                const data = await SubGredditService.BlockUser(params.id, { UserID: id })
+                const data = await SubGredditService.BlockUser(params.id, {
+                    UserID: id,
+                    from: (JSON.parse(window.localStorage.getItem('token'))).Email,
+                    ReportOnUsername: ReportOn.Username,
+                    ReportedByUsername: ReportBy.Username,
+                    ReportByEmail: ReportBy.Email,
+                    ReportOnEmail: ReportOn.Email,
+                    SubGredditName: subgreddit.Name
+                })
                 console.log("recieved", data)
                 var updatedBlocked = subgreddit.Blocked
                 updatedBlocked = subgreddit.Blocked.concat(User)
@@ -661,7 +675,7 @@ export default function OpenSubGreddits(props) {
                                                                         <div>
                                                                             <CancelButton HandleClick={() => HandleBlock(element.On._id, element.On)} />
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                                                                            <Button onClick={() => HandleDeletePost(element.Post._id, element._id)} variant="contained" color="secondary">DELETE POST</Button>
+                                                                            <Button onClick={() => HandleDeletePost(element.Post._id, element._id, element.On, element.By)} variant="contained" color="secondary">DELETE POST</Button>
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                                                                             <Button onClick={() => HandleIgnore(element._id)} variant="contained" color="secondary">IGNORE</Button>
                                                                         </div>

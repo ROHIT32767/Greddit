@@ -3,7 +3,15 @@ const Posts = require("../models/Posts.model")
 const Report = require("../models/Report.model")
 const { request } = require('express')
 const SubGredditRouter = require('express').Router()
-
+var nodemailer = require('nodemailer')
+let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    secure: false,
+    auth: {
+        user: "greddit172@gmail.com",
+        pass: process.env.SMTP_PASSWORD
+    }
+})
 SubGredditRouter.post('/', async (request, response) => {
     console.log(request.body)
     const { Name,
@@ -109,13 +117,44 @@ SubGredditRouter.put('/reject/:id', async (request, response) => {
 
 
 // * Block Users
+// TODO: Update body required for email in Frontend
 SubGredditRouter.put('/block/:id', async (request, response) => {
     console.log(request.body)
-    const { UserID } = request.body
+    const { UserID, from, ReportOnUsername, ReportedByUsername, ReportByEmail, ReportOnEmail, SubGredditName } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Blocked = subgreddit.Blocked.concat(UserID)
     const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
+    let mailOptions = {
+        from: from,
+        to: ReportByEmail,
+        subject: "Action is taken based on your Report",
+        text: `Welcome Gredditian!!!!
+        Your Report on ${ReportOnUsername} has been analsysed
+        and ${ReportOnUsername} has been banned from the SubGreddit ${SubGredditName}`
+    };
+    transporter.sendMail(mailOptions, function (err, data) {
+        if (err) {
+            console.log("Error " + err);
+        } else {
+            console.log("Email sent successfully");
+        }
+    });
+    mailOptions = {
+        from: from,
+        to: ReportOnEmail,
+        subject: "Action is taken on you Based on a Report",
+        text: `Welcome Gredditian!!!!
+        Based on a Report from  ${ReportedByUsername} and after thorough Analysis
+        You haved been banned from the SubGreddit ${SubGredditName}`
+    };
+    transporter.sendMail(mailOptions, function (err, data) {
+        if (err) {
+            console.log("Error " + err);
+        } else {
+            console.log("Email sent successfully");
+        }
+    });
     response.status(201).json(updatedsubgreddit)
 })
 
@@ -131,12 +170,43 @@ SubGredditRouter.put('/Reports/:id', async (request, response) => {
 })
 
 // Delete Post
+// TODO: Update body for Email Requests
 SubGredditRouter.put('/Posts/:id', async (request, response) => {
     console.log(request.body)
-    const { PostID } = request.body
+    const { PostID, from, ReportOnUsername, ReportedByUsername, ReportByEmail, ReportOnEmail, SubGredditName } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Post = subgreddit.Post.filter(element => element != PostID)
     const updatedsubgreddit = await subgreddit.save()
+    let mailOptions = {
+        from: from,
+        to: ReportByEmail,
+        subject: "Action is taken based on your Report",
+        text: `Welcome Gredditian!!!!
+        Your Report on ${ReportOnUsername} has been analsysed
+        and the Reported Post has been deleted from the SubGreddit ${SubGredditName}`
+    };
+    transporter.sendMail(mailOptions, function (err, data) {
+        if (err) {
+            console.log("Error " + err);
+        } else {
+            console.log("Email sent successfully");
+        }
+    });
+    mailOptions = {
+        from: from,
+        to: ReportOnEmail,
+        subject: "Action is taken on you Based on a Report",
+        text: `Welcome Gredditian!!!!
+        Based on a Report from  ${ReportedByUsername} and after thorough Analysis
+        Your post has been deleted  from the SubGreddit ${SubGredditName}`
+    };
+    transporter.sendMail(mailOptions, function (err, data) {
+        if (err) {
+            console.log("Error " + err);
+        } else {
+            console.log("Email sent successfully");
+        }
+    });
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -155,7 +225,7 @@ SubGredditRouter.put('/Click/:id', async (request, response) => {
 SubGredditRouter.put('/GrowthData/:id', async (request, response) => {
     console.log(request.body)
     const subgreddit = await SubGreddit.findById(request.params.id)
-    const {newelement} = request.body
+    const { newelement } = request.body
     subgreddit.GrowthData = subgreddit.GrowthData.concat(newelement)
     const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
@@ -167,7 +237,7 @@ SubGredditRouter.delete('/RemoveUser/:id', async (request, response) => {
     const { UserID } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Followers = subgreddit.Followers.filter(element => element != UserID)
-    subgreddit.Reports = subgreddit.Reports.filter(element => element.On!=UserID )
+    subgreddit.Reports = subgreddit.Reports.filter(element => element.On != UserID)
     const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
