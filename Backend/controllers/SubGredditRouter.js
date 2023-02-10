@@ -41,6 +41,8 @@ SubGredditRouter.post('/', async (request, response) => {
     })
     const savedsubgreddit = await subgreddit.save()
     savedsubgreddit.GrowthData = [{ date: new Date(), Join: true, User: savedsubgreddit._id }]
+    const timeseconds = Date.now()
+    savedsubgreddit.creationdate = timeseconds
     const postsavedsubgreddit = await savedsubgreddit.save()
     console.log(postsavedsubgreddit)
     response.status(201).json(postsavedsubgreddit)
@@ -221,7 +223,7 @@ SubGredditRouter.put('/Click/:id', async (request, response) => {
     const date = new Date()
     subgreddit.Clicks = subgreddit.Clicks.concat(date)
     const timeseconds = Date.now()
-    subgreddit.ClickGrowthData = subgreddit.ClickGrowthData.concat(timeseconds)
+    subgreddit.ClickGrowthData = subgreddit.ClickGrowthData.concat(Number(timeseconds))
     const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)

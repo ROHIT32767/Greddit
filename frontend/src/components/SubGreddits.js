@@ -564,7 +564,7 @@ export default function MySubGreddits(props) {
                                                                     }
                                                                 }
                                                                 UpdateClick();
-                                                                // navigate(`/ViewSubGreddits/${subreddit._id}`)
+                                                                navigate(`/ViewSubGreddits/${subreddit._id}`)
                                                             }} />
                                                         </IconButton>
                                                         :

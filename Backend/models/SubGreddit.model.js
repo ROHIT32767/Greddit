@@ -59,9 +59,7 @@ const SubGredditSchema = new mongoose.Schema({
         }
     ],
     ClickGrowthData: [
-        {
-            creationdate: { type: Number }
-        }
+        { type: Date }
     ],
     PostGrowthData: [
         [
@@ -80,7 +78,8 @@ const SubGredditSchema = new mongoose.Schema({
             ref: 'Report'
         }
     ],
-    Clicks: [{ type: Date }]
+    Clicks: [{ type: Date }],
+    creationdate:{ type: Number }
 })
 
 SubGredditSchema.set('toJSON', {

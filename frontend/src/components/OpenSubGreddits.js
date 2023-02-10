@@ -135,8 +135,7 @@ export default function OpenSubGreddits(props) {
     const [open1, setOpen1] = React.useState(true);
     const [postgrowthData, setpostGrowthData] = React.useState([]);
     const [membergrowthData, setmembergrowthData] = React.useState([]);
-    const [keyarray, setkeyarray] = React.useState([])
-    const [valuearray, setvaluearray] = React.useState([]);
+    const [clickgrowthdata, setclickgrowthdata] = React.useState([])
     var cumulativearray = []
     const [subgreddit, setsubgreddit] = React.useState({
         Name: "",
@@ -151,7 +150,10 @@ export default function OpenSubGreddits(props) {
         JoinRequests: [],
         Blocked: [],
         Reported: [],
-        Clicks: []
+        Clicks: [],
+        PostGrowthData:[],
+        ClickGrowthData:[],
+        GrowthData:[]
     });
     const [myreports, setmyreports] = React.useState([])
     const [open2, setOpen2] = React.useState(true);
@@ -165,47 +167,33 @@ export default function OpenSubGreddits(props) {
     };
     React.useEffect(() => {
         const handleKeyDown = (event) => {
-          if (event.keyCode === 117) {
-            setCurrentTab(0);
-          }
-          else if(event.keyCode === 106)
-          {
-            setCurrentTab(1);
-          }
-          else if(event.keyCode === 115)
-          {
-            setCurrentTab(2);
-          }
-          else if(event.keyCode === 114)
-          {
-            setCurrentTab(3);
-          }
+            console.log(event.keyCode)
+            if (event.keyCode == 85) {
+                setCurrentTab(0);
+            }
+            else if (event.keyCode == 74) {
+                setCurrentTab(1);
+            }
+            else if (event.keyCode == 83) {
+                setCurrentTab(2);
+            }
+            else if (event.keyCode == 82) {
+                setCurrentTab(3);
+            }
         };
         document.addEventListener('keydown', handleKeyDown);
         return () => {
-          document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('keydown', handleKeyDown);
         };
-      }, []);
+    }, []);
     // TODO: Check whether if working for Graphs
     React.useEffect(() => {
         const fetchPostGrowth = async (data) => {
             try {
                 const postdates = new Set();
-                console.log("data.date in Posts Growth is ", data.date)
-                var postsfrom = new Date(data.date)
-                // const [currday, currmonth, curryear] = postsfrom.split('/');
-                // const date = new Date(+curryear, currmonth - 1, +currday);
-                console.log("type",typeof postsfrom)
-                // console.log(postsfrom.getDay(),"getDay")
-                var poststo = new Date();
-                console.log("postsfrom", postsfrom)
-                console.log("poststo", poststo)
-                for (var day = postsfrom; day <= poststo; day.setDate(day.getDate() + 1)) {
-                    console.log(day.toISOString().substring(0, 10))
-                    postdates.add(day.toISOString().substring(0, 10))
-                }
+                data.PostGrowthData.forEach(element => postdates.add(element.date.substring(0, 10)))
                 setpostGrowthData(Array.from(postdates).map(date => {
-                    const posts = data.Post.filter(subdata => subdata.date.substring(0, 10) === date).length;
+                    const posts = data.PostGrowthData.filter(subdata => subdata.date.substring(0, 10) === date).length;
                     console.log("element of postGrowth", {
                         date: date,
                         posts: posts,
@@ -253,36 +241,21 @@ export default function OpenSubGreddits(props) {
         }
         const ClickGrowth = async (data) => {
             try {
-                let varray = []
-                let karray = []
-                console.log("data.date in Clicks Growth is ", data.date)
-                var clicksfrom = new Date(data.date.toLocaleDateString())
-                const [currday, currmonth, curryear] = clicksfrom.split('/');
-                const date = new Date(+curryear, currmonth - 1, +currday);
-                clicksfrom = date
-                // console.log("input to Date",(data.date).toString().substring(0,10))
-                var clicksto = new Date();
-                console.log("clicksfrom", clicksfrom)
-                console.log("clicksto", clicksto)
-                for (var day = clicksfrom; day <= clicksto; day.setDate(day.getDate() + 1)) {
-                    karray.push(day.toISOString().substring(0, 10))
-                    varray.push(0)
-                }
-                console.log("karray before", karray, "varray before", varray)
-                subgreddit.Clicks.forEach(element => {
-                    const index = karray.indexOf(element.toString().substring(0, 10))
-                    if (index + 1) {
-                        console.log("index", index, "element", varray[index])
-                        varray[index] = varray[index] + 1;
-                        console.log("index", index, "element + 1", varray[index])
-                    }
-                    else {
-                        console.log("Didnt find index in OpenSbg 148", element.substring(0, 10))
-                    }
-                });
-                console.log("karray", karray, "varray", varray)
-                setkeyarray(karray)
-                setvaluearray(varray)
+                const clickdates = new Set();
+                console.log("ClickGrowthData",data.ClickGrowthData)
+                data.ClickGrowthData.forEach(element => clickdates.add(element.substring(0, 10)))
+                console.log("clickdates is",clickdates)
+                setclickgrowthdata(Array.from(clickdates).map(date => {
+                    const clicks = data.ClickGrowthData.filter(subdata => subdata.substring(0, 10) === date).length;
+                    console.log("element of postGrowth", {
+                        date: date,
+                        clicks: clicks
+                    })
+                    return {
+                        date: date,
+                        clicks: clicks
+                    };
+                }))
             }
             catch (error) {
                 console.log(error)
@@ -502,11 +475,11 @@ export default function OpenSubGreddits(props) {
                     >
                         <div className="FollowerTabs">
                             <Tabs className="Tabs">
-                                <TabList>
-                                    <Tab onClick={() => setCurrentTab(0)}> USERS</Tab>
-                                    <Tab onClick={() => setCurrentTab(1)}> JOINING REQUESTS </Tab>
-                                    <Tab onClick={() => setCurrentTab(2)}>STATS</Tab>
-                                    <Tab onClick={() => setCurrentTab(3)}>REPORTED</Tab>
+                                <TabList selectedIndex={currentTab} onSelect={setCurrentTab}>
+                                    <Tab> USERS</Tab>
+                                    <Tab> JOINING REQUESTS </Tab>
+                                    <Tab> STATS</Tab>
+                                    <Tab> REPORTED</Tab>
                                 </TabList>
                                 <TabPanel>
                                     <Box
@@ -661,16 +634,16 @@ export default function OpenSubGreddits(props) {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {
-                                                    keyarray.map((element, index) => {
-                                                        return (
-                                                            <TableRow key={2}>
-                                                                <TableCell>{keyarray[index]}</TableCell>
-                                                                <TableCell>{valuearray[index]}</TableCell>
-                                                            </TableRow>
-                                                        )
-                                                    })
-                                                }
+                                                {clickgrowthdata.map((data, index) => {
+                                                    let clicks = 0;
+                                                    clicks = data.clicks;
+                                                    return (
+                                                        <TableRow key={index}>
+                                                            <TableCell>{data.date}</TableCell>
+                                                            <TableCell>{clicks}</TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
                                             </TableBody>
                                         </Table>
                                         <Table sx={{ maxWidth: 250 }} aria-label="simple table">

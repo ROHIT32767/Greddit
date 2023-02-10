@@ -22,6 +22,8 @@ PostsRouter.post('/', async (request, response) => {
     const savedpost = await post.save()
     const currentsubgreddit = await SubGreddit.findById(In)
     currentsubgreddit.Post = currentsubgreddit.Post.concat(savedpost._id)
+    const DATE = new Date()
+    currentsubgreddit.PostGrowthData = currentsubgreddit.PostGrowthData.concat({date: DATE , Post : savedpost._id})
     const savedsubgreddit = await currentsubgreddit.save()
     console.log(savedpost)
     response.status(201).json(savedpost)
