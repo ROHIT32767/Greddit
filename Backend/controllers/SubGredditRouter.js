@@ -216,7 +216,8 @@ SubGredditRouter.put('/Posts/:id', async (request, response) => {
 SubGredditRouter.put('/Click/:id', async (request, response) => {
     console.log(request.body)
     const subgreddit = await SubGreddit.findById(request.params.id)
-    subgreddit.Clicks = subgreddit.Clicks.concat(new Date())
+    const date = new Date()
+    subgreddit.Clicks = subgreddit.Clicks.concat(date)
     const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)

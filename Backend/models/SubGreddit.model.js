@@ -58,6 +58,23 @@ const SubGredditSchema = new mongoose.Schema({
             Join: { type: Boolean }
         }
     ],
+    ClickGrowthData:[
+        {
+            date: { type: Date, required: true }
+        } 
+    ],
+    PostGrowthData:[
+        [
+            {
+                date: { type: Date, required: true },
+                Post:{
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Posts'
+                },
+                Add: { type: Boolean }
+            } 
+        ]
+    ],
     Reported: [
         {
             type: mongoose.Schema.Types.ObjectId,

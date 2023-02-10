@@ -2,7 +2,7 @@ const User = require('../models/User.model')
 const logger = require('./logger')
 const jwt = require('jsonwebtoken')
 const requestLogger = (request, response, next) => {
-  logger.info('Method:', request.method)
+  logger.info('Method:', request.method) 
   logger.info('Path:  ', request.path)
   logger.info('Body:  ', request.body)
   logger.info('---')
@@ -14,7 +14,7 @@ const unknownEndpoint = (request, response) => {
 }
 
 const errorHandler = (error, request, response, next) => {
-  
+  console.log("Request that has an error",request)
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
@@ -36,10 +36,12 @@ const errorHandler = (error, request, response, next) => {
 
 const tokenExtractor = (request, response, next) => {
   const authorization = request.get('authorization')
+  console.log("variable authorization is ",authorization)
   request.token = null
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     request.token = authorization.substring(7)
   }
+  console.log("Token is ",request.token)
   next()
 }
 
@@ -48,6 +50,7 @@ const userExtractor = async (request, response, next) => {
   if (!decodedToken.id) {
     return response.status(401).json({ error: 'token missing or invalid' })
   }
+  console.log("User Extracted")
   const currentuser = await User.findById(decodedToken.id)
   request.user = currentuser
   next()

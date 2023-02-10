@@ -94,7 +94,7 @@ export default function MySubGreddits(props) {
                     Moderator: JSON.parse(window.localStorage.getItem('token')).id,
                     date: new Date()
                 })
-                setSubreddits([...subreddits, data]);
+                setSubreddits([...subreddits, {...data,Posts:data.Post}]);
                 console.log(subreddits)
                 console.log("recieved for Posting MySubGrediiit", data)
             }

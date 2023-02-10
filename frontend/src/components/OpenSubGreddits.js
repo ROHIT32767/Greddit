@@ -137,6 +137,7 @@ export default function OpenSubGreddits(props) {
     const [membergrowthData, setmembergrowthData] = React.useState([]);
     const [keyarray, setkeyarray] = React.useState([])
     const [valuearray, setvaluearray] = React.useState([]);
+    var cumulativearray = []
     const [subgreddit, setsubgreddit] = React.useState({
         Name: "",
         Description: "",
@@ -154,7 +155,7 @@ export default function OpenSubGreddits(props) {
     });
     const [myreports, setmyreports] = React.useState([])
     const [open2, setOpen2] = React.useState(true);
-    const [currentTab, setCurrentTab] = useState(0);
+    const [currentTab, setCurrentTab] = React.useState(0);
     const params = useParams()
     const handleClick1 = () => {
         setOpen1(!open1);
@@ -167,8 +168,12 @@ export default function OpenSubGreddits(props) {
         const fetchPostGrowth = async (data) => {
             try {
                 const postdates = new Set();
-                console.log("data.date in Postss Growth is ", data.date)
-                var postsfrom = new Date(data.date.substring(0, 10));
+                console.log("data.date in Posts Growth is ", data.date)
+                var postsfrom = new Date(data.date)
+                // const [currday, currmonth, curryear] = postsfrom.split('/');
+                // const date = new Date(+curryear, currmonth - 1, +currday);
+                console.log("type",typeof postsfrom)
+                // console.log(postsfrom.getDay(),"getDay")
                 var poststo = new Date();
                 console.log("postsfrom", postsfrom)
                 console.log("poststo", poststo)
@@ -227,7 +232,11 @@ export default function OpenSubGreddits(props) {
                 let varray = []
                 let karray = []
                 console.log("data.date in Clicks Growth is ", data.date)
-                var clicksfrom = new Date(data.date.substring(0, 10));
+                var clicksfrom = new Date(data.date.toLocaleDateString())
+                const [currday, currmonth, curryear] = clicksfrom.split('/');
+                const date = new Date(+curryear, currmonth - 1, +currday);
+                clicksfrom = date
+                // console.log("input to Date",(data.date).toString().substring(0,10))
                 var clicksto = new Date();
                 console.log("clicksfrom", clicksfrom)
                 console.log("clicksto", clicksto)
@@ -398,13 +407,13 @@ export default function OpenSubGreddits(props) {
     }
     console.log("subgreddit now", subgreddit)
     // TODO: Check whether if working
-    function HandleIgnore(id,ReportOn,ReportBy) {
+    function HandleIgnore(id, ReportOn, ReportBy) {
         const IgnoreReport = async () => {
             try {
-                const data = await ReportService.Ignore(id,{
-                    from:(JSON.parse(window.localStorage.getItem('token'))).Email, 
-                    ReportedByEmail:ReportBy.Email, 
-                    ReportedOnUsername:ReportOn.Email
+                const data = await ReportService.Ignore(id, {
+                    from: (JSON.parse(window.localStorage.getItem('token'))).Email,
+                    ReportedByEmail: ReportBy.Email,
+                    ReportedOnUsername: ReportOn.Email
                 })
                 console.log("recieved", data)
                 const finalreports = myreports.map(element => element._id === id ? { ...element, Ignored: true } : element)
@@ -416,9 +425,9 @@ export default function OpenSubGreddits(props) {
         }
         IgnoreReport();
     }
-    function HandleBlock(ReportOn,ReportBy) {
+    function HandleBlock(ReportOn, ReportBy) {
         console.log("Here")
-        console.log("block",ReportOn._id, ReportOn)
+        console.log("block", ReportOn._id, ReportOn)
         const BlockUserRequest = async () => {
             try {
                 const data = await SubGredditService.BlockUser(params.id, {
@@ -443,11 +452,11 @@ export default function OpenSubGreddits(props) {
         // TODO: Check whether if working
         const LeaveSubGreddiit = async () => {
             try {
-                const data = await SubGredditService.LeaveSubGreddit(id, { UserID: ReportOn._id })
+                const data = await SubGredditService.LeaveSubGreddit(params.id, { UserID: ReportOn._id })
                 console.log("recieved", data)
                 var updatedfollowers = subgreddit.Followers
-                updatedfollowers  = updatedfollowers.filter(element => element._id!==ReportOn._id)
-                setsubgreddit({...subgreddit,Followers:updatedfollowers})
+                updatedfollowers = updatedfollowers.filter(element => element._id !== ReportOn._id)
+                setsubgreddit({ ...subgreddit, Followers: updatedfollowers })
             }
             catch (error) {
                 console.log(error)
@@ -648,14 +657,14 @@ export default function OpenSubGreddits(props) {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {membergrowthData.map((data, index, arr) => {
+                                                {membergrowthData.map((data, index) => {
                                                     let members = 0;
                                                     if (index === 0) {
                                                         members = data.members;
-                                                    } else if (arr[index - 1].members > 0) {
-                                                        members = arr[index - 1].members + data.members;
+                                                        cumulativearray[0] = members
                                                     } else {
-                                                        members = arr[index - 1].members;
+                                                        members = cumulativearray[index - 1] + data.members;
+                                                        cumulativearray[index] = members
                                                     }
                                                     return (
                                                         <TableRow key={index}>
@@ -696,11 +705,11 @@ export default function OpenSubGreddits(props) {
                                                                         </div>
                                                                         :
                                                                         <div>
-                                                                            <CancelButton HandleClick={() => HandleBlock(element.On,element.By)} />
+                                                                            <CancelButton HandleClick={() => HandleBlock(element.On, element.By)} />
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                                                                             <Button onClick={() => HandleDeletePost(element.Post._id, element._id, element.On, element.By)} variant="contained" color="secondary">DELETE POST</Button>
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                                                                            <Button onClick={() => HandleIgnore(element._id,element.On,element.By)} variant="contained" color="secondary">IGNORE</Button>
+                                                                            <Button onClick={() => HandleIgnore(element._id, element.On, element.By)} variant="contained" color="secondary">IGNORE</Button>
                                                                         </div>
 
                                                                 }

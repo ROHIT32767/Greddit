@@ -2,12 +2,11 @@ import axios from 'axios'
 const baseUrl = 'http://localhost:3003/api/SubGreddiits'
 
 let token = null
-if(window.localStorage.getItem('token'))
-{
-  token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
+if (window.localStorage.getItem('token')) {
+  token = `bearer ${(JSON.parse(window.localStorage.getItem('token'))).token}`
 }
 const setToken = newToken => {
-  token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
+  token = `bearer ${(JSON.parse(window.localStorage.getItem('token'))).token}`
 }
 
 
@@ -56,11 +55,11 @@ const create = async newObject => {
   return response.data
 }
 
-const UpdateClicks = (id) => {
+const UpdateClicks = (id,newObject) => {
   const config = {
-    headers: { Authorization: token },
+    headers: { Authorization: `bearer ${(JSON.parse(window.localStorage.getItem('token'))).token}` },
   }
-  const request = axios.put(`${baseUrl}/Click/${id}`, config)
+  const request = axios.put(`${baseUrl}/Click/${id}`,{},config)
   return request.then(response => response.data).catch(error => console.log(error))
 }
 

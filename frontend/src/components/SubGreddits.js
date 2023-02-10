@@ -272,6 +272,40 @@ export default function MySubGreddits(props) {
                                         }
                                     }
                                 }
+                                else{
+                                    if (!event.target.value) {
+                                        const options = {
+                                            includeScore: true,
+                                            keys: ['Name']
+                                        }
+                                        const fuse = new Fuse(subreddits.filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)), options)
+                                        const result = fuse.search('')
+                                        console.log("result for empty search text",result)
+                                        setemptydisplaysubreddits(result.map(element => element['item']))
+                                    }
+                                    else {
+                                        if (!selectedTags.length) {
+                                            const options = {
+                                                includeScore: true,
+                                                keys: ['Name']
+                                            }
+                                            const fuse = new Fuse(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())), options)
+                                            const result = fuse.search(event.target.value)
+                                            console.log("result for search text",result ,"searchtext",event.target.value)
+                                            setdisplaysubreddits(result.map(element => element['item']))
+                                        }
+                                        else {
+                                            const options = {
+                                                includeScore: true,
+                                                keys: ['Name']
+                                            }
+                                            const fuse = new Fuse(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)), options)
+                                            const result = fuse.search(event.target.value)
+                                            console.log("result for tags and search text",result,"searchtext",event.target.value)
+                                            setdisplaysubreddits(result.map(element => element['item']))
+                                        }
+                                    }
+                                }
                             }}
                         />
                         <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
@@ -388,7 +422,6 @@ export default function MySubGreddits(props) {
                             }
                         </Grid>
                         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                        // TODO: Check whether if working for fuzzy search 
                         <Grid item xs={15} sm={3}>
                             {
                                 (ascending || descending || datesort || followersort) ? (
@@ -400,44 +433,17 @@ export default function MySubGreddits(props) {
                                         setdescending(false)
                                         setfollowersort(false)
                                         setfuzzysort(true)
-                                        if (!searchtext) {
-                                            const options = {
-                                                includeScore: true,
-                                                keys: ['Name']
-                                            }
-                                            const fuse = new Fuse(subreddits.filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)), options)
-                                            const result = fuse.search('')
-                                            setemptydisplaysubreddits(result.map(element => element[item]))
-                                        }
-                                        else {
-                                            if (!selectedTags.length) {
-                                                const options = {
-                                                    includeScore: true,
-                                                    keys: ['Name']
-                                                }
-                                                const fuse = new Fuse(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())), options)
-                                                const result = fuse.search(searchtext)
-                                                setdisplaysubreddits(result.map(element => element[item]))
-                                            }
-                                            else {
-                                                const options = {
-                                                    includeScore: true,
-                                                    keys: ['Name']
-                                                }
-                                                const fuse = new Fuse(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)), options)
-                                                const result = fuse.search(searchtext)
-                                                setdisplaysubreddits(result.map(element => element[item]))
-                                            }
-                                        }
                                     }}>Fuzzy</Button>)
                             }
                         </Grid>
+                        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                         <Grid item xs={18} sm={3}>
                             <Button variant="contained" color="secondary" onClick={event => {
                                 setascending(false)
                                 setdatesort(false)
                                 setdescending(false)
                                 setfollowersort(false)
+                                setfuzzysort(false)
                                 if (!searchtext && !selectedTags.length) {
                                     setemptydisplaysubreddits([...subreddits])
                                 }
@@ -548,18 +554,17 @@ export default function MySubGreddits(props) {
                                                     subreddit.Followers.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) ?
                                                         <IconButton aria-label="add to favorites">
                                                             <OpenInNewIcon onClick={event => {
-                                                                const UpdateClicks = async () => {
+                                                                const UpdateClick = async () => {
                                                                     try {
                                                                         const data = await SubGredditService.UpdateClicks(subreddit._id)
-
                                                                         console.log("Updated Clicks", data)
                                                                     }
                                                                     catch (error) {
                                                                         console.log(error)
                                                                     }
                                                                 }
-                                                                UpdateClicks();
-                                                                navigate(`/ViewSubGreddits/${subreddit._id}`)
+                                                                UpdateClick();
+                                                                // navigate(`/ViewSubGreddits/${subreddit._id}`)
                                                             }} />
                                                         </IconButton>
                                                         :
