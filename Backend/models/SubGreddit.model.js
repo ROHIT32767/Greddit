@@ -58,21 +58,20 @@ const SubGredditSchema = new mongoose.Schema({
             Join: { type: Boolean }
         }
     ],
-    ClickGrowthData:[
+    ClickGrowthData: [
         {
-            date: { type: Date, required: true }
-        } 
+            creationdate: { type: Number }
+        }
     ],
-    PostGrowthData:[
+    PostGrowthData: [
         [
             {
                 date: { type: Date, required: true },
-                Post:{
+                Post: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'Posts'
-                },
-                Add: { type: Boolean }
-            } 
+                }
+            }
         ]
     ],
     Reported: [
@@ -81,7 +80,7 @@ const SubGredditSchema = new mongoose.Schema({
             ref: 'Report'
         }
     ],
-    Clicks:[{ type: Date}]
+    Clicks: [{ type: Date }]
 })
 
 SubGredditSchema.set('toJSON', {

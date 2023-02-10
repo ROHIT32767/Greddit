@@ -25,6 +25,12 @@ const PostsSchema = new mongoose.Schema({
       }
     }
   ],
+  PostComments:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment'
+    }
+  ],
   BlockedUser : { type: Boolean },
   date:{type:Date,required:true}
 })

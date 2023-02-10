@@ -163,6 +163,29 @@ export default function OpenSubGreddits(props) {
     const handleClick2 = () => {
         setOpen2(!open2);
     };
+    React.useEffect(() => {
+        const handleKeyDown = (event) => {
+          if (event.keyCode === 117) {
+            setCurrentTab(0);
+          }
+          else if(event.keyCode === 106)
+          {
+            setCurrentTab(1);
+          }
+          else if(event.keyCode === 115)
+          {
+            setCurrentTab(2);
+          }
+          else if(event.keyCode === 114)
+          {
+            setCurrentTab(3);
+          }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+          document.removeEventListener('keydown', handleKeyDown);
+        };
+      }, []);
     // TODO: Check whether if working for Graphs
     React.useEffect(() => {
         const fetchPostGrowth = async (data) => {
@@ -210,6 +233,7 @@ export default function OpenSubGreddits(props) {
                     memberdates.add(day.toISOString().substring(0, 10))
                 }
                 console.log(data.GrowthData)
+                data.GrowthData.forEach(element => memberdates.add(element.date.toISOString().substring(0, 10)))
                 setmembergrowthData(Array.from(memberdates).map(date => {
                     const members = data.GrowthData.filter(subdata => subdata.date.substring(0, 10) === date);
                     const joinmembers = members.filter(element => element.Join).length
