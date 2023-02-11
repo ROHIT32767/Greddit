@@ -48,6 +48,7 @@ ReportRouter.get('/SubGreddit/:id', async (request, response) => {
     const AllReports = await Report
         .find({}).populate('Post').populate('By').populate('On')
     const currentsubgreddit = await SubGreddit.findById(request.params.id)
+    console.log("All Reports are",AllReports)
     const myreports = AllReports.filter(element => currentsubgreddit.Reports.includes(element._id))
     response.json(myreports)
     console.log("My reports are", myreports)
@@ -70,7 +71,7 @@ ReportRouter.put('/ignore/:id', async (request, response) => {
     report.Ignored = true
     const updatedreport = await report.save()
     let mailOptions = {
-        from: "Greddit172@gmail.com",
+        from: "greddit172@gmail.com",
         to: ReportedByEmail,
         subject: "Your Report has been Ignored",
         text: `Welcome Gredditian!!!!
