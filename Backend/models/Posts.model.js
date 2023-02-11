@@ -32,7 +32,8 @@ const PostsSchema = new mongoose.Schema({
     }
   ],
   BlockedUser : { type: Boolean },
-  date:{type:Date,required:true}
+  date:{type:Date,required:true},
+  creationdate:{type:Number}
 })
 
 PostsSchema.set('toJSON', {

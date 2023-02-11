@@ -25,7 +25,8 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Posts'
     }
-  ]
+  ],
+  creationdate:{type:Number}
 })
 
 userSchema.set('toJSON', {

@@ -12,14 +12,8 @@ import Collapse from '@mui/material/Collapse';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import StarBorder from '@mui/icons-material/StarBorder';
 import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { styled } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
 import SubGredditService from "../services/SubGreddiit"
 import Button from '@mui/material/Button';
@@ -30,11 +24,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { green } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, Title, Tooltip, BarElement, Legend, CategoryScale, LinearScale, PointElement, Filler } from 'chart.js';
 ChartJS.register(
@@ -42,8 +31,7 @@ ChartJS.register(
     CategoryScale, LinearScale, PointElement, Filler
 )
 const theme = createTheme();
-var EXPIRE = 10 * 86400
-// TODO: Graph
+var EXPIRE = 10 * 86400 * 1000
 function ChartPlot(params) {
     // console.log("entry", params)
     const data = {

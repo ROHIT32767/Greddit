@@ -59,7 +59,18 @@ SubGredditRouter.get('/:id', async (request, response) => {
     const subgreddit = await SubGreddit
         .findById(ID).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked')
     console.log(subgreddit)
-    response.json(subgreddit)
+    const ModeratorID = subgreddit.Moderator._id
+    const userid = request.user._id
+    if(ModeratorID==userid)
+    {
+        response.json(subgreddit)
+    }
+    else{
+        const Blockedids = subgreddit.Blocked.map(element => element._id)
+        const UpdatedPosts =  subgreddit.Post.map(element => Blockedids.includes(element._id) ? {...element,By:{...By,Username:"Blocked User"}}:element)
+        subgreddit.Post = UpdatedPosts
+        response.json(subgreddit)
+    }
 })
 
 SubGredditRouter.get('/User/:id', async (request, response) => {
