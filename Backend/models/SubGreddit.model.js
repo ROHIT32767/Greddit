@@ -62,15 +62,13 @@ const SubGredditSchema = new mongoose.Schema({
         { type: Date }
     ],
     PostGrowthData: [
-        [
             {
                 date: { type: Date, required: true },
                 Post: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'Posts'
                 }
-            }
-        ]
+            } 
     ],
     Reported: [
         {

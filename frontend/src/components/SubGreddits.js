@@ -186,11 +186,11 @@ export default function MySubGreddits(props) {
         console.log(id)
         const followedarray = subreddit.Followed.map(element => element._id)
         const blockedarray = subreddit.Blocked.map(element => element._id)
-        if(!blockedarray.includes(JSON.parse(window.localStorage.getItem('token')).id))
+        if(blockedarray && blockedarray.includes(JSON.parse(window.localStorage.getItem('token')).id))
         {
             alert("You are trying to Join a SubGreddit that has Banned you which is against policy")
         }
-        else if (!followedarray.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
+        else if (followedarray && followedarray.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
             alert("You are trying to Join a SubGreddit that you have already Left which is against policy")
         }
         else {

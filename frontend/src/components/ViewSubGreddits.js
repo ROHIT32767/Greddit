@@ -192,7 +192,6 @@ const Post = ({ id, post, posts, setposts, blocked }) => {
             <Container component="main" sx={{ maxWidth: 500 }}>
                 <Card style={{ marginBottom: '20px' }} sx={{ marginTop: 8, bgcolor: green[500] }}>
                     <CardContent>
-                    // TODO: Check whether if working
                         {blocked ?
                             <Typography variant="h5" component="h2">
                                 Blocked User
@@ -331,10 +330,9 @@ const RedditClone = () => {
                     )
                     console.log("recieved", data)
                     setposts([...posts, {
-                        ...data, By: {
-                            Username: window.localStorage.getItem('token').Username
-                        }
+                        ...data, By: JSON.parse(window.localStorage.getItem('token'))
                     }])
+                    console.log("By",JSON.parse(window.localStorage.getItem('token')))
                     console.log("posts on Loading are", posts)
                 }
                 catch (error) {
@@ -362,6 +360,7 @@ const RedditClone = () => {
                             JSON.parse(window.localStorage.getItem('token'))
 
                     }])
+                    console.log("By",JSON.parse(window.localStorage.getItem('token')))
                     console.log("posts on Loading are", posts)
                 }
                 catch (error) {
@@ -514,7 +513,7 @@ const RedditClone = () => {
                     </DialogActions>
                 </Dialog>
                 {posts.map((post) =>
-                    subgreddit.Blocked && subgreddit.Blocked.map(element => element._id).includes(post.By._id) ?
+                    subgreddit.Blocked && subgreddit.Blocked.map(element => element._id).includes(post.By._id) && subgreddit.Moderator._id!==JSON.parse(window.localStorage.getItem('token'))._id ?
                         <Post key={post._id} blocked={true} id={post._id} post={post} posts={posts} setposts={setposts} />
                         :
                         <Post key={post._id} blocked={false} id={post._id} post={post} posts={posts} setposts={setposts} />

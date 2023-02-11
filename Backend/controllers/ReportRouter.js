@@ -8,7 +8,7 @@ let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     secure: false,
     auth: {
-        user: "greddit172@gmail.com",
+        user: "Greddit172@gmail.com",
         pass: config.SMTP_PASSWORD
     }
 })
@@ -70,7 +70,7 @@ ReportRouter.put('/ignore/:id', async (request, response) => {
     report.Ignored = true
     const updatedreport = await report.save()
     let mailOptions = {
-        from: from,
+        from: "Greddit172@gmail.com",
         to: ReportedByEmail,
         subject: "Your Report has been Ignored",
         text: `Welcome Gredditian!!!!

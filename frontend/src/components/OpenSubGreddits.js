@@ -131,7 +131,6 @@ const CancelButton = ({ HandleClick }) => {
     );
 };
 export default function OpenSubGreddits(props) {
-
     const [open1, setOpen1] = React.useState(true);
     const [postgrowthData, setpostGrowthData] = React.useState([]);
     const [membergrowthData, setmembergrowthData] = React.useState([]);
@@ -151,9 +150,9 @@ export default function OpenSubGreddits(props) {
         Blocked: [],
         Reported: [],
         Clicks: [],
-        PostGrowthData:[],
-        ClickGrowthData:[],
-        GrowthData:[]
+        PostGrowthData: [],
+        ClickGrowthData: [],
+        GrowthData: []
     });
     const [myreports, setmyreports] = React.useState([])
     const [open2, setOpen2] = React.useState(true);
@@ -191,13 +190,19 @@ export default function OpenSubGreddits(props) {
         const fetchPostGrowth = async (data) => {
             try {
                 const postdates = new Set();
-                data.PostGrowthData.forEach(element => postdates.add(element.date.substring(0, 10)))
+                //   console.log("PostGrowthData", data.PostGrowthData)
+                const postarray = data.PostGrowthData
+                postarray.forEach((element, index) => {
+                    // console.log("element", element, "index",index,element.date,typeof element.date)
+                    postdates.add(element.date.substring(0, 10))
+                })
+                //  console.log("postdates", postdates)
                 setpostGrowthData(Array.from(postdates).map(date => {
                     const posts = data.PostGrowthData.filter(subdata => subdata.date.substring(0, 10) === date).length;
-                    console.log("element of postGrowth", {
-                        date: date,
-                        posts: posts,
-                    })
+                    // console.log("element of postGrowth", {
+                    //     date: date,
+                    //     posts: posts,
+                    // })
                     return {
                         date: date,
                         posts: posts,
@@ -211,17 +216,8 @@ export default function OpenSubGreddits(props) {
         const MemberGrowth = async (data) => {
             try {
                 const memberdates = new Set();
-                console.log("data.date in Members Growth is ", data.date)
-                var membersfrom = new Date(data.date.substring(0, 10));
-                var membersto = new Date();
-                console.log("membersfrom", membersfrom)
-                console.log("membersto", membersto)
-                for (var day = membersfrom; day <= membersto; day.setDate(day.getDate() + 1)) {
-                    console.log(day.toISOString().substring(0, 10))
-                    memberdates.add(day.toISOString().substring(0, 10))
-                }
+                data.GrowthData.forEach(element => memberdates.add(element.date.substring(0, 10)))
                 console.log(data.GrowthData)
-                data.GrowthData.forEach(element => memberdates.add(element.date.toISOString().substring(0, 10)))
                 setmembergrowthData(Array.from(memberdates).map(date => {
                     const members = data.GrowthData.filter(subdata => subdata.date.substring(0, 10) === date);
                     const joinmembers = members.filter(element => element.Join).length
@@ -242,9 +238,9 @@ export default function OpenSubGreddits(props) {
         const ClickGrowth = async (data) => {
             try {
                 const clickdates = new Set();
-                console.log("ClickGrowthData",data.ClickGrowthData)
+                console.log("ClickGrowthData", data.ClickGrowthData)
                 data.ClickGrowthData.forEach(element => clickdates.add(element.substring(0, 10)))
-                console.log("clickdates is",clickdates)
+                console.log("clickdates is", clickdates)
                 setclickgrowthdata(Array.from(clickdates).map(date => {
                     const clicks = data.ClickGrowthData.filter(subdata => subdata.substring(0, 10) === date).length;
                     console.log("element of postGrowth", {
@@ -727,34 +723,3 @@ export default function OpenSubGreddits(props) {
         </div>
     )
 }
-
-
-{/* <Box
-sx={{
-    marginTop: 8,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-}}
->
-{
-    subgreddit.Reports.map(element => {
-        return (
-            <div>
-                {element.By.Username}
-            </div>
-        )
-    })
-}
-</Box> */}
-
-
-// Write code in reactjs so that When button is pressed it changes to another button with
-// a countdown like “Cancel in 3 secs” (where 3 will change to 2
-// after 1 second and so on). If the timer reaches 0, A function gets executed, otherwise the user can press cancel to abort
-
-
-// import React, { useState, useEffect } from "react";
-
-
-// export default CancelButton;

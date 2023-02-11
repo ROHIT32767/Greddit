@@ -9,7 +9,7 @@ let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     secure: false,
     auth: {
-        user: "greddit172@gmail.com",
+        user: "Greddit172@gmail.com",
         pass: config.SMTP_PASSWORD
     }
 })
@@ -183,7 +183,7 @@ SubGredditRouter.put('/Posts/:id', async (request, response) => {
     subgreddit.Post = subgreddit.Post.filter(element => element != PostID)
     const updatedsubgreddit = await subgreddit.save()
     let mailOptions = {
-        from: from,
+        from: "Greddit172@gmail.com",
         to: ReportByEmail,
         subject: "Action is taken based on your Report",
         text: `Welcome Gredditian!!!!
@@ -198,7 +198,7 @@ SubGredditRouter.put('/Posts/:id', async (request, response) => {
         }
     });
     mailOptions = {
-        from: from,
+        from: "Greddit172@gmail.com",
         to: ReportOnEmail,
         subject: "Action is taken on you Based on a Report",
         text: `Welcome Gredditian!!!!
