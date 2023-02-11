@@ -35,64 +35,59 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-
-// import { Bar } from 'react-chartjs-2';
-// import { Chart as ChartJS, Title, Tooltip, BarElement, Legend, CategoryScale, LinearScale, PointElement, Filler } from 'chart.js';
-// ChartJS.register(
-//     Title, Tooltip, BarElement, Legend,
-//     CategoryScale, LinearScale, PointElement, Filler
-// )
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, Title, Tooltip, BarElement, Legend, CategoryScale, LinearScale, PointElement, Filler } from 'chart.js';
+ChartJS.register(
+    Title, Tooltip, BarElement, Legend,
+    CategoryScale, LinearScale, PointElement, Filler
+)
 const theme = createTheme();
 var EXPIRE = 10 * 86400
 // TODO: Graph
-// function ChartPlot(params) {
-
-//     // console.log("entry", params)
-
-//     const data = {
-//         title: {
-//             text: params.title
-//         },
-//         labels: params.labels,
-//         datasets: [
-//             {
-//                 data: params.data,
-//                 tension: 0,
-//                 fill: true,
-//                 pointBorderColor: '#00000090',
-//                 pointBackgroundColor: '#00000090',
-//                 showLine: true,
-//                 radius: 0.5,
-//                 borderColor: "#000000",
-//                 linecolor: "black",
-//             },
-//         ]
-//     }
-//     const options = {
-//         plugins: {
-//             title: {
-//                 display: true,
-//                 text: params.title,
-//                 padding: 15,
-//                 font: {
-//                     size: 20
-//                 }
-//             },
-//             legend: {
-//                 display: false
-//             }
-//         },
-//         maintainAspectRatio: true
-//     }
-
-//     options.scales = null;
-
-
-//     return (
-//         <Bar data={data} options={options} ></Bar>
-//     );
-// }
-// 
+function ChartPlot(params) {
+    // console.log("entry", params)
+    const data = {
+        title: {
+            text: params.title
+        },
+        labels: params.labels,
+        datasets: [
+            {
+                data: params.data,
+                tension: 0,
+                fill: true,
+                pointBorderColor: '#00000090',
+                pointBackgroundColor: '#00000090',
+                showLine: true,
+                radius: 0.5,
+                borderColor: "#000000",
+                linecolor: "black",
+                borderColor: '#FF6384',
+                backgroundColor: '#FFB1C1'
+            },
+        ]
+    }
+    const options = {
+        plugins: {
+            title: {
+                display: true,
+                text: params.title,
+                padding: 15,
+                font: {
+                    size: 20
+                }
+            },
+            legend: {
+                display: false
+            }
+        },
+        maintainAspectRatio: true
+    }
+    options.scales = null;
+    return (
+        <Bar data={data} options={options} ></Bar>
+    );
+}
 const CancelButton = ({ HandleClick }) => {
     const [count, setCount] = React.useState(3);
     const [cancelled, setCancelled] = React.useState(true);
@@ -421,42 +416,59 @@ export default function OpenSubGreddits(props) {
     function HandleBlock(ReportOn, ReportBy) {
         console.log("Here")
         console.log("block", ReportOn._id, ReportOn)
-        const BlockUserRequest = async () => {
-            try {
-                const data = await SubGredditService.BlockUser(params.id, {
-                    UserID: ReportOn._id,
-                    from: (JSON.parse(window.localStorage.getItem('token'))).Email,
-                    ReportOnUsername: ReportOn.Username,
-                    ReportedByUsername: ReportBy.Username,
-                    ReportByEmail: ReportBy.Email,
-                    ReportOnEmail: ReportOn.Email,
-                    SubGredditName: subgreddit.Name
-                })
-                console.log("recieved", data)
-                var updatedBlocked = subgreddit.Blocked
-                updatedBlocked = subgreddit.Blocked.concat(ReportOn)
-                setsubgreddit({ ...subgreddit, Blocked: updatedBlocked })
+        if (!subgreddit.Blocked.map(element => element._id).includes(ReportOn._id)) {
+            const BlockUserRequest = async () => {
+                try {
+                    const data = await SubGredditService.BlockUser(params.id, {
+                        UserID: ReportOn._id,
+                        from: (JSON.parse(window.localStorage.getItem('token'))).Email,
+                        ReportOnUsername: ReportOn.Username,
+                        ReportedByUsername: ReportBy.Username,
+                        ReportByEmail: ReportBy.Email,
+                        ReportOnEmail: ReportOn.Email,
+                        SubGredditName: subgreddit.Name
+                    })
+                    console.log("recieved", data)
+                    var updatedBlocked = subgreddit.Blocked
+                    updatedBlocked = subgreddit.Blocked.concat(ReportOn)
+                    setsubgreddit({ ...subgreddit, Blocked: updatedBlocked })
+                }
+                catch (error) {
+                    console.log(error)
+                }
             }
-            catch (error) {
-                console.log(error)
+            BlockUserRequest();
+            // TODO: Check whether if working
+            const LeaveSubGreddiit = async () => {
+                try {
+                    const data = await SubGredditService.LeaveSubGreddit(params.id, { UserID: ReportOn._id })
+                    console.log("recieved", data)
+                    var updatedfollowers = subgreddit.Followers
+                    updatedfollowers = updatedfollowers.filter(element => element._id !== ReportOn._id)
+                    setsubgreddit({ ...subgreddit, Followers: updatedfollowers })
+                }
+                catch (error) {
+                    console.log(error)
+                }
             }
+            LeaveSubGreddiit();
         }
-        BlockUserRequest();
-        // TODO: Check whether if working
-        const LeaveSubGreddiit = async () => {
-            try {
-                const data = await SubGredditService.LeaveSubGreddit(params.id, { UserID: ReportOn._id })
-                console.log("recieved", data)
-                var updatedfollowers = subgreddit.Followers
-                updatedfollowers = updatedfollowers.filter(element => element._id !== ReportOn._id)
-                setsubgreddit({ ...subgreddit, Followers: updatedfollowers })
-            }
-            catch (error) {
-                console.log(error)
-            }
+        else {
+            console.log("User is already blocked")
         }
-        LeaveSubGreddiit();
+
     }
+    const cumulativememebrs = membergrowthData.map((data, index) => {
+        let members = 0;
+        if (index === 0) {
+            members = data.members;
+            cumulativearray[0] = members
+        } else {
+            members = cumulativearray[index - 1] + data.members;
+            cumulativearray[index] = members
+        }
+    }
+    )
     return (
         <div>
             <ThemeProvider theme={theme}>
@@ -586,88 +598,10 @@ export default function OpenSubGreddits(props) {
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <Table sx={{ maxWidth: 250, mb: 2 }} aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Date</TableCell>
-                                                    <TableCell align="right">DailyPosts</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {postgrowthData.map((data, index, arr) => {
-                                                    let posts = 0;
-                                                    posts = data.posts;
-                                                    return (
-                                                        <TableRow key={index}>
-                                                            <TableCell>{data.date}</TableCell>
-                                                            <TableCell>{posts}</TableCell>
-                                                        </TableRow>
-                                                    );
-                                                })
-                                                }
-                                            </TableBody>
-                                        </Table>
-                                        <Divider />
-                                        <Table sx={{ maxWidth: 250, mb: 2 }} aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Reported Posts</TableCell>
-                                                    <TableCell align="right">Deleted Posts</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                <TableRow key={2}>
-                                                    <TableCell>{subgreddit.Reported.length}</TableCell>
-                                                    <TableCell>{subgreddit.Reported.length - subgreddit.Reports.length}</TableCell>
-                                                </TableRow>
-                                            </TableBody>
-                                        </Table>
-                                        <Table sx={{ maxWidth: 250, mb: 2 }} aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Date</TableCell>
-                                                    <TableCell align="right">Daily Clicks</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {clickgrowthdata.map((data, index) => {
-                                                    let clicks = 0;
-                                                    clicks = data.clicks;
-                                                    return (
-                                                        <TableRow key={index}>
-                                                            <TableCell>{data.date}</TableCell>
-                                                            <TableCell>{clicks}</TableCell>
-                                                        </TableRow>
-                                                    );
-                                                })}
-                                            </TableBody>
-                                        </Table>
-                                        <Table sx={{ maxWidth: 250 }} aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Date</TableCell>
-                                                    <TableCell>Members</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {membergrowthData.map((data, index) => {
-                                                    let members = 0;
-                                                    if (index === 0) {
-                                                        members = data.members;
-                                                        cumulativearray[0] = members
-                                                    } else {
-                                                        members = cumulativearray[index - 1] + data.members;
-                                                        cumulativearray[index] = members
-                                                    }
-                                                    return (
-                                                        <TableRow key={index}>
-                                                            <TableCell>{data.date}</TableCell>
-                                                            <TableCell>{members}</TableCell>
-                                                        </TableRow>
-                                                    );
-                                                })}
-                                            </TableBody>
-                                        </Table>
+                                        <ChartPlot labels={postgrowthData.map((data, index, arr) => data.date)} title="Daily Posts" data={postgrowthData.map((data, index, arr) => data.posts)}></ChartPlot>
+                                        <ChartPlot labels={["Reported Posts", "Deleted Posts"]} title="Reported Posts vs Deleted Posts" data={[subgreddit.Reported.length, subgreddit.Reported.length - subgreddit.Reports.length]}></ChartPlot>
+                                        <ChartPlot labels={clickgrowthdata.map((data, index) => data.date)} title="Daily Clicks" data={clickgrowthdata.map((data, index) => data.clicks)}></ChartPlot>
+                                        <ChartPlot labels={membergrowthData.map((data, index) => data.date)} title="Member Growth" data={cumulativearray}></ChartPlot>
                                     </Box>
                                 </TabPanel>
                                 <TabPanel>
