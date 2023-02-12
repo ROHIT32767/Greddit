@@ -45,7 +45,7 @@ export default function Register(props) {
     LastName: "",
     Username: "",
     Email: "",
-    Age: 18,
+    Age: "",
     ContactNumber: "",
     password: ""
   })
@@ -81,7 +81,7 @@ export default function Register(props) {
         LastName: "",
         Username: "",
         Email: "",
-        Age: 18,
+        Age: "",
         ContactNumber: "",
         password: "",
       })
@@ -104,7 +104,7 @@ export default function Register(props) {
             LastName: "",
             Username: "",
             Email: "",
-            Age: 18,
+            Age: "",
             ContactNumber: "",
             password: ""
           })

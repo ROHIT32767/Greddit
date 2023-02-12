@@ -82,7 +82,7 @@ const BlockUser = (id, newObject) => {
 const AcceptRequest = (id, newObject) => {
   const config = {
     headers: { Authorization: token },
-  }
+  } 
   const request = axios.put(`${baseUrl}/accept/${id}`, newObject, config)
   return request.then(response => response.data).catch(error => console.log(error))
 }

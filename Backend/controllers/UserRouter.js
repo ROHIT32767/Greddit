@@ -76,7 +76,8 @@ usersRouter.put('/update/:id', async (request, response) => {
   UserProfile.Email = Email
   UserProfile.ContactNumber = ContactNumber
   UserProfile.passwordHash = passwordHash
-  const updateduser = await UserProfile.save()
+  // const updateduser = await UserProfile.save()
+  const updateduser = await User.findByIdAndUpdate(UserProfile._id,UserProfile,{new:true})
   console.log(updateduser)
   response.status(201).json(updateduser)
 })
@@ -85,18 +86,20 @@ usersRouter.put('/addfollowing/:id', async (request, response) => {
   // * For Updating Followers Data
   console.log(request.body)
   const { TargetID } = request.body
-  // TODO: Have to Check Validity of id , TargetID
+  // TODO: Have to Check Validity of id , TargetID 
   // ! Add Number 1
   const UserProfile1 = await User.findById(TargetID)
+  console.log("UserProfile1 is ",UserProfile1)
   UserProfile1.Followers = UserProfile1.Followers.concat(request.params.id)
   const updatedFollowers = await UserProfile1.save()
   console.log("updatedFollowers", updatedFollowers)
   // ! Add Number 2
   const UserProfile2 = await User.findById(request.params.id)
+  console.log("UserProfile2 is ",UserProfile2)
   UserProfile2.Following = UserProfile2.Following.concat(TargetID)
   const updatedFollowing = await UserProfile2.save()
   console.log("updatedFollowing", updatedFollowing)
-  response.status(201).json(updatedFollowing)
+  response.status(201).json(updatedFollowing) 
 })
 
 
@@ -105,7 +108,6 @@ usersRouter.put('/addfollowers/:id', async (request, response) => {
   console.log(request.body)
   const { TargetID } = request.body
   // TODO: Have to Check Validity of id , TargetID
-
   // ! Add Number 1
   const UserProfile1 = await User.findById(TargetID)
   UserProfile1.Following = UserProfile1.Following.concat(request.params.id)

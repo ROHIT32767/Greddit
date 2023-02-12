@@ -240,6 +240,18 @@ export default function OpenSubGreddits(props) {
                 console.log(error)
             }
         }
+        const fetchReports = async (data) => {
+            try {
+                const data = await ReportService.getBySubGreddit(params.id)
+                var currentdate = new Date()
+                // const reportdata = data.filter(element => (currentdate.getTime() - new Date(element.date).getTime()) / 1000 < EXPIRE)
+                setmyreports(data)
+                console.log("Reports of the particular subgreddit on Loading are", data)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
         const fetchUsers = async () => {
             try {
                 const data = await SubGredditService.getid(params.id)
@@ -271,21 +283,9 @@ export default function OpenSubGreddits(props) {
             catch (error) {
                 console.log(error)
             }
+            fetchReports();
         }
         fetchUsers();
-        const fetchReports = async (data) => {
-            try {
-                const data = await ReportService.getBySubGreddit(params.id)
-                var currentdate = new Date()
-                // const reportdata = data.filter(element => (currentdate.getTime() - new Date(element.date).getTime()) / 1000 < EXPIRE)
-                setmyreports(data)
-                console.log("Reports of the particular subgreddit on Loading are", data)
-            }
-            catch (error) {
-                console.log(error)
-            }
-        }
-        fetchReports();
     }, [])
     function handleAccept(id1, id2) {
         console.log(id1, id2)
@@ -325,42 +325,6 @@ export default function OpenSubGreddits(props) {
     }
     // ! Related to Reports Page
     function HandleDeletePost(postid, reportid, ReportOn, ReportBy) {
-        const DeletePost = async () => {
-            try {
-                const data = await PostService.Delete(postid)
-                console.log("recieved", data)
-            }
-            catch (error) {
-                console.log(error)
-            }
-        }
-        DeletePost();
-        const DeleteReport = async () => {
-            try {
-                const data = await ReportService.Delete(reportid, params.id)
-                console.log("recieved", data)
-                const finalreports = myreports.filter(element => element._id !== reportid)
-                setmyreports(finalreports)
-            }
-            catch (error) {
-                console.log(error)
-            }
-        }
-        DeleteReport();
-        const UpdateSubGredditReport = async () => {
-            try {
-                const data = await SubGredditService.DeleteReport(params.id, {
-                    ReportID: reportid
-                })
-                console.log("UpdatedSubGredditdata", data)
-                const updatesubgredditreports = subgreddit.Reports.filter(element => element._id !== reportid)
-                setsubgreddit({ ...subgreddit, Reports: updatesubgredditreports })
-            }
-            catch (error) {
-                console.log(error)
-            }
-        }
-        UpdateSubGredditReport();
         // TODO: Check whether if working
         const UpdateSubGredditPost = async () => {
             try {
@@ -379,7 +343,43 @@ export default function OpenSubGreddits(props) {
                 console.log(error)
             }
         }
-        UpdateSubGredditPost();
+        const UpdateSubGredditReport = async () => {
+            try {
+                const data = await SubGredditService.DeleteReport(params.id, {
+                    ReportID: reportid
+                })
+                console.log("UpdatedSubGredditdata", data)
+                const updatesubgredditreports = subgreddit.Reports.filter(element => element._id !== reportid)
+                setsubgreddit({ ...subgreddit, Reports: updatesubgredditreports })
+            }
+            catch (error) {
+                console.log(error)
+            }
+            UpdateSubGredditPost();
+        }
+        const DeleteReport = async () => {
+            try {
+                const data = await ReportService.Delete(reportid, params.id)
+                console.log("recieved", data)
+                const finalreports = myreports.filter(element => element._id !== reportid)
+                setmyreports(finalreports)
+            }
+            catch (error) {
+                console.log(error)
+            }
+            UpdateSubGredditReport();
+        }
+        const DeletePost = async () => {
+            try {
+                const data = await PostService.Delete(postid)
+                console.log("recieved", data)
+            }
+            catch (error) {
+                console.log(error)
+            }
+            DeleteReport();
+        }
+        DeletePost();
     }
     console.log("subgreddit now", subgreddit)
     // TODO: Check whether if working
@@ -405,6 +405,20 @@ export default function OpenSubGreddits(props) {
         console.log("Here")
         console.log("block", ReportOn._id, ReportOn)
         if (!subgreddit.Blocked.map(element => element._id).includes(ReportOn._id)) {
+            // TODO: Check whether if working
+            const LeaveSubGreddiit = async () => {
+
+                try {
+                    const data = await SubGredditService.LeaveSubGreddit(params.id, { UserID: ReportOn._id })
+                    console.log("recieved through Leave Subgreddit", data)
+                    var updatedfollowers = subgreddit.Followers
+                    updatedfollowers = updatedfollowers.filter(element => element._id !== ReportOn._id)
+                    setsubgreddit({ ...subgreddit, Followers: updatedfollowers })
+                }
+                catch (error) {
+                    console.log(error)
+                }
+            }
             const BlockUserRequest = async () => {
                 try {
                     const data = await SubGredditService.BlockUser(params.id, {
@@ -416,30 +430,18 @@ export default function OpenSubGreddits(props) {
                         ReportOnEmail: ReportOn.Email,
                         SubGredditName: subgreddit.Name
                     })
-                    console.log("recieved", data)
+                    console.log("recieved through BlockUserRequest", data)
                     var updatedBlocked = subgreddit.Blocked
                     updatedBlocked = subgreddit.Blocked.concat(ReportOn)
                     setsubgreddit({ ...subgreddit, Blocked: updatedBlocked })
+                    LeaveSubGreddiit();
                 }
                 catch (error) {
                     console.log(error)
                 }
+
             }
             BlockUserRequest();
-            // TODO: Check whether if working
-            const LeaveSubGreddiit = async () => {
-                try {
-                    const data = await SubGredditService.LeaveSubGreddit(params.id, { UserID: ReportOn._id })
-                    console.log("recieved", data)
-                    var updatedfollowers = subgreddit.Followers
-                    updatedfollowers = updatedfollowers.filter(element => element._id !== ReportOn._id)
-                    setsubgreddit({ ...subgreddit, Followers: updatedfollowers })
-                }
-                catch (error) {
-                    console.log(error)
-                }
-            }
-            LeaveSubGreddiit();
         }
         else {
             console.log("User is already blocked")

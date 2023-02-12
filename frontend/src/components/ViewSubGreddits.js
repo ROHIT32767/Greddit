@@ -128,14 +128,13 @@ const Post = ({ id, post, posts, setposts, blocked }) => {
         } : element))
         setNewComment('');
     };
-
     const handleFollow = (event) => {
         event.preventDefault();
         const HandleFollowing = async () => {
             try {
                 const data = await UserService.AddFollowing((JSON.parse(window.localStorage.getItem('token'))).id,
                     {
-                        TargetID: post._id
+                        TargetID: post.By._id
                     }
                 )
                 console.log("recieved", data)

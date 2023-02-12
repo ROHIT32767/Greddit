@@ -10,7 +10,7 @@ const setToken = newToken => {
     token = `bearer ${JSON.parse(window.localStorage.getItem('token')).token}`
 }
 
-const getAll = () => {
+const getAll = () => { 
     const config = {
         headers: { Authorization: token },
       }
@@ -48,11 +48,11 @@ const getSubGredditID = (id) => {
 
 const create = async newObject => {
     const config = {
-        headers: { Authorization: token },
+        headers: { Authorization: token }, 
     }
     // ! Create uses await while other use then,catch
     const response = await axios.post(baseUrl, newObject, config)
-    return response.data
+    return response.data 
 }
 
 const UpdateUpvotes = (id, newObject) => {

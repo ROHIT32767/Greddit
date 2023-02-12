@@ -69,7 +69,8 @@ ReportRouter.put('/ignore/:id', async (request, response) => {
     } = request.body
     const report = await Report.findById(request.params.id)
     report.Ignored = true
-    const updatedreport = await report.save()
+    const updatedreport = await Report.findByIdAndUpdate(report._id,report,{new:true})
+    // const updatedreport = await report.save()
     let mailOptions = {
         from: "greddit172@gmail.com",
         to: ReportedByEmail,
@@ -93,7 +94,6 @@ ReportRouter.put('/ignore/:id', async (request, response) => {
 ReportRouter.delete('/:id', async (request, response) => {
     const ID = request.params.id
     const DeleteReport = await Report.findByIdAndDelete(ID)
-
     response.json(DeleteReport)
 })
 

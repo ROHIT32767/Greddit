@@ -21,7 +21,7 @@ SubGredditRouter.post('/', async (request, response) => {
         Banned,
         Moderator,
         Followers } = request.body
-    const date = Date.parse(request.body.date)
+    const date = Date.parse(request.body.date) 
     const subgreddit = new SubGreddit({
         Name,
         Description,
@@ -90,7 +90,8 @@ SubGredditRouter.put('/join/:id', async (request, response) => {
     const { UserID } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.JoinRequests = subgreddit.JoinRequests.concat(UserID)
-    const updatedsubgreddit = await subgreddit.save()
+    // const updatedsubgreddit = await subgreddit.save()
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -98,11 +99,12 @@ SubGredditRouter.put('/join/:id', async (request, response) => {
 
 SubGredditRouter.put('/leave/:id', async (request, response) => {
     console.log(request.body)
-    const { UserID } = request.body
+    const {UserID} = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Followers = subgreddit.Followers.filter(element => element != UserID)
     subgreddit.GrowthData = subgreddit.GrowthData.concat({ date: new Date(), User: UserID, Join: false })
-    const updatedsubgreddit = await subgreddit.save()
+    // const updatedsubgreddit = await subgreddit.save()
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -116,7 +118,8 @@ SubGredditRouter.put('/accept/:id', async (request, response) => {
     subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element != UserID)
     subgreddit.Followed = subgreddit.Followed.concat(UserID)
     subgreddit.GrowthData = subgreddit.GrowthData.concat({ date: new Date(), User: UserID, Join: true })
-    const updatedsubgreddit = await subgreddit.save()
+    // const updatedsubgreddit = await subgreddit.save()
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -126,7 +129,8 @@ SubGredditRouter.put('/reject/:id', async (request, response) => {
     const { UserID } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element != UserID)
-    const updatedsubgreddit = await subgreddit.save()
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    // const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -139,7 +143,8 @@ SubGredditRouter.put('/block/:id', async (request, response) => {
     const { UserID, from, ReportOnUsername, ReportedByUsername, ReportByEmail, ReportOnEmail, SubGredditName } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Blocked = subgreddit.Blocked.concat(UserID)
-    const updatedsubgreddit = await subgreddit.save()
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    // const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     let mailOptions = {
         from: "greddit172@gmail.com",
@@ -180,7 +185,8 @@ SubGredditRouter.put('/Reports/:id', async (request, response) => {
     const { ReportID } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Reports = subgreddit.Reports.filter(element => element != ReportID)
-    const updatedsubgreddit = await subgreddit.save()
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    // const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -192,7 +198,8 @@ SubGredditRouter.put('/Posts/:id', async (request, response) => {
     const { PostID, from, ReportOnUsername, ReportedByUsername, ReportByEmail, ReportOnEmail, SubGredditName } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Post = subgreddit.Post.filter(element => element != PostID)
-    const updatedsubgreddit = await subgreddit.save()
+    // const updatedsubgreddit = await subgreddit.save()
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
     let mailOptions = {
         from: "greddit172@gmail.com",
         to: ReportByEmail,
@@ -235,7 +242,8 @@ SubGredditRouter.put('/Click/:id', async (request, response) => {
     subgreddit.Clicks = subgreddit.Clicks.concat(date)
     const timeseconds = Date.now()
     subgreddit.ClickGrowthData = subgreddit.ClickGrowthData.concat(Number(timeseconds))
-    const updatedsubgreddit = await subgreddit.save()
+    // const updatedsubgreddit = await subgreddit.save()
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -247,6 +255,7 @@ SubGredditRouter.put('/GrowthData/:id', async (request, response) => {
     const { newelement } = request.body
     subgreddit.GrowthData = subgreddit.GrowthData.concat(newelement)
     const updatedsubgreddit = await subgreddit.save()
+    // const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -257,7 +266,8 @@ SubGredditRouter.delete('/RemoveUser/:id', async (request, response) => {
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Followers = subgreddit.Followers.filter(element => element != UserID)
     subgreddit.Reports = subgreddit.Reports.filter(element => element.On != UserID)
-    const updatedsubgreddit = await subgreddit.save()
+    // const updatedsubgreddit = await subgreddit.save()
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })

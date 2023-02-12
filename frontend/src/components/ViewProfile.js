@@ -19,17 +19,17 @@ import UserService from "../services/Users"
 const theme = createTheme();
 function validate(FirstName, LastName, Username, Email, Age, ContactNumber, password) {
     // true means invalid, so our conditions got reversed
-    console.log("Age",Age,Age > 0)
+    console.log("Age", Age, Age > 0)
     return {
-      Email: Email.length === 0,
-      password: password.length === 0,
-      FirstName: FirstName.length === 0,
-      LastName: LastName.length === 0,
-      Age: Age <= 0,
-      Username: Username.length === 0,
-      ContactNumber: ContactNumber.length === 0
+        Email: Email.length === 0,
+        password: password.length === 0,
+        FirstName: FirstName.length === 0,
+        LastName: LastName.length === 0,
+        Age: Age <= 0,
+        Username: Username.length === 0,
+        ContactNumber: ContactNumber.length === 0
     };
-  }
+}
 const Notification = ({ message }) => {
     if (message === null) {
         return null
@@ -108,7 +108,7 @@ export default function ViewProfile(props) {
             try {
                 // console.log("props user =", props.user)
                 const data = await UserService.getID()
-                console.log("recieved", data)
+                console.log("recieved ReadOnlyValues", data)
                 setReadOnlyValues({
                     FirstName: data.FirstName,
                     LastName: data.LastName,
@@ -117,8 +117,8 @@ export default function ViewProfile(props) {
                     Age: data.Age,
                     ContactNumber: data.ContactNumber,
                     Password: data.Password,
-                    Following: data.Followers,
-                    Followers: data.Following
+                    Following: data.Following,
+                    Followers: data.Followers
                 })
             }
             catch (error) {
@@ -179,12 +179,12 @@ export default function ViewProfile(props) {
             console.log(ReadOnlyValues)
         }
     }
-    function Deleterow1(event, id) {
+    function Deleterow2(event, id) {
         console.log(id)
         const DeleteFollowers = async () => {
             try {
                 // console.log("props user =", props.user)
-                const data = await UserService.UpdateFollowers(props.user.id, { TargetID: id })
+                const data = await UserService.UpdateFollowers((JSON.parse(window.localStorage.getItem('token'))).id, { TargetID: id })
                 console.log("recieved", data)
                 setReadOnlyValues({ ...ReadOnlyValues, Followers: ReadOnlyValues.Followers.filter(element => element.id !== id) })
             }
@@ -194,12 +194,12 @@ export default function ViewProfile(props) {
         }
         DeleteFollowers();
     }
-    function Deleterow2(event, id) {
+    function Deleterow1(event, id) {
         console.log(id)
         const DeleteFollowing = async () => {
             try {
                 // console.log("props user =", props.user)
-                const data = await UserService.UpdateFollowing(props.user.id, { TargetID: id })
+                const data = await UserService.UpdateFollowing((JSON.parse(window.localStorage.getItem('token'))).id, { TargetID: id })
                 console.log("recieved", data)
                 setReadOnlyValues({ ...ReadOnlyValues, Following: ReadOnlyValues.Following.filter(element => element.id !== id) })
             }
@@ -209,6 +209,8 @@ export default function ViewProfile(props) {
         }
         DeleteFollowing();
     }
+    // console.log("Readonly values for Followers",ReadOnlyValues.Followers)
+    // console.log("Readonly values for Following",ReadOnlyValues.Following)
     return (
         <div>
             <ThemeProvider theme={theme}>
@@ -576,47 +578,15 @@ export default function ViewProfile(props) {
                                 </Button>
                             </Box>
                         }
+
                         <div className="FollowerTabs">
                             <Tabs className="Tabs">
                                 <TabList>
-                                    <Tab>Followers <Button variant="contained" color="secondary" onClick={() => setshow1(!show1)}>{ReadOnlyValues.Followers.length}</Button></Tab>
-                                    <Tab>Following <Button variant="contained" color="secondary" onClick={() => setshow2(!show2)}>{ReadOnlyValues.Following.length}</Button></Tab>
+                                    <Tab>Following <Button variant="contained" color="secondary" onClick={() => setshow1(!show1)}>{ReadOnlyValues.Following.length}</Button></Tab>
+                                    <Tab>Followers <Button variant="contained" color="secondary" onClick={() => setshow2(!show2)}>{ReadOnlyValues.Followers.length}</Button></Tab>
                                 </TabList>
                                 <TabPanel>
-                                    {show1 && <Box
-                                        sx={{
-                                            marginTop: 8,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <Table sx={{ maxWidth: 125 }} aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Username</TableCell>
-                                                    <TableCell align="right">Action</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {ReadOnlyValues.Followers.map(element => {
-                                                    return (
-                                                        <TableRow key={element.Username}>
-                                                            <TableCell component="th" scope="row">
-                                                                {element.Username}
-                                                            </TableCell>
-                                                            <TableCell align="right">
-                                                                <Button variant="contained" color="secondary" onClick={(event) => Deleterow1(event, element.id)}>Remove</Button>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    )
-                                                })}
-                                            </TableBody>
-                                        </Table>
-                                    </Box>}
-                                </TabPanel>
-                                <TabPanel>
-                                    {show2 && <Box
+                                    {show1 ? <Box
                                         sx={{
                                             marginTop: 8,
                                             display: 'flex',
@@ -639,14 +609,66 @@ export default function ViewProfile(props) {
                                                                 {element.Username}
                                                             </TableCell>
                                                             <TableCell align="right">
-                                                                <Button variant="contained" color="secondary" onClick={(event) => Deleterow2(event, element.id)}>UnFollow</Button>
+                                                                <Button variant="contained" color="secondary" onClick={(event) => Deleterow1(event, element._id)}>UNFOLLOW</Button>
                                                             </TableCell>
                                                         </TableRow>
                                                     )
                                                 })}
                                             </TableBody>
                                         </Table>
-                                    </Box>}
+                                    </Box> :
+                                        <Box>
+                                            <div>
+                                                <br />
+                                                <div className='error'>
+                                                    Click on the Button to View
+                                                </div>
+                                                <br />
+                                            </div>
+                                        </Box>
+                                    }
+                                </TabPanel>
+                                <TabPanel>
+                                    {show2 ? <Box
+                                        sx={{
+                                            marginTop: 8,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <Table sx={{ maxWidth: 125 }} aria-label="simple table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Username</TableCell>
+                                                    <TableCell align="right">Action</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {ReadOnlyValues.Followers.map(element => {
+                                                    return (
+                                                        <TableRow key={element.Username}>
+                                                            <TableCell component="th" scope="row">
+                                                                {element.Username}
+                                                            </TableCell>
+                                                            <TableCell align="right">
+                                                                <Button variant="contained" color="secondary" onClick={(event) => Deleterow2(event, element._id)}>REMOVE</Button>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )
+                                                })}
+                                            </TableBody>
+                                        </Table>
+                                    </Box> :
+                                        <Box>
+                                            <div>
+                                                <br />
+                                                <div className='error'>
+                                                    Click on the Button to View
+                                                </div>
+                                                <br />
+                                            </div>
+                                        </Box>}
                                 </TabPanel>
                             </Tabs>
                         </div>
