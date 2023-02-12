@@ -25,6 +25,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SubGredditService from '../services/SubGreddiit';
 import { useNavigate } from "react-router-dom";
+import FileUploadInput from './FileUploadInput';
 const theme = createTheme();
 export default function MySubGreddits(props) {
     const navigate = useNavigate()
@@ -94,7 +95,8 @@ export default function MySubGreddits(props) {
                     Posts: [],
                     Tags: newSubreddit.Tags,
                     Moderator: JSON.parse(window.localStorage.getItem('token')).id,
-                    date: new Date()
+                    date: new Date(),
+                    file: file
                 })
                 setSubreddits([...subreddits, { ...data, Posts: data.Post }]);
                 console.log(subreddits)
@@ -187,6 +189,7 @@ export default function MySubGreddits(props) {
                                         Create New SubGreddit
                                     </Button>
                             }
+                            <FileUploadInput />
                             {
                                 showForm &&
                                 <Box component="form" sx={{ mt: 3 }}>

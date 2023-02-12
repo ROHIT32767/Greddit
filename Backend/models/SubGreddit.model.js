@@ -77,7 +77,8 @@ const SubGredditSchema = new mongoose.Schema({
         }
     ],
     Clicks: [{ type: Date }],
-    creationdate:{ type: Number }
+    creationdate:{ type: Number },
+    ImageURL:{type:String}
 })
 
 SubGredditSchema.set('toJSON', {

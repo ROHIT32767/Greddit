@@ -3,8 +3,7 @@ const config = require('../utils/config')
 const Posts = require("../models/Posts.model")
 const Report = require("../models/Report.model")
 const { request } = require('express')
-const multer = require("multer")
-const upload = multer({ dest: "uploads/" })
+// const fs = require("fs");
 const SubGredditRouter = require('express').Router()
 var nodemailer = require('nodemailer')
 let transporter = nodemailer.createTransport({
@@ -15,12 +14,15 @@ let transporter = nodemailer.createTransport({
         pass: config.SMTP_PASSWORD
     }
 })
+const multer = require("multer")
+const upload = multer({ dest: "uploads/" })
+const ImageKit = require("imagekit")
 const imageKit = new ImageKit({
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
-  })
-SubGredditRouter.post('/', async (request, response) => {
+    publicKey: "public_IJLi9UAoKESgixezLLWdRZIoYlM=",
+    privateKey: "private_vA7l2KfiHmMR5ETWryTRlgWLYS8=",
+    urlEndpoint: "https://imagekit.io/dashboard/url-endpoints/lksjdf7sd"
+})
+SubGredditRouter.post('/', upload.single("file"), async (request, response) => {
     console.log(request.body)
     const { Name,
         Description,
@@ -28,7 +30,8 @@ SubGredditRouter.post('/', async (request, response) => {
         Banned,
         Moderator,
         Followers } = request.body
-    const date = Date.parse(request.body.date) 
+    const time = Date.now()
+    const date = Date.parse(request.body.date)
     const subgreddit = new SubGreddit({
         Name,
         Description,
@@ -43,8 +46,9 @@ SubGredditRouter.post('/', async (request, response) => {
         Post: [],
         Reported: [],
         Clicks: 0,
-        PostGrowthData:[],
-        ClickGrowthData:[]
+        PostGrowthData: [],
+        ClickGrowthData: [],
+        ImageURL: ImageURL
     })
     const savedsubgreddit = await subgreddit.save()
     savedsubgreddit.GrowthData = [{ date: new Date(), Join: true, User: savedsubgreddit._id }]
@@ -68,13 +72,12 @@ SubGredditRouter.get('/:id', async (request, response) => {
     console.log(subgreddit)
     const ModeratorID = subgreddit.Moderator._id
     const userid = request.user._id
-    if(ModeratorID==userid)
-    {
+    if (ModeratorID == userid) {
         response.json(subgreddit)
     }
-    else{
+    else {
         const Blockedids = subgreddit.Blocked.map(element => element._id)
-        const UpdatedPosts =  subgreddit.Post.map(element => Blockedids.includes(element._id) ? {...element,By:{...By,Username:"Blocked User"}}:element)
+        const UpdatedPosts = subgreddit.Post.map(element => Blockedids.includes(element._id) ? { ...element, By: { ...By, Username: "Blocked User" } } : element)
         subgreddit.Post = UpdatedPosts
         response.json(subgreddit)
     }
@@ -98,7 +101,7 @@ SubGredditRouter.put('/join/:id', async (request, response) => {
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.JoinRequests = subgreddit.JoinRequests.concat(UserID)
     // const updatedsubgreddit = await subgreddit.save()
-    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -106,12 +109,12 @@ SubGredditRouter.put('/join/:id', async (request, response) => {
 
 SubGredditRouter.put('/leave/:id', async (request, response) => {
     console.log(request.body)
-    const {UserID} = request.body
+    const { UserID } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Followers = subgreddit.Followers.filter(element => element != UserID)
     subgreddit.GrowthData = subgreddit.GrowthData.concat({ date: new Date(), User: UserID, Join: false })
     // const updatedsubgreddit = await subgreddit.save()
-    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -126,7 +129,7 @@ SubGredditRouter.put('/accept/:id', async (request, response) => {
     subgreddit.Followed = subgreddit.Followed.concat(UserID)
     subgreddit.GrowthData = subgreddit.GrowthData.concat({ date: new Date(), User: UserID, Join: true })
     // const updatedsubgreddit = await subgreddit.save()
-    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -136,7 +139,7 @@ SubGredditRouter.put('/reject/:id', async (request, response) => {
     const { UserID } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element != UserID)
-    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
     // const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
@@ -150,7 +153,7 @@ SubGredditRouter.put('/block/:id', async (request, response) => {
     const { UserID, from, ReportOnUsername, ReportedByUsername, ReportByEmail, ReportOnEmail, SubGredditName } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Blocked = subgreddit.Blocked.concat(UserID)
-    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
     // const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     let mailOptions = {
@@ -192,7 +195,7 @@ SubGredditRouter.put('/Reports/:id', async (request, response) => {
     const { ReportID } = request.body
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Reports = subgreddit.Reports.filter(element => element != ReportID)
-    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
     // const updatedsubgreddit = await subgreddit.save()
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
@@ -206,7 +209,7 @@ SubGredditRouter.put('/Posts/:id', async (request, response) => {
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Post = subgreddit.Post.filter(element => element != PostID)
     // const updatedsubgreddit = await subgreddit.save()
-    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
     let mailOptions = {
         from: "greddit172@gmail.com",
         to: ReportByEmail,
@@ -250,7 +253,7 @@ SubGredditRouter.put('/Click/:id', async (request, response) => {
     const timeseconds = Date.now()
     subgreddit.ClickGrowthData = subgreddit.ClickGrowthData.concat(Number(timeseconds))
     // const updatedsubgreddit = await subgreddit.save()
-    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -274,7 +277,7 @@ SubGredditRouter.delete('/RemoveUser/:id', async (request, response) => {
     subgreddit.Followers = subgreddit.Followers.filter(element => element != UserID)
     subgreddit.Reports = subgreddit.Reports.filter(element => element.On != UserID)
     // const updatedsubgreddit = await subgreddit.save()
-    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
+    const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
     console.log(updatedsubgreddit)
     response.status(201).json(updatedsubgreddit)
 })
@@ -293,5 +296,44 @@ SubGredditRouter.delete('/:id', async (request, response) => {
     const DeleteSubGreddit = await SubGreddit.findByIdAndDelete(ID)
     response.json(DeleteSubGreddit)
 })
-
+// function uploadFile(req, res) {
+//     const time = Date.now()
+//     console.log("req.file", req.file)
+//     // const FILE = req.file
+//     if (req.file) {
+//         imageKit.upload({
+//             file: req.file,
+//             fileName: req.fileName,
+//             folder: 'user_avatars'
+//         }, function (err, response) {
+//             if (err) {
+//                 console.log(err)
+//                 return res.status(500).json({
+//                     status: "failed",
+//                     message: "An error occured during file upload. Please try again."
+//                 })
+//             } else {
+//                 const { url } = response
+//                 const modifiedUrl = imageKit.url({
+//                     src: url,
+//                     transformation: [
+//                         {
+//                             height: "100",
+//                             width: "100",
+//                             quality: "50",
+//                             format: "png",
+//                             overlayText: "ImageKit",
+//                             overlayTextColor: "purple",
+//                             focus: "auto"
+//                         }
+//                     ]
+//                 })
+//                 req.ImageURL = modifiedUrl
+//                 console.log("modifiedURL", modifiedUrl)
+//                 res.json({ status: "success", message: "Successfully uploaded files" });
+//             }
+//         })
+//     }
+// }
+// SubGredditRouter.post("/upload", upload.single("file"), uploadFile)
 module.exports = SubGredditRouter
