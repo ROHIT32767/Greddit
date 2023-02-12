@@ -84,6 +84,8 @@ export default function MySubGreddits(props) {
             try {
                 console.log("props user for Posting MySubreddiit = ", props.user)
                 console.log(JSON.parse(window.localStorage.getItem('token')).id)
+                const fileInput = document.getElementById("file")
+                const file = fileInput.files[0]
                 const data = await SubGredditService.create({
                     Name: newSubreddit.Name,
                     Description: newSubreddit.Description,
@@ -94,7 +96,7 @@ export default function MySubGreddits(props) {
                     Moderator: JSON.parse(window.localStorage.getItem('token')).id,
                     date: new Date()
                 })
-                setSubreddits([...subreddits, {...data,Posts:data.Post}]);
+                setSubreddits([...subreddits, { ...data, Posts: data.Post }]);
                 console.log(subreddits)
                 console.log("recieved for Posting MySubGrediiit", data)
             }
@@ -298,6 +300,12 @@ export default function MySubGreddits(props) {
                                                 onClick={addTag}>
                                                 Create Tag
                                             </Button>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <div class="input-group">
+                                                <label for="file">Select image</label>
+                                                <input id="file" type="file" multiple />
+                                            </div>
                                         </Grid>
                                     </Grid>
                                     <Button

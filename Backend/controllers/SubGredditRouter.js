@@ -3,6 +3,8 @@ const config = require('../utils/config')
 const Posts = require("../models/Posts.model")
 const Report = require("../models/Report.model")
 const { request } = require('express')
+const multer = require("multer")
+const upload = multer({ dest: "uploads/" })
 const SubGredditRouter = require('express').Router()
 var nodemailer = require('nodemailer')
 let transporter = nodemailer.createTransport({
@@ -13,6 +15,11 @@ let transporter = nodemailer.createTransport({
         pass: config.SMTP_PASSWORD
     }
 })
+const imageKit = new ImageKit({
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+  })
 SubGredditRouter.post('/', async (request, response) => {
     console.log(request.body)
     const { Name,
