@@ -281,10 +281,10 @@ const Post = ({ id, post, posts, setposts, blocked }) => {
     );
 };
 
-function srcset(image: string, width: number, height: number, rows = 1, cols = 1) {
+function srcset(image,width,height,rows = 1,cols = 1) {
     return {
-        src: `${image}?w=${width * cols}&h=${height * rows}&fit=crop&auto=format`,
-        srcSet: `${image}?w=${width * cols}&h=${height * rows
+        src: `${image}?w=${Number(width) * Number(cols)}&h=${Number(height) * Number(rows)}&fit=crop&auto=format`,
+        srcSet: `${image}?w=${Number(width) * Number(cols)}&h=${Number(height) * Number(rows)
             }&fit=crop&auto=format&dpr=2 2x`,
     };
 }
@@ -377,6 +377,10 @@ const RedditClone = () => {
                 const data = await SubGredditService.getid(params.id)
                 setsubgreddit(data)
                 console.log("set subgreddit to", data)
+                if(data.ImageURL)
+                {
+                    itemData[0].img = data.ImageURL
+                }
             }
             catch (error) {
                 console.log(error)
@@ -522,5 +526,5 @@ const RedditClone = () => {
         </div>
     );
 };
-export default RedditClone;
 
+export default RedditClone;
