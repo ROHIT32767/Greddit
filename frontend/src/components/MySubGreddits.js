@@ -54,6 +54,10 @@ export default function MySubGreddits(props) {
         });
         setShowForm(!showForm);
     };
+    const [file, setFile] = useState(null);
+    const handleFileChange = (event) => {
+        setFile(event.target.files[0]);
+    };
     React.useEffect(() => {
         const fetchData = async () => {
             try {
@@ -81,23 +85,24 @@ export default function MySubGreddits(props) {
     }, [])
     const handleSubmit = (event) => {
         event.preventDefault();
+        const formData =new FormData()
+        const DATE = new Date()
+        formData.append("Name",newSubreddit.Name)
+        formData.append("Description",newSubreddit.Description)
+        formData.append("Banned",newSubreddit.Banned)
+        formData.append("Followers",[JSON.parse(window.localStorage.getItem('token')).id])
+        formData.append("Posts",[])
+        formData.append("Tags",newSubreddit.Tags)
+        formData.append("Moderator",JSON.parse(window.localStorage.getItem('token')).id)
+        formData.append("date",DATE)
+        formData.append("image",file)
         const PostSubGreddiit = async () => {
             try {
                 console.log("props user for Posting MySubreddiit = ", props.user)
-                console.log(JSON.parse(window.localStorage.getItem('token')).id)
-                const fileInput = document.getElementById("file")
-                const file = fileInput.files[0]
-                const data = await SubGredditService.create({
-                    Name: newSubreddit.Name,
-                    Description: newSubreddit.Description,
-                    Banned: newSubreddit.Banned,
-                    Followers: [JSON.parse(window.localStorage.getItem('token')).id],
-                    Posts: [],
-                    Tags: newSubreddit.Tags,
-                    Moderator: JSON.parse(window.localStorage.getItem('token')).id,
-                    date: new Date(),
-                    file: file
-                })
+                console.log(file)
+                const data = await SubGredditService.create(
+                    formData
+                )
                 setSubreddits([...subreddits, { ...data, Posts: data.Post }]);
                 console.log(subreddits)
                 console.log("recieved for Posting MySubGrediiit", data)
@@ -189,7 +194,6 @@ export default function MySubGreddits(props) {
                                         Create New SubGreddit
                                     </Button>
                             }
-                            <FileUploadInput />
                             {
                                 showForm &&
                                 <Box component="form" sx={{ mt: 3 }}>
@@ -305,10 +309,13 @@ export default function MySubGreddits(props) {
                                             </Button>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <div class="input-group">
-                                                <label for="file">Select image</label>
-                                                <input id="file" type="file" multiple />
-                                            </div>
+                                            <TextField
+                                                id="outlined-basic"
+                                                type="file"
+                                                label="Choose Image"
+                                                variant="outlined"
+                                                onChange={handleFileChange}
+                                            />
                                         </Grid>
                                     </Grid>
                                     <Button

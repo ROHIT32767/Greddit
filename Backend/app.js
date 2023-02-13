@@ -13,6 +13,7 @@ const logger = require('./utils/logger')
 const mongoose = require('mongoose')
 const mongoUrl = config.MONGODB_URI
 const connection = mongoose.connection
+const fileUpload = require('express-fileupload');
 mongoose.set("strictQuery", false)
 mongoose.connect(mongoUrl, { useNewurlParser: true }).then(() => {
   logger.info('connected to MongoDB')
@@ -23,8 +24,6 @@ mongoose.connect(mongoUrl, { useNewurlParser: true }).then(() => {
 connection.once('open', () => {
   logger.info(`MongoDB Database connection Established Successfully`)
 })
-
-
 app.use(cors())
 app.use(express.json())
 app.use(middleware.requestLogger)
@@ -32,6 +31,7 @@ app.use(middleware.tokenExtractor)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 app.use(middleware.userExtractor)
+app.use(fileUpload());
 app.use('/api/SubGreddiits', SubGredditRouter)
 app.use('/api/Reports',ReportRouter)
 app.use('/api/Posts',PostsRouter)

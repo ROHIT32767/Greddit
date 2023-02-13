@@ -3,6 +3,7 @@ const config = require('../utils/config')
 const Posts = require("../models/Posts.model")
 const Report = require("../models/Report.model")
 const { request } = require('express')
+
 // const fs = require("fs");
 const SubGredditRouter = require('express').Router()
 var nodemailer = require('nodemailer')
@@ -14,49 +15,71 @@ let transporter = nodemailer.createTransport({
         pass: config.SMTP_PASSWORD
     }
 })
-const multer = require("multer")
-const upload = multer({ dest: "uploads/" })
-const ImageKit = require("imagekit")
+const ImageKit = require('imagekit');
 const imageKit = new ImageKit({
     publicKey: "public_IJLi9UAoKESgixezLLWdRZIoYlM=",
     privateKey: "private_vA7l2KfiHmMR5ETWryTRlgWLYS8=",
     urlEndpoint: "https://imagekit.io/dashboard/url-endpoints/lksjdf7sd"
 })
-SubGredditRouter.post('/', upload.single("file"), async (request, response) => {
-    console.log(request.body)
-    const { Name,
-        Description,
-        Tags,
-        Banned,
-        Moderator,
-        Followers } = request.body
-    const time = Date.now()
-    const date = Date.parse(request.body.date)
-    const subgreddit = new SubGreddit({
-        Name,
-        Description,
-        Tags,
-        Banned,
-        Moderator,
-        Followers,
-        date,
-        JoinRequests: [],
-        Blocked: [],
-        Reports: [],
-        Post: [],
-        Reported: [],
-        Clicks: 0,
-        PostGrowthData: [],
-        ClickGrowthData: [],
-        ImageURL: ImageURL
-    })
-    const savedsubgreddit = await subgreddit.save()
-    savedsubgreddit.GrowthData = [{ date: new Date(), Join: true, User: savedsubgreddit._id }]
-    const timeseconds = Date.now()
-    savedsubgreddit.creationdate = timeseconds
-    const postsavedsubgreddit = await savedsubgreddit.save()
-    console.log(postsavedsubgreddit)
-    response.status(201).json(postsavedsubgreddit)
+SubGredditRouter.post('/', async (request, response) => {
+    if (!request.files || Object.keys(request.files).length === 0) {
+        return response.status(400).send('No files were uploaded.');
+    }
+    console.log("req.files", request.files)
+    var modifiedUrl = null
+    let image = request.files.image;
+    imageKit.upload({
+        file: image.data,
+        fileName: image.name,
+        useUniqueFileName: false,
+        tags: ['express-fileupload', 'Imagekit'],
+
+    }, async (err, result) => {
+        if (err) {
+            return response.status(500).send(err);
+        }
+        console.log("result", result)
+        const { url } = result
+        modifiedUrl = imageKit.url({
+            src: url
+        })
+        console.log(request.body)
+        console.log("modifiedUrl", modifiedUrl)
+        const { Name,
+            Description,
+            Tags,
+            Banned,
+            Moderator,
+            Followers } = request.body
+        const time = Date.now()
+        const date = Date.parse(request.body.date)
+        const subgreddit = new SubGreddit({
+            Name,
+            Description,
+            Tags,
+            Banned,
+            Moderator,
+            Followers,
+            date,
+            JoinRequests: [],
+            Blocked: [],
+            Reports: [],
+            Post: [],
+            Reported: [],
+            Clicks: 0,
+            PostGrowthData: [],
+            ClickGrowthData: [],
+            ImageURL: modifiedUrl
+        })
+        const savedsubgreddit = await subgreddit.save()
+        savedsubgreddit.GrowthData = [{ date: new Date(), Join: true, User: savedsubgreddit._id }]
+        const timeseconds = Date.now()
+        savedsubgreddit.creationdate = timeseconds
+        const postsavedsubgreddit = await savedsubgreddit.save()
+        console.log(postsavedsubgreddit)
+        response.status(201).json(postsavedsubgreddit)
+
+    });
 })
 
 SubGredditRouter.get('/', async (request, response) => {
@@ -296,44 +319,52 @@ SubGredditRouter.delete('/:id', async (request, response) => {
     const DeleteSubGreddit = await SubGreddit.findByIdAndDelete(ID)
     response.json(DeleteSubGreddit)
 })
-// function uploadFile(req, res) {
-//     const time = Date.now()
-//     console.log("req.file", req.file)
-//     // const FILE = req.file
-//     if (req.file) {
-//         imageKit.upload({
-//             file: req.file,
-//             fileName: req.fileName,
-//             folder: 'user_avatars'
-//         }, function (err, response) {
-//             if (err) {
-//                 console.log(err)
-//                 return res.status(500).json({
-//                     status: "failed",
-//                     message: "An error occured during file upload. Please try again."
-//                 })
-//             } else {
-//                 const { url } = response
-//                 const modifiedUrl = imageKit.url({
-//                     src: url,
-//                     transformation: [
-//                         {
-//                             height: "100",
-//                             width: "100",
-//                             quality: "50",
-//                             format: "png",
-//                             overlayText: "ImageKit",
-//                             overlayTextColor: "purple",
-//                             focus: "auto"
-//                         }
-//                     ]
-//                 })
-//                 req.ImageURL = modifiedUrl
-//                 console.log("modifiedURL", modifiedUrl)
-//                 res.json({ status: "success", message: "Successfully uploaded files" });
-//             }
-//         })
+
+// SubGredditRouter.put("/upload/:id", async (req, res) => {
+//     if (!req.files || Object.keys(req.files).length === 0) {
+//         return res.status(400).send('No files were uploaded.');
 //     }
-// }
-// SubGredditRouter.post("/upload", upload.single("file"), uploadFile)
+//     console.log("req.files", req.files)
+//     let image = req.files.image;
+//     imageKit.upload({
+//         file: image.data,
+//         fileName: image.name,
+//         useUniqueFileName: false,
+//         tags: ['express-fileupload', 'Imagekit'],
+
+//     }, async (err, result) => {
+//         if (err) {
+//             return res.status(500).send(err);
+//         }
+//         const { url } = result
+//         const modifiedUrl = imageKit.url({
+//             src: url,
+//             transformation: [
+//                 {
+//                     height: "100",
+//                     width: "100",
+//                     quality: "50",
+//                     format: "png",
+//                     overlayText: "ImageKit",
+//                     overlayTextColor: "purple",
+//                     focus: "auto"
+//                 }
+//             ]
+//         })
+//         const subgreddit = await SubGreddit.findById(ID)
+//         subgreddit.ImageURL = modifiedUrl
+//         const updatedsubgreddit = await subgreddit.save()
+//         res.status(200).json(updatedsubgreddit)
+//     });
+// })
 module.exports = SubGredditRouter
+
+
+
+
+
+
+
+
+
+
