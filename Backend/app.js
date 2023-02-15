@@ -24,6 +24,19 @@ mongoose.connect(mongoUrl, { useNewurlParser: true }).then(() => {
 connection.once('open', () => {
   logger.info(`MongoDB Database connection Established Successfully`)
 })
+const io = require("socket.io")(http);
+io.on("connection", (socket) => {
+  console.log("A user connected!");
+
+  socket.on("new message", (message) => {
+    console.log(`Received message: ${message}`);
+    io.emit("new message", message);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected!");
+  });
+});
 app.use(cors())
 app.use(express.json())
 app.use(middleware.requestLogger)

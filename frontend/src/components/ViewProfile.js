@@ -609,6 +609,10 @@ export default function ViewProfile(props) {
                                                                 {element.Username}
                                                             </TableCell>
                                                             <TableCell align="right">
+                                                                {
+                                                                    element.Following.map(ID => ID._id).includes((JSON.parse(window.localStorage.getItem('token'))).id) &&
+                                                                    <Button variant="contained" color="secondary" onClick={(event) => Deleterow1(event, element._id)}>CHAT</Button>
+                                                                }
                                                                 <Button variant="contained" color="secondary" onClick={(event) => Deleterow1(event, element._id)}>UNFOLLOW</Button>
                                                             </TableCell>
                                                         </TableRow>
