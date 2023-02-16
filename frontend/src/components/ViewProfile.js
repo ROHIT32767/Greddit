@@ -78,6 +78,11 @@ export default function ViewProfile(props) {
     const [show1, setshow1] = React.useState(false)
     const [show2, setshow2] = React.useState(false)
     const [edit, setedit] = React.useState(false)
+    const [showbuttons, setshowbuttons] = React.useState({
+        showsavebutton: true,
+        showcancelbutton: true,
+        showeditbutton: true
+    })
     function canBeSubmitted() {
         const errors = validate(touched.FirstName, touched.LastName, touched.Username, touched.Email, touched.Age, touched.ContactNumber, touched.password);
         const isDisabled = Object.keys(errors).some(x => errors[x]);
@@ -148,6 +153,7 @@ export default function ViewProfile(props) {
         }
         else {
             const UpdateProfile = async () => {
+                setshowbuttons({ ...showbuttons, showcancelbutton: false, showeditbutton: false, showsavebutton: false })
                 try {
                     console.log("props user for Update = ", props.user)
                     const data = await UserService.UpdateProfile(props.user.id, {
@@ -173,6 +179,7 @@ export default function ViewProfile(props) {
                 catch (error) {
                     console.log("In Register.js", error)
                 }
+                setshowbuttons({ ...showbuttons, showcancelbutton: true, showeditbutton: true, showsavebutton: true })
             }
             UpdateProfile();
             setedit(!edit)
@@ -459,7 +466,7 @@ export default function ViewProfile(props) {
                                     isDisabled ?
                                         <Button fullWidth disabled sx={{ mt: 3, mb: 2 }}> Save Changes </Button>
                                         :
-                                        <Button
+                                        showbuttons.showsavebutton ? <Button
                                             type="submit"
                                             fullWidth
                                             variant="contained"
@@ -467,15 +474,23 @@ export default function ViewProfile(props) {
                                         >
                                             Save Changes
                                         </Button>
+                                            :
+                                            <Button fullWidth disabled sx={{ mt: 3, mb: 2 }}> Save Changes </Button>
                                 }
-                                <Button
-                                    fullWidth
-                                    variant="contained"
-                                    sx={{ mt: 3, mb: 2 }}
-                                    onClick={handleEdit}
-                                >
-                                    Cancel
-                                </Button>
+                                {
+                                    showbuttons.showcancelbutton ?
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            sx={{ mt: 3, mb: 2 }}
+                                            onClick={handleEdit}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        :
+                                        <Button fullWidth disabled sx={{ mt: 3, mb: 2 }}> Cancel </Button>
+                                }
+
                             </Box>
                             :
                             <Box component="form" sx={{ mt: 3 }}>
@@ -568,14 +583,19 @@ export default function ViewProfile(props) {
                                         />
                                     </Grid>
                                 </Grid>
-                                <Button
-                                    fullWidth
-                                    variant="contained"
-                                    sx={{ mt: 3, mb: 2 }}
-                                    onClick={handleEdit}
-                                >
-                                    Edit
-                                </Button>
+                                {
+                                    showbuttons.showeditbutton ?
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            sx={{ mt: 3, mb: 2 }}
+                                            onClick={handleEdit}
+                                        >
+                                            Edit
+                                        </Button>
+                                        :
+                                        <Button fullWidth disabled sx={{ mt: 3, mb: 2 }}> Edit </Button>
+                                }
                             </Box>
                         }
 

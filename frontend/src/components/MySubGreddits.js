@@ -55,6 +55,12 @@ export default function MySubGreddits(props) {
         setShowForm(!showForm);
     };
     const [file, setFile] = useState(null);
+    const [showbuttons, setshowbuttons] = React.useState({
+        showbannedwordbutton: true,
+        showcreatetagbutton: true,
+        showcreatesubgredditbutton: true,
+        showsavebutton: true
+    })
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
     };
@@ -85,17 +91,18 @@ export default function MySubGreddits(props) {
     }, [])
     const handleSubmit = (event) => {
         event.preventDefault();
-        const formData =new FormData()
+        const formData = new FormData()
         const DATE = new Date()
-        formData.append("Name",newSubreddit.Name)
-        formData.append("Description",newSubreddit.Description)
-        formData.append("Banned",newSubreddit.Banned)
-        formData.append("Followers",[JSON.parse(window.localStorage.getItem('token')).id])
-        formData.append("Posts",[])
-        formData.append("Tags",newSubreddit.Tags)
-        formData.append("Moderator",JSON.parse(window.localStorage.getItem('token')).id)
-        formData.append("date",DATE)
-        formData.append("image",file)
+        setshowbuttons({...showbuttons,showcreatetagbutton:false,showbannedwordbutton:false,showcreatesubgredditbutton:false,showsavebutton:false})
+        formData.append("Name", newSubreddit.Name)
+        formData.append("Description", newSubreddit.Description)
+        formData.append("Banned", newSubreddit.Banned)
+        formData.append("Followers", [JSON.parse(window.localStorage.getItem('token')).id])
+        formData.append("Posts", [])
+        formData.append("Tags", newSubreddit.Tags)
+        formData.append("Moderator", JSON.parse(window.localStorage.getItem('token')).id)
+        formData.append("date", DATE)
+        formData.append("image", file)
         const PostSubGreddiit = async () => {
             try {
                 console.log("props user for Posting MySubreddiit = ", props.user)
@@ -110,6 +117,7 @@ export default function MySubGreddits(props) {
             catch (error) {
                 console.log("In MySubReddit.js", error)
             }
+            setshowbuttons({...showbuttons,showcreatetagbutton:true,showbannedwordbutton:true,showcreatesubgredditbutton:true,showsavebutton:true})
         }
         PostSubGreddiit();
         setShowForm(false);
@@ -185,14 +193,23 @@ export default function MySubGreddits(props) {
                                 >
                                     Close Form
                                 </Button> :
-                                    <Button
-                                        fullWidth
-                                        variant="contained"
-                                        sx={{ mt: 3, mb: 2 }}
-                                        onClick={ToggleForm}
-                                    >
-                                        Create New SubGreddit
-                                    </Button>
+                                    showbuttons.showcreatesubgredditbutton ?
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            sx={{ mt: 3, mb: 2 }}
+                                            onClick={ToggleForm}
+                                        >
+                                            Create New SubGreddit
+                                        </Button> :
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            sx={{ mt: 3, mb: 2 }}
+                                            disabled
+                                        >
+                                            Create New SubGreddit
+                                        </Button>
                             }
                             {
                                 showForm &&
@@ -259,12 +276,22 @@ export default function MySubGreddits(props) {
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
-                                            <Button fullWidth
-                                                variant="contained"
-                                                sx={{ mt: 1, mb: 2 }}
-                                                onClick={addword}>
-                                                Ban this Word !
-                                            </Button>
+                                            {
+                                                showbuttons.showbannedwordbutton ?
+                                                    <Button fullWidth
+                                                        variant="contained"
+                                                        sx={{ mt: 1, mb: 2 }}
+                                                        onClick={addword}>
+                                                        Ban this Word !
+                                                    </Button>
+                                                    :
+                                                    <Button fullWidth
+                                                        variant="contained"
+                                                        sx={{ mt: 1, mb: 2 }}
+                                                        disabled>
+                                                        Ban this Word !
+                                                    </Button>
+                                            }
                                         </Grid>
                                         {/* // ! Tags */}
                                         <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
@@ -301,12 +328,22 @@ export default function MySubGreddits(props) {
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
-                                            <Button fullWidth
-                                                variant="contained"
-                                                sx={{ mt: 1, mb: 2 }}
-                                                onClick={addTag}>
-                                                Create Tag
-                                            </Button>
+                                            {
+                                                showbuttons.showcreatetagbutton ?
+                                                    <Button fullWidth
+                                                        variant="contained"
+                                                        sx={{ mt: 1, mb: 2 }}
+                                                        onClick={addTag}>
+                                                        Create Tag
+                                                    </Button>
+                                                    :
+                                                    <Button fullWidth
+                                                        variant="contained"
+                                                        sx={{ mt: 1, mb: 2 }}
+                                                        disabled>
+                                                        Create Tag
+                                                    </Button>
+                                            }
                                         </Grid>
                                         <Grid item xs={12}>
                                             <TextField
@@ -318,15 +355,28 @@ export default function MySubGreddits(props) {
                                             />
                                         </Grid>
                                     </Grid>
-                                    <Button
-                                        type="submit"
-                                        fullWidth
-                                        variant="contained"
-                                        sx={{ mt: 3, mb: 2 }}
-                                        onClick={handleSubmit}
-                                    >
-                                        Save
-                                    </Button>
+                                    {
+                                        showbuttons.showsavebutton ?
+                                            <Button
+                                                type="submit"
+                                                fullWidth
+                                                variant="contained"
+                                                sx={{ mt: 3, mb: 2 }}
+                                                onClick={handleSubmit}
+                                            >
+                                                SAVE
+                                            </Button>
+                                            :
+                                            <Button
+                                                type="submit"
+                                                fullWidth
+                                                variant="contained"
+                                                sx={{ mt: 3, mb: 2 }}
+                                                disabled
+                                            >
+                                                SAVE
+                                            </Button>
+                                    }
                                 </Box>
                             }
                         </Box>
@@ -374,6 +424,6 @@ export default function MySubGreddits(props) {
                     </Grid>
                 </Container>
             </ThemeProvider>
-        </div>
+        </div >
     )
 }

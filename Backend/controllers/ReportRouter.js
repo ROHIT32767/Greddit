@@ -8,7 +8,7 @@ let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     secure: false,
     auth: {
-        user: "Greddit172@gmail.com",
+        user: "greddit172@gmail.com",
         pass: config.SMTP_PASSWORD
     }
 })
@@ -21,13 +21,25 @@ ReportRouter.post('/', async (request, response) => {
         On,
         SubGredditID } = request.body
     const date = Date.parse(request.body.date)
+    if (!Concern) {
+        return response.status(400).json({
+            error: 'Concern is empty in Login'
+        })
+    }
+    if (!Post || !On || !By || !SubGredditID) {
+        return response.status(400).json({
+            error: 'Some Fields are missing in Report Creation'
+        })
+    }
+    const timeseconds = Date.now()
     const report = new Report({
         Concern,
         Post,
         By,
         On,
         date,
-        Ignored: false
+        Ignored: false,
+        creationdate:timeseconds
     })
     const savedreport = await report.save()
     const currentsubgreddit = await SubGreddit.findById(SubGredditID)
@@ -48,7 +60,7 @@ ReportRouter.get('/SubGreddit/:id', async (request, response) => {
     const AllReports = await Report
         .find({}).populate('Post').populate('By').populate('On')
     const currentsubgreddit = await SubGreddit.findById(request.params.id)
-    console.log("All Reports are",AllReports)
+    console.log("All Reports are", AllReports)
     const myreports = AllReports.filter(element => currentsubgreddit.Reports.includes(element._id))
     response.json(myreports)
     console.log("My reports are", myreports)
@@ -65,11 +77,16 @@ ReportRouter.get('/:id', async (request, response) => {
 ReportRouter.put('/ignore/:id', async (request, response) => {
     console.log(request.body)
     const {
-        from, ReportedByEmail, ReportedOnUsername
+        ReportedByEmail, ReportedOnUsername
     } = request.body
+    if (!ReportedByEmail) {
+        return response.status(400).json({
+            error: 'Email fields are empty in Ignore in Reports'
+        })
+    }
     const report = await Report.findById(request.params.id)
     report.Ignored = true
-    const updatedreport = await Report.findByIdAndUpdate(report._id,report,{new:true})
+    const updatedreport = await Report.findByIdAndUpdate(report._id, report, { new: true })
     // const updatedreport = await report.save()
     let mailOptions = {
         from: "greddit172@gmail.com",

@@ -281,7 +281,7 @@ const Post = ({ id, post, posts, setposts, blocked }) => {
     );
 };
 
-function srcset(image,width,height,rows = 1,cols = 1) {
+function srcset(image, width, height, rows = 1, cols = 1) {
     return {
         src: `${image}?w=${Number(width) * Number(cols)}&h=${Number(height) * Number(rows)}&fit=crop&auto=format`,
         srcSet: `${image}?w=${Number(width) * Number(cols)}&h=${Number(height) * Number(rows)
@@ -294,6 +294,10 @@ const RedditClone = () => {
     const [open, setOpen] = useState(false);
     const [Text, setText] = useState("")
     const [subgreddit, setsubgreddit] = React.useState({})
+    const [showbuttons, setshowbuttons] = React.useState({
+        showpostthisbutton: true,
+        showcreatepostbutton: true
+    })
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -302,6 +306,7 @@ const RedditClone = () => {
         setText("")
     };
     const handlePost = () => {
+        setshowbuttons({...showbuttons,showcreatepostbutton:false,showpostthisbutton:false})
         var inputLowerCase = Text.toLowerCase();
         let containsBannedWord = false;
         console.log("Banned Keywords are", subgreddit.Banned)
@@ -331,7 +336,7 @@ const RedditClone = () => {
                     setposts([...posts, {
                         ...data, By: JSON.parse(window.localStorage.getItem('token'))
                     }])
-                    console.log("By",JSON.parse(window.localStorage.getItem('token')))
+                    console.log("By", JSON.parse(window.localStorage.getItem('token')))
                     console.log("posts on Loading are", posts)
                 }
                 catch (error) {
@@ -359,7 +364,7 @@ const RedditClone = () => {
                             JSON.parse(window.localStorage.getItem('token'))
 
                     }])
-                    console.log("By",JSON.parse(window.localStorage.getItem('token')))
+                    console.log("By", JSON.parse(window.localStorage.getItem('token')))
                     console.log("posts on Loading are", posts)
                 }
                 catch (error) {
@@ -369,6 +374,7 @@ const RedditClone = () => {
             PostData();
             setText("")
         }
+        setshowbuttons({...showbuttons,showcreatepostbutton:true,showpostthisbutton:true})
         setOpen(false);
     };
     React.useEffect(() => {
@@ -377,8 +383,7 @@ const RedditClone = () => {
                 const data = await SubGredditService.getid(params.id)
                 setsubgreddit(data)
                 console.log("set subgreddit to", data)
-                if(data.ImageURL)
-                {
+                if (data.ImageURL) {
                     itemData[0].img = data.ImageURL
                 }
             }
@@ -484,7 +489,13 @@ const RedditClone = () => {
                         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                             <PostAddIcon />
                         </Avatar>
-                        <Button variant="contained" color="secondary" onClick={handleClickOpen}>CREATE POST</Button>
+                        {
+                            showbuttons.showcreatepostbutton ?
+                                <Button variant="contained" color="secondary" onClick={handleClickOpen}>CREATE POST</Button>
+                                :
+                                <Button variant="contained" color="secondary" disabled >CREATE POST</Button>
+                        }
+
                     </Box>
                 </Box>
                 <Dialog open={open} onClose={handleClose}>
@@ -508,7 +519,7 @@ const RedditClone = () => {
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
                         {
-                            Text ?
+                            Text && showbuttons.showpostthisbutton ?
                                 <Button onClick={handlePost}>POST THIS</Button>
                                 :
                                 <Button disabled>POST THIS</Button>
@@ -516,7 +527,7 @@ const RedditClone = () => {
                     </DialogActions>
                 </Dialog>
                 {posts.map((post) =>
-                    subgreddit.Blocked && subgreddit.Blocked.map(element => element._id).includes(post.By._id) && subgreddit.Moderator._id!==JSON.parse(window.localStorage.getItem('token'))._id ?
+                    subgreddit.Blocked && subgreddit.Blocked.map(element => element._id).includes(post.By._id) && subgreddit.Moderator._id !== JSON.parse(window.localStorage.getItem('token'))._id ?
                         <Post key={post._id} blocked={true} id={post._id} post={post} posts={posts} setposts={setposts} />
                         :
                         <Post key={post._id} blocked={false} id={post._id} post={post} posts={posts} setposts={setposts} />

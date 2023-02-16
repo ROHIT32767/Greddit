@@ -53,6 +53,17 @@ SubGredditRouter.post('/', async (request, response) => {
             Followers } = request.body
         const time = Date.now()
         const date = Date.parse(request.body.date)
+        if (!Name || !Description) {
+            return response.status(400).json({
+                error: 'Name or Description is Null'
+            })
+        }
+        if (!Tags) {
+            Tags = []
+        }
+        if (!Banned) {
+            Banned = []
+        }
         const subgreddit = new SubGreddit({
             Name,
             Description,
@@ -121,6 +132,11 @@ SubGredditRouter.get('/User/:id', async (request, response) => {
 SubGredditRouter.put('/join/:id', async (request, response) => {
     console.log(request.body)
     const { UserID } = request.body
+    if (!UserID) {
+        return response.status(400).json({
+            error: 'UserID is empty in Join Request'
+        })
+    }
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.JoinRequests = subgreddit.JoinRequests.concat(UserID)
     // const updatedsubgreddit = await subgreddit.save()
@@ -133,6 +149,11 @@ SubGredditRouter.put('/join/:id', async (request, response) => {
 SubGredditRouter.put('/leave/:id', async (request, response) => {
     console.log(request.body)
     const { UserID } = request.body
+    if (!UserID) {
+        return response.status(400).json({
+            error: 'UserID is empty in Leave Request'
+        })
+    }
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Followers = subgreddit.Followers.filter(element => element != UserID)
     subgreddit.GrowthData = subgreddit.GrowthData.concat({ date: new Date(), User: UserID, Join: false })
@@ -146,6 +167,11 @@ SubGredditRouter.put('/leave/:id', async (request, response) => {
 SubGredditRouter.put('/accept/:id', async (request, response) => {
     console.log(request.body)
     const { UserID } = request.body
+    if (!UserID) {
+        return response.status(400).json({
+            error: 'UserID is empty in Accept Request'
+        })
+    }
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Followers = subgreddit.Followers.concat(UserID)
     subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element != UserID)
@@ -160,6 +186,11 @@ SubGredditRouter.put('/accept/:id', async (request, response) => {
 SubGredditRouter.put('/reject/:id', async (request, response) => {
     console.log(request.body)
     const { UserID } = request.body
+    if (!UserID) {
+        return response.status(400).json({
+            error: 'UserID is empty in Reject Request'
+        })
+    }
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element != UserID)
     const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
@@ -173,7 +204,17 @@ SubGredditRouter.put('/reject/:id', async (request, response) => {
 // TODO: Update body required for email in Frontend
 SubGredditRouter.put('/block/:id', async (request, response) => {
     console.log(request.body)
-    const { UserID, from, ReportOnUsername, ReportedByUsername, ReportByEmail, ReportOnEmail, SubGredditName } = request.body
+    const { UserID, ReportOnUsername, ReportedByUsername, ReportByEmail, ReportOnEmail, SubGredditName } = request.body
+    if (!UserID) {
+        return response.status(400).json({
+            error: 'UserID is empty in Leave Request'
+        })
+    }
+    if (!ReportByEmail || !ReportOnEmail) {
+        return response.status(400).json({
+            error: 'Email Fields are empty in Block Request'
+        })
+    }
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Blocked = subgreddit.Blocked.concat(UserID)
     const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
@@ -216,6 +257,11 @@ SubGredditRouter.put('/block/:id', async (request, response) => {
 SubGredditRouter.put('/Reports/:id', async (request, response) => {
     console.log(request.body)
     const { ReportID } = request.body
+    if (!ReportID) {
+        return response.status(400).json({
+            error: 'ReportID is empty in Reports Request in SubGreddit'
+        })
+    }
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Reports = subgreddit.Reports.filter(element => element != ReportID)
     const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
@@ -228,7 +274,17 @@ SubGredditRouter.put('/Reports/:id', async (request, response) => {
 // TODO: Update body for Email Requests
 SubGredditRouter.put('/Posts/:id', async (request, response) => {
     console.log(request.body)
-    const { PostID, from, ReportOnUsername, ReportedByUsername, ReportByEmail, ReportOnEmail, SubGredditName } = request.body
+    const { PostID, ReportOnUsername, ReportedByUsername, ReportByEmail, ReportOnEmail, SubGredditName } = request.body
+    if (!PostID) {
+        return response.status(400).json({
+            error: 'PostID is empty in Posts Request in SubGreddit'
+        })
+    }
+    if (!ReportByEmail || !ReportOnEmail) {
+        return response.status(400).json({
+            error: 'Email Fields are empty in Posts Request in SubGreddit'
+        })
+    }
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Post = subgreddit.Post.filter(element => element != PostID)
     // const updatedsubgreddit = await subgreddit.save()
@@ -286,6 +342,11 @@ SubGredditRouter.put('/GrowthData/:id', async (request, response) => {
     console.log(request.body)
     const subgreddit = await SubGreddit.findById(request.params.id)
     const { newelement } = request.body
+    if (!newelement) {
+        return response.status(400).json({
+            error: 'newelement is empty in GrowthData Request in SubGreddit'
+        })
+    }
     subgreddit.GrowthData = subgreddit.GrowthData.concat(newelement)
     const updatedsubgreddit = await subgreddit.save()
     // const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id,subgreddit,{new:true})
@@ -296,6 +357,11 @@ SubGredditRouter.put('/GrowthData/:id', async (request, response) => {
 SubGredditRouter.delete('/RemoveUser/:id', async (request, response) => {
     console.log(request.body)
     const { UserID } = request.body
+    if (!UserID) {
+        return response.status(400).json({
+            error: 'UserID is empty in RemoveUser Request'
+        })
+    }
     const subgreddit = await SubGreddit.findById(request.params.id)
     subgreddit.Followers = subgreddit.Followers.filter(element => element != UserID)
     subgreddit.Reports = subgreddit.Reports.filter(element => element.On != UserID)
@@ -320,43 +386,6 @@ SubGredditRouter.delete('/:id', async (request, response) => {
     response.json(DeleteSubGreddit)
 })
 
-// SubGredditRouter.put("/upload/:id", async (req, res) => {
-//     if (!req.files || Object.keys(req.files).length === 0) {
-//         return res.status(400).send('No files were uploaded.');
-//     }
-//     console.log("req.files", req.files)
-//     let image = req.files.image;
-//     imageKit.upload({
-//         file: image.data,
-//         fileName: image.name,
-//         useUniqueFileName: false,
-//         tags: ['express-fileupload', 'Imagekit'],
-
-//     }, async (err, result) => {
-//         if (err) {
-//             return res.status(500).send(err);
-//         }
-//         const { url } = result
-//         const modifiedUrl = imageKit.url({
-//             src: url,
-//             transformation: [
-//                 {
-//                     height: "100",
-//                     width: "100",
-//                     quality: "50",
-//                     format: "png",
-//                     overlayText: "ImageKit",
-//                     overlayTextColor: "purple",
-//                     focus: "auto"
-//                 }
-//             ]
-//         })
-//         const subgreddit = await SubGreddit.findById(ID)
-//         subgreddit.ImageURL = modifiedUrl
-//         const updatedsubgreddit = await subgreddit.save()
-//         res.status(200).json(updatedsubgreddit)
-//     });
-// })
 module.exports = SubGredditRouter
 
 

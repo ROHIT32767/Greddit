@@ -12,13 +12,18 @@ usersRouter.post('/', async (request, response) => {
     Age,
     ContactNumber,
     password } = request.body
-
+  if (!FirstName || !LastName || !Username || !Email || (Age <= 0) || !ContactNumber || !password) {
+    return response.status(400).json({
+      error: 'Error in Input Fields for User Creation'
+    })
+  }
   const existingUser = await User.findOne({ Email })
   if (existingUser) {
     return response.status(400).json({
       error: 'Email must be unique'
     })
   }
+  const timeseconds = Date.now()
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
   const user = new User({
@@ -29,17 +34,18 @@ usersRouter.post('/', async (request, response) => {
     Age,
     ContactNumber,
     passwordHash,
+    creationdate:timeseconds
   })
   const savedUser = await user.save()
   console.log(savedUser)
   response.status(201).json(savedUser)
 })
 
-// usersRouter.get('/', async (request, response) => {
-//   const users = await User
-//     .find({}).populate('Followers').populate('Following').populate('SavedPosts')
-//   response.json(users)
-// })
+usersRouter.get('/', async (request, response) => {
+  const users = await User
+    .find({}).populate('Followers').populate('Following').populate('SavedPosts')
+  response.json(users)
+})
 
 usersRouter.get('/:id', async (request, response) => {
   const ID = request.params.id
@@ -61,6 +67,11 @@ usersRouter.put('/update/:id', async (request, response) => {
     ContactNumber,
     password } = request.body
   // TODO: Have to Check Validity of Email
+  if (!FirstName || !LastName || !Username || !Email || (Age <= 0) || !ContactNumber || !password) {
+    return response.status(400).json({
+      error: 'Error in Input Fields for User Edit'
+    })
+  }
   const existingUser = await User.find({ Email })
   if (existingUser.length > 1) {
     return response.status(400).json({
@@ -77,7 +88,7 @@ usersRouter.put('/update/:id', async (request, response) => {
   UserProfile.ContactNumber = ContactNumber
   UserProfile.passwordHash = passwordHash
   // const updateduser = await UserProfile.save()
-  const updateduser = await User.findByIdAndUpdate(UserProfile._id,UserProfile,{new:true})
+  const updateduser = await User.findByIdAndUpdate(UserProfile._id, UserProfile, { new: true })
   console.log(updateduser)
   response.status(201).json(updateduser)
 })
@@ -86,20 +97,25 @@ usersRouter.put('/addfollowing/:id', async (request, response) => {
   // * For Updating Followers Data
   console.log(request.body)
   const { TargetID } = request.body
+  if (!TargetID) {
+    return response.status(400).json({
+      error: 'TargetID is empty in addfollowing Request in Users'
+    })
+  }
   // TODO: Have to Check Validity of id , TargetID 
   // ! Add Number 1
   const UserProfile1 = await User.findById(TargetID)
-  console.log("UserProfile1 is ",UserProfile1)
+  console.log("UserProfile1 is ", UserProfile1)
   UserProfile1.Followers = UserProfile1.Followers.concat(request.params.id)
   const updatedFollowers = await UserProfile1.save()
   console.log("updatedFollowers", updatedFollowers)
   // ! Add Number 2
   const UserProfile2 = await User.findById(request.params.id)
-  console.log("UserProfile2 is ",UserProfile2)
+  console.log("UserProfile2 is ", UserProfile2)
   UserProfile2.Following = UserProfile2.Following.concat(TargetID)
   const updatedFollowing = await UserProfile2.save()
   console.log("updatedFollowing", updatedFollowing)
-  response.status(201).json(updatedFollowing) 
+  response.status(201).json(updatedFollowing)
 })
 
 
@@ -107,6 +123,11 @@ usersRouter.put('/addfollowers/:id', async (request, response) => {
   // * For Updating Followers Data
   console.log(request.body)
   const { TargetID } = request.body
+  if (!TargetID) {
+    return response.status(400).json({
+      error: 'TargetID is empty in addfollowers Request in Users'
+    })
+  }
   // TODO: Have to Check Validity of id , TargetID
   // ! Add Number 1
   const UserProfile1 = await User.findById(TargetID)
@@ -128,6 +149,11 @@ usersRouter.put('/following/:id', async (request, response) => {
   // * For Updating Followers Data
   console.log(request.body)
   const { TargetID } = request.body
+  if (!TargetID) {
+    return response.status(400).json({
+      error: 'TargetID is empty in following Request in Users'
+    })
+  }
   // TODO: Have to Check Validity of id , TargetID
   // ! Delete Number 1
   const UserProfile1 = await User.findById(TargetID)
@@ -146,6 +172,11 @@ usersRouter.put('/followers/:id', async (request, response) => {
   // * For Updating Followers Data
   console.log(request.body)
   const { TargetID } = request.body
+  if (!TargetID) {
+    return response.status(400).json({
+      error: 'TargetID is empty in followers Request in Users'
+    })
+  }
   // TODO: Have to Check Validity of id , TargetID
 
   // ! Delete Number 1
@@ -165,6 +196,11 @@ usersRouter.put("/RemoveSavedPosts/:id", async (request, response) => {
   // * For Updating Followers Data
   console.log(request.body)
   const { PostID } = request.body
+  if (!PostID) {
+    return response.status(400).json({
+      error: 'PostID is empty in RemoveSavedPosts Request in Users'
+    })
+  }
   const UserProfile = await User.findById(request.params.id)
   UserProfile.SavedPosts = UserProfile.SavedPosts.filter(element => element != PostID)
   const UpdatedSavedPosts = await UserProfile.save()
@@ -176,6 +212,11 @@ usersRouter.put("/AddSavedPosts/:id", async (request, response) => {
   // * For Updating Followers Data
   console.log(request.body)
   const { PostID } = request.body
+  if (!PostID) {
+    return response.status(400).json({
+      error: 'PostID is empty in AddSavedPosts Request in Users'
+    })
+  }
   const UserProfile = await User.findById(request.params.id)
   UserProfile.SavedPosts = UserProfile.SavedPosts.concat(PostID)
   const UpdatedSavedPosts = await UserProfile.save()
