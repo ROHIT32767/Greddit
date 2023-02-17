@@ -1,37 +1,61 @@
-import React, { useState, useEffect } from "react";
-import io from "socket.io-client";
-
-const ChatBox = () => {
+import { useEffect, useState } from 'react';
+import io from 'socket.io-client';
+import ChatService from "../services/Chat";
+import { useParams } from "react-router-dom";
+const Chat = ({ username }) => {
+  const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState("");
-
+  const socket = io('http://localhost:5000');
+  const params = useParams()
   useEffect(() => {
-    const socket = io("http://localhost:3003");
-    socket.on("new message", (newMessage) => {
-      setMessages([...messages, newMessage]);
+      const fetchData = async () => {
+        try {
+          const data = await ChatService.getbyRoom(params.room)
+          console.log("recieved", data)
+          setposts(data.SavedPosts)
+          console.log("posts on Loading are", data.SavedPosts)
+        }
+        catch (error) {
+          console.log(error)
+        }
+      }
+      fetchData();
+    }, [])
+  useEffect(() => {
+    // Listen for incoming messages from the server
+    socket.on('message', (data) => {
+      setMessages((messages) => [...messages, data]);
     });
+    // Cleanup function
     return () => {
       socket.disconnect();
     };
-  }, [messages]);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const socket = io("http://localhost:3003");
-    socket.emit("new message", message);
-    setMessage("");
+  }, [socket]);
+
+  const handleSend = (event) => {
+    event.preventDefault();
+    // Send the message to the server
+    socket.emit('message', {
+      username,
+      message,
+    });
+    // Clear the input field
+    setMessage('');
   };
+
   return (
     <div>
-      <ul>
-        {messages.map((m, index) => (
-          <li key={index}>{m}</li>
-        ))}
-      </ul>
-      <form onSubmit={handleSubmit}>
+      {messages.map((message, index) => (
+        <div key={index}>
+          <strong>{message.username}: </strong>
+          <span>{message.message}</span>
+        </div>
+      ))}
+      <form onSubmit={handleSend}>
         <input
           type="text"
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(event) => setMessage(event.target.value)}
         />
         <button type="submit">Send</button>
       </form>
@@ -39,4 +63,5 @@ const ChatBox = () => {
   );
 };
 
-export default ChatBox;
+export default Chat;
+
