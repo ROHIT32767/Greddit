@@ -244,8 +244,10 @@ export default function OpenSubGreddits(props) {
             try {
                 const data = await ReportService.getBySubGreddit(params.id)
                 var currentdate = new Date()
-                // const reportdata = data.filter(element => (currentdate.getTime() - new Date(element.date).getTime()) / 1000 < EXPIRE)
-                setmyreports(data)
+                const currenttime = Date.now()
+                const unexpiredreportdata = data.filter(element => (currenttime-element.creationdate < EXPIRE))
+                console.log("unexpiredreportdata",unexpiredreportdata)
+                setmyreports(unexpiredreportdata)
                 console.log("Reports of the particular subgreddit on Loading are", data)
             }
             catch (error) {

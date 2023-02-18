@@ -104,7 +104,15 @@ SubGredditRouter.get('/:id', async (request, response) => {
     const subgreddit = await SubGreddit
         .findById(ID).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked')
     console.log(subgreddit)
+    const myreports = subgreddit.Reports
+    const expiredreports = myreports.filter(report => (currenttime-report.creationdate>=config.TIME_PERIOD))
+    const unexpiredreports = myreports.filter(report => (currenttime-report.creationdate<config.TIME_PERIOD))
+    const ReportIDs = expiredreports.map(element => element._id)
+    const deleteexpiredReports = await Report.deleteMany({ _id: { $in: ReportIDs } })
+    console.log("Delete Expired Reports", deleteexpiredReports)
     const ModeratorID = subgreddit.Moderator._id
+    subgreddit.Reports = unexpiredreports
+    // TODO: TESTING PENDING
     const userid = request.user._id
     if (ModeratorID == userid) {
         response.json(subgreddit)
@@ -225,7 +233,7 @@ SubGredditRouter.put('/block/:id', async (request, response) => {
         to: ReportByEmail,
         subject: "Action is taken based on your Report",
         text: `Welcome Gredditian!!!!
-        Your Report on ${ReportOnUsername} has been analsysed
+        Your Report on ${ReportOnUsername} has been analyzed
         and ${ReportOnUsername} has been banned from the SubGreddit ${SubGredditName}`
     };
     transporter.sendMail(mailOptions, function (err, data) {
@@ -294,7 +302,7 @@ SubGredditRouter.put('/Posts/:id', async (request, response) => {
         to: ReportByEmail,
         subject: "Action is taken based on your Report",
         text: `Welcome Gredditian!!!!
-        Your Report on ${ReportOnUsername} has been analsysed
+        Your Report on ${ReportOnUsername} has been analyzed
         and the Reported Post has been deleted from the SubGreddit ${SubGredditName}`
     };
     transporter.sendMail(mailOptions, function (err, data) {

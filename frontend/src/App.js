@@ -10,6 +10,7 @@ import OpenSubGreddits from "./components/OpenSubGreddits"
 import SubGreddits from "./components/SubGreddits"
 import ViewSubGreddits from "./components/ViewSubGreddits"
 import SavedPosts from "./components/SavedPosts"
+import ChatBox from "./components/ChatBox"
 
 export default function App() {
   const [user, setuser] = React.useState(null)
@@ -32,9 +33,10 @@ export default function App() {
           <Route path="/profile" element={window.localStorage.getItem('token') ? <Profile user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
           <Route path="/MySubGreddits" element={window.localStorage.getItem('token') ? <MySubGreddits user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
           <Route path="/OpenSubGreddits/:id" element={window.localStorage.getItem('token') ? <OpenSubGreddits user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
-         <Route path="/SubGreddits" element={window.localStorage.getItem('token') ? <SubGreddits user={user} setuser={setuser} /> :<Navigate replace to="/" />}/> 
-         <Route path="/ViewSubGreddits/:id" element={window.localStorage.getItem('token') ? <ViewSubGreddits user={user} setuser={setuser}/> :<Navigate replace to="/" />}/> 
-         <Route path="/SavedPosts" element={window.localStorage.getItem('token') ? <SavedPosts user={user} setuser={setuser}/> :<Navigate replace to="/" />}/> 
+          <Route path="/SubGreddits" element={window.localStorage.getItem('token') ? <SubGreddits user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
+          <Route path="/ViewSubGreddits/:id" element={window.localStorage.getItem('token') ? <ViewSubGreddits user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
+          <Route path="/SavedPosts" element={window.localStorage.getItem('token') ? <SavedPosts user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
+          <Route path="/Chat/:room" element={window.localStorage.getItem('token') ? <ChatBox user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
           {/*   <Route path="/AllSubGreddits" element={window.localStorage.getItem('token') ? <AllSubGreddits/> :<Navigate replace to="/" />}/>
             <Route path="*" element={<Navigate replace to="/"/>} /> */}
         </Routes>

@@ -61,17 +61,41 @@ ReportRouter.get('/SubGreddit/:id', async (request, response) => {
         .find({}).populate('Post').populate('By').populate('On')
     const currentsubgreddit = await SubGreddit.findById(request.params.id)
     console.log("All Reports are", AllReports)
+    const currenttime = Date.now()
     const myreports = AllReports.filter(element => currentsubgreddit.Reports.includes(element._id))
-    response.json(myreports)
-    console.log("My reports are", myreports)
+    const expiredreports = myreports.filter(report => (currenttime-report.creationdate>=config.TIME_PERIOD))
+    const unexpiredreports = myreports.filter(report => (currenttime-report.creationdate<config.TIME_PERIOD))
+    const ReportIDs = expiredreports.map(element => element._id)
+    const deleteexpiredReports = await Report.deleteMany({ _id: { $in: ReportIDs } })
+    // TODO: Have to update individual subgreddits as well
+    // TODO: TESTING PENDING
+    console.log("Delete Expired Reports", deleteexpiredReports)
+    response.json(unexpiredreports)
+    console.log("My reports are", unexpiredreports)
 })
 
 ReportRouter.get('/:id', async (request, response) => {
     const ID = request.params.id
     const report = await Report
         .findById(ID).populate('Post').populate('By').populate('On')
+    const currenttime = Date.now()
+    if(currenttime-report.creationdate >= config.TIME_PERIOD)
+    {
+        // TODO: TESTING PENDING
+        const SubGredditID = report.Post.In
+        const deletedreport = await Report.findByIdAndDelete(ID)
+        console.log("deletedreport",deletedreport)
+        const subgreddit = await SubGreddit.findById(SubGredditID)
+        console.log("subgreddit",subgreddit)
+        subgreddit.Reports = subgreddit.Reports.filter(element => element!=ID)
+        const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(SubGredditID, subgreddit, { new: true })
+        console.log("updatedsubgreddit",updatedsubgreddit)
+        return response.status(400).json({
+            error: `Report has Expired the limit of ${config.TIME_PERIOD}`
+        })
+    }
     console.log(report)
-    response.json(report)
+    response.status(200).json(report)
 })
 // TODO: Update body required for email in Frontend
 ReportRouter.put('/ignore/:id', async (request, response) => {
@@ -93,7 +117,7 @@ ReportRouter.put('/ignore/:id', async (request, response) => {
         to: ReportedByEmail,
         subject: "Your Report has been Ignored",
         text: `Welcome Gredditian!!!!
-        Your Report on ${ReportedOnUsername} has been analsysed
+        Your Report on ${ReportedOnUsername} has been analyzed
         and your Report is ignored due to Community
         Guidelines`
     };

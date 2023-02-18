@@ -5,22 +5,22 @@ import { useParams } from "react-router-dom";
 const Chat = ({ username }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const socket = io('http://localhost:5000');
+  const socket = io('http://localhost:3003');
   const params = useParams()
   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const data = await ChatService.getbyRoom(params.room)
-          console.log("recieved", data)
-          setposts(data.SavedPosts)
-          console.log("posts on Loading are", data.SavedPosts)
-        }
-        catch (error) {
-          console.log(error)
-        }
+    const fetchData = async () => {
+      try {
+        const data = await ChatService.getbyRoom(params.room)
+        console.log("recieved", data)
+        setMessages(data.messages)
+        console.log("messages on Loading are", data.messages)
       }
-      fetchData();
-    }, [])
+      catch (error) {
+        console.log(error)
+      }
+    }
+    fetchData();
+  }, [])
   useEffect(() => {
     // Listen for incoming messages from the server
     socket.on('message', (data) => {
@@ -31,7 +31,6 @@ const Chat = ({ username }) => {
       socket.disconnect();
     };
   }, [socket]);
-
   const handleSend = (event) => {
     event.preventDefault();
     // Send the message to the server
@@ -39,10 +38,19 @@ const Chat = ({ username }) => {
       username,
       message,
     });
+    const NewMessage = async () => {
+      try {
+        const data = await ChatService.create
+          console.log("recieved", data)
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+    NewMessage();
     // Clear the input field
     setMessage('');
   };
-
   return (
     <div>
       {messages.map((message, index) => (

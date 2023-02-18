@@ -193,8 +193,7 @@ export default function MySubGreddits(props) {
         else if (followedarray && followedarray.includes(JSON.parse(window.localStorage.getItem('token')).id)) {
             alert("You are trying to Join a SubGreddit that you have already Left which is against policy")
         }
-        else {
-            
+        else {   
             const JoiningRequests = async () => {
                 try {
                     const data = await SubGredditService.JoinSubGreddit(id, { UserID: JSON.parse(window.localStorage.getItem('token')).id })

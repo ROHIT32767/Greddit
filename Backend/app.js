@@ -8,7 +8,7 @@ const loginRouter = require('./controllers/login')
 const SubGredditRouter = require('./controllers/SubGredditRouter')
 const PostsRouter = require('./controllers/PostRouter')
 const ReportRouter = require('./controllers/ReportRouter')
-const ChatRouter  = require('./controllers/ChatRouter')
+const ChatRouter = require('./controllers/ChatRouter')
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
@@ -25,7 +25,11 @@ mongoose.connect(mongoUrl, { useNewurlParser: true }).then(() => {
 connection.once('open', () => {
   logger.info(`MongoDB Database connection Established Successfully`)
 })
-const io = require("socket.io")(http);
+const io = require("socket.io")(3003, {
+  cors: {
+    origin: ["http://localhost:5000"]
+  }
+});
 // Listen for new connections
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -81,7 +85,7 @@ app.use('/api/login', loginRouter)
 app.use(middleware.userExtractor)
 app.use(fileUpload());
 app.use('/api/SubGreddiits', SubGredditRouter)
-app.use('/api/Chat',ChatRouter)
+app.use('/api/Chat', ChatRouter)
 app.use('/api/Reports', ReportRouter)
 app.use('/api/Posts', PostsRouter)
 app.use(middleware.unknownEndpoint)
