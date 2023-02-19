@@ -64,8 +64,11 @@ ReportRouter.get('/SubGreddit/:id', async (request, response) => {
     const currenttime = Date.now()
     const myreports = AllReports.filter(element => currentsubgreddit.Reports.includes(element._id))
     const expiredreports = myreports.filter(report => (currenttime-report.creationdate>=config.TIME_PERIOD))
+    console.log("expired reports",expiredreports)
     const unexpiredreports = myreports.filter(report => (currenttime-report.creationdate<config.TIME_PERIOD))
+    console.log("unexpired reports",unexpiredreports)
     const ReportIDs = expiredreports.map(element => element._id)
+    console.log("These ID's will be Deleted",ReportIDs)
     const deleteexpiredReports = await Report.deleteMany({ _id: { $in: ReportIDs } })
     // TODO: Have to update individual subgreddits as well
     // TODO: TESTING PENDING

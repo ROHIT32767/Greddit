@@ -104,9 +104,12 @@ SubGredditRouter.get('/:id', async (request, response) => {
     const subgreddit = await SubGreddit
         .findById(ID).populate('Post').populate('Moderator').populate('Followers').populate('Reports').populate('Followed').populate('JoinRequests').populate('Blocked')
     console.log(subgreddit)
+    const currenttime = Date.now()
     const myreports = subgreddit.Reports
     const expiredreports = myreports.filter(report => (currenttime-report.creationdate>=config.TIME_PERIOD))
+    console.log("expired reports",expiredreports)
     const unexpiredreports = myreports.filter(report => (currenttime-report.creationdate<config.TIME_PERIOD))
+    console.log("unexpired reports",unexpiredreports)
     const ReportIDs = expiredreports.map(element => element._id)
     const deleteexpiredReports = await Report.deleteMany({ _id: { $in: ReportIDs } })
     console.log("Delete Expired Reports", deleteexpiredReports)

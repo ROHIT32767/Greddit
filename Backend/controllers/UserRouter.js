@@ -34,7 +34,7 @@ usersRouter.post('/', async (request, response) => {
     Age,
     ContactNumber,
     passwordHash,
-    creationdate:timeseconds
+    creationdate: timeseconds
   })
   const savedUser = await user.save()
   console.log(savedUser)

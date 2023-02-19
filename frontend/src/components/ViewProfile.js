@@ -14,6 +14,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { useNavigate } from "react-router-dom";
 // import axios from 'axios';
 import UserService from "../services/Users"
 const theme = createTheme();
@@ -83,6 +84,7 @@ export default function ViewProfile(props) {
         showcancelbutton: true,
         showeditbutton: true
     })
+    const navigate = useNavigate()
     function canBeSubmitted() {
         const errors = validate(touched.FirstName, touched.LastName, touched.Username, touched.Email, touched.Age, touched.ContactNumber, touched.password);
         const isDisabled = Object.keys(errors).some(x => errors[x]);
@@ -629,10 +631,6 @@ export default function ViewProfile(props) {
                                                                 {element.Username}
                                                             </TableCell>
                                                             <TableCell align="right">
-                                                                {
-                                                                    element.Following.map(ID => ID._id).includes((JSON.parse(window.localStorage.getItem('token'))).id) &&
-                                                                    <Button variant="contained" color="secondary" onClick={(event) => Deleterow1(event, element._id)}>CHAT</Button>
-                                                                }
                                                                 <Button variant="contained" color="secondary" onClick={(event) => Deleterow1(event, element._id)}>UNFOLLOW</Button>
                                                             </TableCell>
                                                         </TableRow>
@@ -645,7 +643,7 @@ export default function ViewProfile(props) {
                                             <div>
                                                 <br />
                                                 <div className='error'>
-                                                    Click on the Button to View
+                                                    {`Click on  ${ReadOnlyValues.Following.length} to View`}
                                                 </div>
                                                 <br />
                                             </div>
@@ -688,7 +686,7 @@ export default function ViewProfile(props) {
                                             <div>
                                                 <br />
                                                 <div className='error'>
-                                                    Click on the Button to View
+                                                    {`Click on  ${ReadOnlyValues.Followers.length} to View`}
                                                 </div>
                                                 <br />
                                             </div>

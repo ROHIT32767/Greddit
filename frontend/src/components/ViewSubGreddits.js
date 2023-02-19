@@ -34,7 +34,6 @@ import SubGredditService from "../services/SubGreddiit"
 const theme = createTheme();
 var itemData = [
     {
-        img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
         title: 'Breakfast',
         author: '@bkristastucchio',
         featured: true,
@@ -298,6 +297,7 @@ const RedditClone = () => {
         showpostthisbutton: true,
         showcreatepostbutton: true
     })
+    var [url_image,seturl_image] = useState("https://images.unsplash.com/photo-1551963831-b3b1ca40c98e")
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -384,7 +384,7 @@ const RedditClone = () => {
                 setsubgreddit(data)
                 console.log("set subgreddit to", data)
                 if (data.ImageURL) {
-                    itemData[0].img = data.ImageURL
+                    seturl_image(data.ImageURL)
                 }
             }
             catch (error) {
@@ -448,7 +448,7 @@ const RedditClone = () => {
                         return (
                             <ImageListItem key={item.img} cols={cols} rows={rows}>
                                 <img
-                                    {...srcset(item.img, 250, 200, rows, cols)}
+                                    {...srcset(url_image, 250, 200, rows, cols)}
                                     alt={item.title}
                                     loading="lazy"
                                 />

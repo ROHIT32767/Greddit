@@ -243,7 +243,6 @@ export default function OpenSubGreddits(props) {
         const fetchReports = async (data) => {
             try {
                 const data = await ReportService.getBySubGreddit(params.id)
-                var currentdate = new Date()
                 const currenttime = Date.now()
                 const unexpiredreportdata = data.filter(element => (currenttime-element.creationdate < EXPIRE))
                 console.log("unexpiredreportdata",unexpiredreportdata)
