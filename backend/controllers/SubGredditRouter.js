@@ -201,6 +201,12 @@ SubGredditRouter.put('/accept/:id', async (request, response) => {
         })
     }
     const subgreddit = await SubGreddit.findById(request.params.id)
+    if(subgreddit.Moderator==UserID)
+    {
+        return response.status(400).json({
+            error: 'Moderator cannot send Join Request to his own SubGreddit'
+        })
+    }
     subgreddit.Followers = subgreddit.Followers.concat(UserID)
     subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element != UserID)
     subgreddit.Followed = subgreddit.Followed.concat(UserID)
@@ -220,6 +226,12 @@ SubGredditRouter.put('/reject/:id', async (request, response) => {
         })
     }
     const subgreddit = await SubGreddit.findById(request.params.id)
+    if(subgreddit.Moderator==UserID)
+    {
+        return response.status(400).json({
+            error: 'Moderator cannot send Join Request to his own SubGreddit'
+        })
+    }
     subgreddit.JoinRequests = subgreddit.JoinRequests.filter(element => element != UserID)
     const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
     // const updatedsubgreddit = await subgreddit.save()
@@ -248,6 +260,12 @@ SubGredditRouter.put('/block/:id', async (request, response) => {
     {
         return response.status(400).json({
             error: 'User is Already Blocked in the SubGreddit'
+        })
+    }
+    if(subgreddit.Moderator == UserID)
+    {
+        return response.status(400).json({
+            error: 'Cannot Block Moderator of a SubGreddit'
         })
     }
     subgreddit.Blocked = subgreddit.Blocked.concat(UserID)

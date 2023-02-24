@@ -118,7 +118,6 @@ export default function OpenSubGreddits(props) {
     const [postgrowthData, setpostGrowthData] = React.useState([]);
     const [membergrowthData, setmembergrowthData] = React.useState([]);
     const [clickgrowthdata, setclickgrowthdata] = React.useState([])
-    var cumulativearray = []
     const [subgreddit, setsubgreddit] = React.useState({
         Name: "",
         Description: "",
@@ -147,45 +146,17 @@ export default function OpenSubGreddits(props) {
     const handleClick2 = () => {
         setOpen2(!open2);
     };
-    React.useEffect(() => {
-        const handleKeyDown = (event) => {
-            console.log(event.keyCode)
-            if (event.keyCode == 85) {
-                setCurrentTab(0);
-            }
-            else if (event.keyCode == 74) {
-                setCurrentTab(1);
-            }
-            else if (event.keyCode == 83) {
-                setCurrentTab(2);
-            }
-            else if (event.keyCode == 82) {
-                setCurrentTab(3);
-            }
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, []);
     // TODO: Check whether if working for Graphs
     React.useEffect(() => {
         const fetchPostGrowth = async (data) => {
             try {
                 const postdates = new Set();
-                //   console.log("PostGrowthData", data.PostGrowthData)
                 const postarray = data.PostGrowthData
                 postarray.forEach((element, index) => {
-                    // console.log("element", element, "index",index,element.date,typeof element.date)
                     postdates.add(element.date.substring(0, 10))
                 })
-                //  console.log("postdates", postdates)
                 setpostGrowthData(Array.from(postdates).map(date => {
                     const posts = data.PostGrowthData.filter(subdata => subdata.date.substring(0, 10) === date).length;
-                    // console.log("element of postGrowth", {
-                    //     date: date,
-                    //     posts: posts,
-                    // })
                     return {
                         date: date,
                         posts: posts,
@@ -206,11 +177,11 @@ export default function OpenSubGreddits(props) {
                     const joinmembers = members.filter(element => element.Join).length
                     console.log("element of postGrowth", {
                         date: date,
-                        members: (2 * joinmembers - members.length)
+                        members: joinmembers
                     })
                     return {
                         date: date,
-                        members: (2 * joinmembers - members.length)
+                        members: joinmembers
                     };
                 }))
             }
@@ -447,9 +418,9 @@ export default function OpenSubGreddits(props) {
         else {
             console.log("User is already blocked")
         }
-
     }
-    const cumulativememebrs = membergrowthData.map((data, index) => {
+    const cumulativearray = []
+    const cumulativemembers = membergrowthData.map((data, index) => {
         let members = 0;
         if (index === 0) {
             members = data.members;
@@ -458,8 +429,7 @@ export default function OpenSubGreddits(props) {
             members = cumulativearray[index - 1] + data.members;
             cumulativearray[index] = members
         }
-    }
-    )
+    })
     return (
         <div>
             <ThemeProvider theme={theme}>
@@ -592,7 +562,7 @@ export default function OpenSubGreddits(props) {
                                         <ChartPlot labels={postgrowthData.map((data, index, arr) => data.date)} title="Daily Posts" data={postgrowthData.map((data, index, arr) => data.posts)}></ChartPlot>
                                         <ChartPlot labels={["Reported Posts", "Deleted Posts"]} title="Reported Posts vs Deleted Posts" data={[subgreddit.Reported.length, subgreddit.Reported.length - subgreddit.Reports.length]}></ChartPlot>
                                         <ChartPlot labels={clickgrowthdata.map((data, index) => data.date)} title="Daily Clicks" data={clickgrowthdata.map((data, index) => data.clicks)}></ChartPlot>
-                                        <ChartPlot labels={membergrowthData.map((data, index) => data.date)} title="Member Growth" data={cumulativearray}></ChartPlot>
+                                        <ChartPlot labels={membergrowthData.map((data, index) => data.date)} title="Member Growth" data={cumulativearray}ChartPlot />
                                     </Box>
                                 </TabPanel>
                                 <TabPanel>

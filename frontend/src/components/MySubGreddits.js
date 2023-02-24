@@ -25,7 +25,6 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SubGredditService from '../services/SubGreddiit';
 import { useNavigate } from "react-router-dom";
-import FileUploadInput from './FileUploadInput';
 const theme = createTheme();
 export default function MySubGreddits(props) {
     const navigate = useNavigate()
