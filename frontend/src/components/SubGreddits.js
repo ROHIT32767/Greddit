@@ -274,7 +274,7 @@ export default function MySubGreddits(props) {
                                 else{
                                     if (!event.target.value) {
                                         const options = {
-                                            includeScore: true,
+                                            findAllMatches: true,
                                             keys: ['Name']
                                         }
                                         const fuse = new Fuse(subreddits.filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)), options)
@@ -285,7 +285,7 @@ export default function MySubGreddits(props) {
                                     else {
                                         if (!selectedTags.length) {
                                             const options = {
-                                                includeScore: true,
+                                                findAllMatches: true,
                                                 keys: ['Name']
                                             }
                                             const fuse = new Fuse(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())), options)
@@ -295,7 +295,7 @@ export default function MySubGreddits(props) {
                                         }
                                         else {
                                             const options = {
-                                                includeScore: true,
+                                                findAllMatches: true,
                                                 keys: ['Name']
                                             }
                                             const fuse = new Fuse(subreddits.filter(element => element.Name.toLowerCase().includes((event.target.value).toLowerCase())).filter(element => element.Tags.some(r => selectedTags.indexOf(r) >= 0)), options)
@@ -310,10 +310,6 @@ export default function MySubGreddits(props) {
                         <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
                             <SearchIcon />
                         </IconButton>
-                        {/* <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                        <IconButton color="primary" sx={{ p: '10px' }} aria-label="directions">
-                            <DirectionsIcon />
-                        </IconButton> */}
                     </Paper>
                 </Container>
                 <Container component="main" maxWidth="xs">

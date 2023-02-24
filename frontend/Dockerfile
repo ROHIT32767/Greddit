@@ -1,30 +1,28 @@
 FROM node:16-alpine
 
-RUN apk add python3 make g++
+# ? install node
+RUN apk add python3 make g++ 
 
-# copy all the code inside docker container
-
-
-# Removes permission errors
-USER node
+# ? creat new user (optional)
+USER node 
 
 RUN mkdir -p /home/node/app
+WORKDIR /home/node/app
 
-# ALl the commands in WORKDIR run inside the container
-WORKDIR  /home/node/app
+# ? copy package.json and package-lock.json
+COPY --chown=node:node package*.json ./
 
-# changes owner
-# moves code from our . (server) to containers .
-COPY --chown=node:node package*.json .
-RUN npm ci 
+# ? ci is exact install ( without upgraded version )
+RUN npm i
 
-COPY --chown=node:node . .
+# ? first . my PC
+# ? second . docker working dir
+COPY --chown=node:node . ./
 
+# ? give access to 5000 port of docker
 EXPOSE 3000
 
-ENTRYPOINT ["./entrypoint.sh"]
-
-
-
-# cd server
-# docker build . -t server:v1
+# RUN chmod +x /bin/sh
+# RUN ls -a /bin/
+RUN npm run build
+CMD npx serve -s build -l 3000

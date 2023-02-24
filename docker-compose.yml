@@ -1,52 +1,35 @@
 version: '3.1'
+
 services:
-  backend:
-    build: ./server
-    restart: always
-    environment:
-      - PORT=5000
-      - DEBUG=$DEBUG
-      - MONGOURI
-      - SECRET_KEY
-    networks:
-      - web-network
-    
-
-  frontend:
-    build: ./client
-    environment:
-      - PORT=3000
-      - DEBUG=$DEBUG
-    networks:
-      - web-network
-
-  nginx:
-    image: nginx
-    volumes:
-      - ./nginx:/etc/nginx/conf.d/
-    ports:
-      - 80:80
-    depends_on:
-      - backend
-      - frontend
-    networks:
-      - web-network
-      
-  networks:
-    web-network:
-      driver:bridge
+    backend:
+      build: ./backend
+      environment:
+        - PORT=3003
+      restart: unless-stopped
+      networks:
+        - web-network
 
 
-# docker-compose up -d
-# chmod +x entrypoint.sh
+    frontend:
+      build: ./frontend
+      environment:
+        - PORT=3000
+      networks:
+        - web-network
+    nginx:
+      image: nginx
+      container_name: webserver
+      restart: unless-stopped
+      depends_on:
+        - backend
+        - frontend
+      ports:
+        - 8080:8080
+      volumes:
+        - ./nginx/local.conf:/etc/nginx/nginx.conf
+      networks:
+        - web-network
 
-# docker-compose logs -f nginx
-# docker-compose logs -f backend
-# docker-compose logs -f frontend
-# docker-compose build backend
-# docker-compose run backend
-# docker-compose build backend --no-cache
-# docker-compose logs -f frontend
-# docker-compose build frontend
-# docker-compose down
-# docker-compose up -d
+networks:
+  web-network:
+    driver: bridge
