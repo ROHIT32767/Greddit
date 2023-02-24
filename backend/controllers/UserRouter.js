@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const { request } = require('express')
 const usersRouter = require('express').Router()
 const User = require('../models/User.model')
+const Post = require("../models/Posts.model")
 
 usersRouter.post('/', async (request, response) => {
   console.log(request.body)
@@ -50,7 +51,12 @@ usersRouter.get('/', async (request, response) => {
 usersRouter.get('/:id', async (request, response) => {
   const ID = request.params.id
   const users = await User
-    .findById(ID).populate('Followers').populate('Following').populate('SavedPosts')
+    .findById(ID).populate('Followers').populate('Following')
+  const PostIDs = users.SavedPosts
+  const AllPosts = await Post
+        .find({}).populate('In').populate('By').populate('Comments.commented')
+  const postssaved = AllPosts.filter(element => PostIDs.includes(element._id))
+  users.SavedPosts = postssaved
   users.id = ID
   console.log(users)
   response.json(users)
@@ -98,6 +104,12 @@ usersRouter.put('/addfollowing/:id', async (request, response) => {
   // * For Updating Followers Data
   console.log(request.body)
   const { TargetID } = request.body
+  if(request.params.id==TargetID)
+  {
+    return response.status(400).json({
+      error: 'User Cannot Follow Himself'
+    })
+  }
   if (!TargetID) {
     return response.status(400).json({
       error: 'TargetID is empty in addfollowing Request in Users'
@@ -133,6 +145,12 @@ usersRouter.put('/addfollowers/:id', async (request, response) => {
   if (!TargetID) {
     return response.status(400).json({
       error: 'TargetID is empty in addfollowers Request in Users'
+    })
+  }
+  if(request.params.id==TargetID)
+  {
+    return response.status(400).json({
+      error: 'User Cannot Follow Himself'
     })
   }
   // TODO: Have to Check Validity of id , TargetID

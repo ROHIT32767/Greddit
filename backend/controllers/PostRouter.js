@@ -60,7 +60,6 @@ PostsRouter.get('/SubGreddit/:id', async (request, response) => {
     const allpost = await Post
         .find({}).populate('In').populate('By').populate('Comments.commented')
     const myposts = allpost.filter(element => element.In._id == ID)
-    // const blockeduserposts = myposts.map(element => element.In.Blocked.includes(element.By._id) ? {...element,BlockedUser:true}:element)
     console.log(myposts)
     response.json(myposts)
 })

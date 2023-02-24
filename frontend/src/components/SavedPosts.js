@@ -139,9 +139,6 @@ const Post = ({ id, post, posts, setposts }) => {
                         <Typography variant="h5" component="h2">
                             {post.By.Username}
                         </Typography>
-                        <Typography color="textSecondary" style={{ marginBottom: 12 }}>
-                            {post.By.FirstName}
-                        </Typography>
                         <Typography variant="body2" component="p">
                             {post.Text}
                         </Typography>

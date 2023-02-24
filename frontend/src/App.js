@@ -23,7 +23,6 @@ export default function App() {
   }, [])
   return (
     <Router>
-      {/* <AuthContext.Provider value={{user,setuser}}> */}
       <div className="container">
         <Navbar user={user} setuser={setuser} />
         <Routes>
@@ -34,11 +33,9 @@ export default function App() {
           <Route path="/SubGreddits" element={window.localStorage.getItem('token') ? <SubGreddits user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
           <Route path="/ViewSubGreddits/:id" element={window.localStorage.getItem('token') ? <ViewSubGreddits user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
           <Route path="/SavedPosts" element={window.localStorage.getItem('token') ? <SavedPosts user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
-          {/*   <Route path="/AllSubGreddits" element={window.localStorage.getItem('token') ? <AllSubGreddits/> :<Navigate replace to="/" />}/>
-            <Route path="*" element={<Navigate replace to="/"/>} /> */}
+          <Route path="*" element={<Navigate replace to="/"/>} /> 
         </Routes>
       </div>
-      {/* </AuthContext.Provider> */}
     </Router>
   );
 }

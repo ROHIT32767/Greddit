@@ -166,6 +166,13 @@ SubGredditRouter.put('/join/:id', async (request, response) => {
             error: 'User is already part of SubGreddit'
         })
     }
+    const BlockedIDs = subgreddit.Blocked
+    if(BlockedIDs.includes(UserID))
+    {
+        return response.status(400).json({
+            error: 'User cannot send Join Request as they are already Blocked'
+        })
+    }
     subgreddit.JoinRequests = subgreddit.JoinRequests.concat(UserID)
     // const updatedsubgreddit = await subgreddit.save()
     const updatedsubgreddit = await SubGreddit.findByIdAndUpdate(subgreddit._id, subgreddit, { new: true })
