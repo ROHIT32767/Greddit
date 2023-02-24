@@ -623,6 +623,9 @@ export default function OpenSubGreddits(props) {
                                                                         </div>
                                                                         :
                                                                         <div>
+                                                                            {
+                                                                                
+                                                                            }
                                                                             <CancelButton HandleClick={() => HandleBlock(element.On, element.By)} />
                                                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                                                                             <Button onClick={() => HandleDeletePost(element.Post._id, element._id, element.On, element.By)} variant="contained" color="secondary">DELETE POST</Button>

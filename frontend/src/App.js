@@ -21,14 +21,13 @@ export default function App() {
       UserService.setToken(user.token)
     }
   }, [])
-
   return (
     <Router>
       {/* <AuthContext.Provider value={{user,setuser}}> */}
       <div className="container">
         <Navbar user={user} setuser={setuser} />
         <Routes>
-          <Route exact path="/" element={<Home user={user} setuser={setuser} />} />
+          <Route exact path="/" element={!window.localStorage.getItem('token')? <Home user={user} setuser={setuser} />: <Navigate replace to="/profile" />}/>
           <Route path="/profile" element={window.localStorage.getItem('token') ? <Profile user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
           <Route path="/MySubGreddits" element={window.localStorage.getItem('token') ? <MySubGreddits user={user} setuser={setuser} /> : <Navigate replace to="/" />} />
           <Route path="/OpenSubGreddits/:id" element={window.localStorage.getItem('token') ? <OpenSubGreddits user={user} setuser={setuser} /> : <Navigate replace to="/" />} />

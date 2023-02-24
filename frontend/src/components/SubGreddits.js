@@ -173,7 +173,7 @@ export default function MySubGreddits(props) {
                 console.log("recieved", data)
                 setSubreddits(subreddits => subreddits.map(element => element._id === id ? {
                     ...element,
-                    Followers: element.Followers.filter(element => element._id !== JSON.parse(window.localStorage.getItem('token')).id)
+                    Followers: element.Followers.filter(element => element._id !== (JSON.parse(window.localStorage.getItem('token'))).id)
                 } : element))
             }
             catch (error) {
@@ -545,7 +545,7 @@ export default function MySubGreddits(props) {
                                                     {subreddit.Followers.length} Followers
                                                 </Typography>
                                                 <Typography variant="body2" color="text.secondary">
-                                                    {subreddit.Description}
+                                                    Description : {subreddit.Description}
                                                 </Typography>
                                             </CardContent>
                                             <CardActions disableSpacing>
@@ -608,7 +608,7 @@ export default function MySubGreddits(props) {
                                                     {subreddit.Followers.length} Followers
                                                 </Typography>
                                                 <Typography variant="body2" color="text.secondary">
-                                                    {subreddit.Description}
+                                                    Description : {subreddit.Description}
                                                 </Typography>
                                             </CardContent>
                                             <CardActions disableSpacing>

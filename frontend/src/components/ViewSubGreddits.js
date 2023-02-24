@@ -120,10 +120,18 @@ const Post = ({ id, post, posts, setposts, blocked }) => {
             }
         }
         CommentData();
-        setComments([...Comments, { comment: newComment, commented: (JSON.parse(window.localStorage.getItem('token'))).id }]);
+        setComments([...Comments, {
+            comment: newComment, commented: {
+                Username: (JSON.parse(window.localStorage.getItem('token'))).Username
+            }
+        }]);
         setposts(posts.map(element => element._id === id ? {
             ...element,
-            Comments: { comment: newComment, commented: (JSON.parse(window.localStorage.getItem('token'))).id }
+            Comments: {
+                comment: newComment, commented: {
+                    Username: (JSON.parse(window.localStorage.getItem('token'))).Username
+                }
+            }
         } : element))
         setNewComment('');
     };
@@ -210,9 +218,16 @@ const Post = ({ id, post, posts, setposts, blocked }) => {
                                 <ThumbDownIcon />
                             </IconButton>
                             {post.Downvotes}
-                            <IconButton aria-label="Save" onClick={handleSaveposts}>
-                                <BookmarkAddIcon />
-                            </IconButton>
+                            {
+                                (JSON.parse(window.localStorage.getItem('token'))).SavedPosts.map(element => element._id).includes(JSON.parse(window.localStorage.getItem('token')).id) ?
+                                    <IconButton aria-label="Save" disabled>
+                                        <BookmarkAddIcon />
+                                    </IconButton>
+                                    :
+                                    <IconButton aria-label="Save" onClick={handleSaveposts}>
+                                        <BookmarkAddIcon />
+                                    </IconButton>
+                            }
                             <IconButton aria-label="Follow" onClick={handleFollow}>
                                 <FollowTheSignsIcon />
                             </IconButton>
@@ -297,7 +312,7 @@ const RedditClone = () => {
         showpostthisbutton: true,
         showcreatepostbutton: true
     })
-    var [url_image,seturl_image] = useState("https://images.unsplash.com/photo-1551963831-b3b1ca40c98e")
+    var [url_image, seturl_image] = useState("https://images.unsplash.com/photo-1551963831-b3b1ca40c98e")
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -306,7 +321,7 @@ const RedditClone = () => {
         setText("")
     };
     const handlePost = () => {
-        setshowbuttons({...showbuttons,showcreatepostbutton:false,showpostthisbutton:false})
+        setshowbuttons({ ...showbuttons, showcreatepostbutton: false, showpostthisbutton: false })
         var inputLowerCase = Text.toLowerCase();
         let containsBannedWord = false;
         console.log("Banned Keywords are", subgreddit.Banned)
@@ -374,7 +389,7 @@ const RedditClone = () => {
             PostData();
             setText("")
         }
-        setshowbuttons({...showbuttons,showcreatepostbutton:true,showpostthisbutton:true})
+        setshowbuttons({ ...showbuttons, showcreatepostbutton: true, showpostthisbutton: true })
         setOpen(false);
     };
     React.useEffect(() => {
@@ -458,7 +473,7 @@ const RedditClone = () => {
                                             'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
                                             'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
                                     }}
-                                    title={subgreddit.Name}
+                                    title={`Name: ${subgreddit.Name}`}
                                     position="top"
                                     actionIcon={
                                         <IconButton
@@ -471,7 +486,7 @@ const RedditClone = () => {
                                     actionPosition="left"
                                 />
                                 <ImageListItemBar
-                                    title={<span>Description: {subgreddit.Description}</span>}
+                                    title={<span> Description: {subgreddit.Description}</span>}
                                     position="below"
                                 />
                             </ImageListItem>

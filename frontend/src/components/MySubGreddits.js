@@ -96,10 +96,13 @@ export default function MySubGreddits(props) {
         setshowbuttons({...showbuttons,showcreatetagbutton:false,showbannedwordbutton:false,showcreatesubgredditbutton:false,showsavebutton:false})
         formData.append("Name", newSubreddit.Name)
         formData.append("Description", newSubreddit.Description)
-        formData.append("Banned", newSubreddit.Banned)
+        formData.append("Banned", JSON.stringify(newSubreddit.Banned))
         formData.append("Followers", [JSON.parse(window.localStorage.getItem('token')).id])
         formData.append("Posts", [])
-        formData.append("Tags", newSubreddit.Tags)
+        newSubreddit.Tags.forEach((word, index) => {
+            formData.append(`Tags[${index}]`, word);
+          });
+        formData.append("Tags", JSON.stringify(newSubreddit.Tags))
         formData.append("Moderator", JSON.parse(window.localStorage.getItem('token')).id)
         formData.append("date", DATE)
         formData.append("image", file)
