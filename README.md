@@ -1,3 +1,98 @@
+# Assignment-1
+# 2021101113
+# Design and Analysis of Software Systems
+# Gowlapalli Rohit
+
+>##### All these commands are tested on Ubuntu Version 20.04.3 LTS (Focal Fossa) 
+```
+├── backend
+│   ├── app.js
+│   ├── controllers
+│   │   ├── login.js
+│   │   ├── PostRouter.js
+│   │   ├── ReportRouter.js
+│   │   ├── SubGredditRouter.js
+│   │   └── UserRouter.js
+│   ├── db.json
+│   ├── Dockerfile
+│   ├── entrypoint.sh
+│   ├── index.js
+│   ├── models
+│   │   ├── Posts.model.js
+│   │   ├── Report.model.js
+│   │   ├── SubGreddit.model.js
+│   │   └── User.model.js
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── uploads
+│   └── utils
+│       ├── config.js
+│       ├── logger.js
+│       └── middleware.js
+├── docker-compose.yml
+├── frontend
+│   ├── Dockerfile
+│   ├── entrypoint.sh
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── public
+│   │   ├── favicon.ico
+│   │   ├── index.html
+│   │   ├── logo192.png
+│   │   ├── logo512.png
+│   │   ├── manifest.json
+│   │   └── robots.txt
+│   ├── README.md
+│   └── src
+│       ├── App.css
+│       ├── App.js
+│       ├── assets
+│       │   └── icons8-reddit.gif
+│       ├── Check_Auth
+│       │   └── LocalStorage.js
+│       ├── components
+│       │   ├── FormElements
+│       │   │   ├── Age.js
+│       │   │   ├── Email.js
+│       │   │   └── Password.js
+│       │   ├── Home.js
+│       │   ├── Login.js
+│       │   ├── MySubGreddits.js
+│       │   ├── Navbar.js
+│       │   ├── OpenSubGreddits.js
+│       │   ├── Profile.js
+│       │   ├── Register.js
+│       │   ├── SavedPosts.js
+│       │   ├── SubGreddits.js
+│       │   ├── ViewProfile.js
+│       │   └── ViewSubGreddits.js
+│       ├── context
+│       │   └── AuthContext.js
+│       ├── index.css
+│       ├── index.js
+│       ├── reportWebVitals.js
+│       ├── services
+│       │   ├── login.js
+│       │   ├── Posts.js
+│       │   ├── Report.js
+│       │   ├── SubGreddiit.js
+│       │   └── Users.js
+│       └── setupTests.js
+├── nginx
+│   └── local.conf
+└── README.md
+```
+>* Assumptions
+```
+
+
+
+
+
+
+```
+
+>* Guidelines for Dockerization
 # Structure
 
 ```
