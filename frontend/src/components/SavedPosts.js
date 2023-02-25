@@ -101,7 +101,7 @@ const Post = ({ id, post, posts, setposts }) => {
             try {
                 const data = await UserService.AddFollowing((JSON.parse(window.localStorage.getItem('token'))).id,
                     {
-                        PostID: post.By._id
+                        TargetID: post.By._id
                     }
                 )
                 console.log("recieved", data)
