@@ -1,5 +1,3 @@
-# Assignment-1
-# 2021101113
 # Design and Analysis of Software Systems
 # Gowlapalli Rohit
 >##### All these commands are tested on Ubuntu Version 20.04.3 LTS (Focal Fossa) 
