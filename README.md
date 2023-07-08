@@ -288,19 +288,19 @@ networks:
 
 # How to run:
 
-To Build (To reflect every modification in the Directory from the Previous build , Run this Command after any change in Directory is made (including files)) :
+## Build (To reflect every modification in the Directory from the Previous build , Run after any change in Directory is made (including files)) :
 
 ```bash
 sudo docker-compose build
 ```
 
-To Start:
+## Start:
 
 ```bash
 sudo docker-compose up
 ```
 
-To Stop:
+## Stop:
 
 ```bash
 sudo docker-compose down
