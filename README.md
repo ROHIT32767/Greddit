@@ -81,23 +81,22 @@
 ```
 >* Assumptions
 ```
-1. Some changes in frontend might not be dynamic and may require a Reload
-2. Member Growth is represented by Number of Accepted Join Requests to a SubGreddit in a cumulative way
-3. Due to mismatch b/w IST and GMT , some changes in Stats might not reflect instantaneously
-4. Daily Visitors to a SubGreddit are calculated by counting number of Clicks to the Open-Button in SubGreddits page
-5. Number of Deleted posts are calculated by subtracting Number of Reports in DB corresponding to SubGreddit from Number of All-time Reports in DB corresponding to SubGreddit
-6. Image-Upload is mandatory for creating a New SubGreddit
-7. Email Notifications would be sent to valid Emails only
-8. At any instant , atmost only one of Ascending,Descending,Followers,Date sort can be active
-9. A switch is used to represent Fuzzy Search
-10. Some errors are handled in Backend and might not show corresponding messages in Frontend and may be shown through console output
-11. Users are not allowed to follow themselves
-12. Blocking User based on a Report removes reported user from SubGreddit and permanently bans him from Joining SubGreddit
-13. None button is used to undo any sort applied in SubGreddit Page
-14. At each place where the User is waiting for the API Call to finish , corresponding Buttons are disabled
-15. Reports not handled even after TIME_PERIOD seconds from Time of Report Creation will be Deleted from the DB as soon as any Request involving that Report is Fetched
-16. It is assumed that nginx and docker-compose.yml are part of the Outer-most Directory unlike the Submission Format mentioned for Assignment-Part 2 in Assignment.pdf
-17. Moderators cannot Block themselves from their SubGreddit
+1. Member Growth is represented by Number of Accepted Join Requests to a SubGreddit in a cumulative way
+2. Due to mismatch b/w IST and GMT , some changes in Stats might not reflect instantaneously
+3. Daily Visitors to a SubGreddit are calculated by counting number of Clicks to the Open-Button in SubGreddits page
+4. Number of Deleted posts are calculated by subtracting Number of Reports in DB corresponding to SubGreddit from Number of All-time Reports in DB corresponding to SubGreddit
+5. Image-Upload is mandatory for creating a New SubGreddit
+6. Email Notifications would be sent to valid Emails only
+7. At any instant , atmost only one of Ascending,Descending,Followers,Date sort can be active
+8. A switch is used to represent Fuzzy Search
+9. Some errors are handled in Backend and might not show corresponding messages in Frontend and may be shown through console output
+10. Users are not allowed to follow themselves
+11. Blocking User based on a Report removes reported user from SubGreddit and permanently bans him from Joining SubGreddit
+12. None button is used to undo any sort applied in SubGreddit Page
+13. At each place where the User is waiting for the API Call to finish , corresponding Buttons are disabled
+14. Reports not handled even after TIME_PERIOD seconds from Time of Report Creation will be Deleted from the DB as soon as any Request involving that Report is Fetched
+15. It is assumed that nginx and docker-compose.yml are part of the Outer-most Directory unlike the Submission Format mentioned for Assignment-Part 2 in Assignment.pdf
+16. Moderators cannot Block themselves from their SubGreddit
 ```
 
 >* Guidelines for Dockerization
