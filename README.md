@@ -191,9 +191,10 @@ EXPOSE 5000
 CMD npm start
 ```
 
-# backend/.dcokerignore:
+# backend/.dockerignore:
 
-same as frontend
+node_modules
+build
 
 # nginx/local.conf:
 
