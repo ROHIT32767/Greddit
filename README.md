@@ -192,9 +192,10 @@ CMD npm start
 ```
 
 # backend/.dockerignore:
-
+```
 node_modules
 build
+```
 
 # nginx/local.conf:
 
